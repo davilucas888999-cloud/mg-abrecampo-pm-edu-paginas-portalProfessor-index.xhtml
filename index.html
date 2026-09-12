@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SigeNotas 2026 - Gestão Escolar</title>
+    <title>Portal do Professor 2026 • Gestão Escolar</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body class="light-mode">
+<body class="light-mode refined-portal">
 
     <!-- TOPBAR MOBILE -->
     <div class="topbar">
         <button class="menu-hamburger" onclick="toggleMenu()" aria-label="Abrir Menu">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="topbar-title">SigeNotas 2026</div>
+        <div class="topbar-title">Portal do Professor 2026</div>
         <div class="theme-toggle" onclick="toggleTheme()">
             <i class="fas fa-moon" id="theme-icon"></i>
         </div>
@@ -35,7 +35,7 @@
             <ul>
                 <li onclick="navigate('home')"><i class="fas fa-th-large"></i> Disciplinas em Bloco</li>
                 <li onclick="navigate('boletim-individual')"><i class="fas fa-file-invoice"></i> Boletim Individual</li>
-                <li onclick="openCadastroAlunos()"><i class="fas fa-user-graduate"></i> Cadastro de Alunos</li>
+                <li onclick="abrirCadastroAlunos()"><i class="fas fa-user-plus"></i> Cadastro de Alunos</li>
                 <li onclick="navigate('fechamento-global')"><i class="fas fa-lock"></i> Fechamento de Bimestre</li>
                 <li onclick="navigate('dashboard')"><i class="fas fa-chart-line"></i> Estatísticas e Gráficos</li>
                 <li onclick="navigate('backup')"><i class="fas fa-server"></i> Manutenção de Dados</li>
@@ -43,104 +43,85 @@
             </ul>
         </nav>
         <div class="sidebar-footer">
-            <span>Versão Mobile 4.0 Pro</span>
+            <span>Portal do Professor 2026 • Versão Responsiva</span>
         </div>
     </div>
 
     <!-- MAIN CONTAINER (CONTEÚDO DO APLICATIVO) -->
-    <div class="responsive-device-note" aria-live="polite">
-        <span class="device-dot"></span>
-        <span id="device-mode-label">Interface adaptada</span>
-    </div>
-
     <div class="main-container">
 
         <!-- TELA 1: INÍCIO (BLOCOS DE MATÉRIAS) -->
         <div id="screen-home" class="screen active">
-
             <div class="welcome-banner">
-    
-            <div class="banner-flex">
+                <div class="banner-flex">
                     <div>
                         <h2>Bem-vinda de volta!</h2>
                         <p class="school-text">EM DR CUSTÓDIO DE PAULA RODRIGUES</p>
                     </div>
                     <img src="brasao.png" alt="Brasão" class="banner-logo">
                 </div>
-    
-            <div class="banner-badge-container">
+                <div class="banner-badge-container">
                     <span class="badge">Ano Letivo: 2026</span>
                     <span class="badge-active" id="global-bimestre-badge">Carregando Bimestre...</span>
                 </div>
             </div>
             
-
             <div class="section-header-block">
                 <h3 class="section-title">Minhas Disciplinas</h3>
                 <p class="section-desc">Toque em um bloco para gerenciar atividades, notas ou emitir boletins.</p>
             </div>
             
-
             <div class="disciplinas-grid" id="disciplinas-grid"></div>
-
-            <div class="home-management-panel">
-                <div>
-                    <span class="panel-kicker">ADMINISTRAÇÃO DA TURMA</span>
-                    <h3>Alunos e registros acadêmicos</h3>
-                    <p>Cadastre novos estudantes e passe a lançar as notas deles normalmente nas atividades de cada bimestre.</p>
-                </div>
-                <button class="btn-submit-action btn-student-primary" onclick="openCadastroAlunos()">
-                    <i class="fas fa-user-plus"></i> Gerenciar alunos
-                </button>
-            </div>
         </div>
 
         <!-- TELA: CADASTRO DE ALUNOS -->
         <div id="screen-cadastro-alunos" class="screen">
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar ao Início</button>
 
-            <div class="student-page-header">
-                <div>
-                    <span class="panel-kicker">GESTÃO DA TURMA</span>
-                    <h2>Cadastro de Alunos</h2>
-                    <p>Inclua, edite e organize os estudantes da turma. Todo novo cadastro é liberado automaticamente para lançamento de notas em todas as disciplinas.</p>
-                </div>
-                <div class="student-counter" id="alunos-contador">0 estudante(s) cadastrado(s)</div>
+            <div class="table-meta-header">
+                <h3><i class="fas fa-user-plus"></i> Cadastro de Alunos</h3>
+                <p class="sub-meta">Cadastre novos alunos. O novo aluno é colocado automaticamente no fim da ordem de matrícula/chamada.</p>
             </div>
 
-            <div class="student-layout">
-                <section class="card-box student-form-card" id="form-aluno-card">
-                    <div class="form-card-heading">
-                        <div class="heading-icon"><i class="fas fa-user-plus"></i></div>
-                        <div><span class="panel-kicker">REGISTRO</span><h3 id="titulo-form-aluno">Cadastrar novo estudante</h3></div>
+            <div class="card-box student-registration-card">
+                <form id="form-cadastro-aluno" onsubmit="cadastrarNovoAluno(event)">
+                    <div class="input-grid-cadastro">
+                        <div class="input-group">
+                            <label for="novo-aluno-nome">Nome completo do aluno</label>
+                            <input type="text" id="novo-aluno-nome" placeholder="NOME COMPLETO" autocomplete="off" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="novo-aluno-data">Data de matrícula</label>
+                            <input type="date" id="novo-aluno-data" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="novo-aluno-nascimento">Data de nascimento</label>
+                            <input type="date" id="novo-aluno-nascimento">
+                        </div>
                     </div>
-                    <form id="form-aluno" onsubmit="salvarAluno(event)">
-                        <input type="hidden" id="aluno-original" value="">
-                        <div class="input-group"><label for="aluno-nome">Nome completo *</label><input id="aluno-nome" type="text" required autocomplete="off" placeholder="NOME COMPLETO DO ESTUDANTE"></div>
-                        <div class="student-form-row">
-                            <div class="input-group"><label for="aluno-matricula">Matrícula</label><input id="aluno-matricula" type="text" inputmode="numeric" placeholder="Código ou matrícula"></div>
-                            <div class="input-group"><label for="aluno-observacao">Observação</label><input id="aluno-observacao" type="text" placeholder="Informação opcional"></div>
-                        </div>
-                        <div class="form-hint"><i class="fas fa-circle-info"></i> Ao cadastrar, o estudante aparecerá no quadro de atividades, lançamento de notas, recuperações, estatísticas e boletim.</div>
-                        <div class="student-form-actions">
-                            <button type="submit" class="btn-submit-action" id="btn-salvar-aluno"><i class="fas fa-user-plus"></i> Cadastrar estudante</button>
-                            <button type="button" class="btn-cancel-edit" onclick="abrirFormAluno('')"><i class="fas fa-rotate-left"></i> Limpar</button>
-                        </div>
-                    </form>
-                </section>
+                    <button type="submit" class="btn-submit-action"><i class="fas fa-user-plus"></i> Cadastrar Aluno</button>
+                </form>
+            </div>
 
-                <section class="card-box student-list-card">
-                    <div class="student-list-heading">
-                        <div><span class="panel-kicker">ESTUDANTES</span><h3>Turma cadastrada</h3></div>
-                        <input type="search" id="search-aluno-cadastro" class="student-search" placeholder="Pesquisar aluno..." oninput="filtrarAlunosCadastro()">
-                    </div>
-                    <div class="table-responsive-container student-table-wrap">
-                        <table class="table-custom-format student-table">
-                            <thead><tr><th>#</th><th>Estudante</th><th>Observação</th><th>Ações</th></tr></thead>
-                            <tbody id="table-alunos-cadastro"></tbody>
-                        </table>
-                    </div>
-                </section>
+            <div class="section-header-block" style="margin-top:25px;">
+                <h4 class="section-title">Ordem de Matrícula e Chamada</h4>
+                <p class="section-desc">A matrícula é formada por <strong>ano da matrícula + turma 800 + ordem de chamada</strong>.</p>
+            </div>
+
+            <div class="table-responsive-container">
+                <table class="table-custom-format">
+                    <thead>
+                        <tr>
+                            <th>Ordem</th>
+                            <th>Matrícula</th>
+                            <th>Nome do Aluno</th>
+                            <th>Data de Matrícula</th>
+                            <th>Data de Nascimento</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-cadastro-alunos-corpo"></tbody>
+                </table>
             </div>
         </div>
 
@@ -148,7 +129,6 @@
         <div id="screen-boletim-individual" class="screen">
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar ao Início</button>
             
-
             <div class="table-meta-header">
                 <h3>Boletim de Aproveitamento Individual</h3>
                 <p class="sub-meta">Gere e visualize o rendimento unificado de todas as disciplinas do ano.</p>
@@ -161,7 +141,6 @@
                 
                 <input type="text" class="search-box-input" id="search-aluno-boletim" placeholder="🔍 Pesquisar estudante..." onkeyup="filterTable('table-boletim-corpo', this.value)">
             </div>
-
 
             <div class="table-responsive-container">
                 <table class="table-custom-format">
@@ -180,15 +159,12 @@
         <div id="screen-materia-hub" class="screen">
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar ao Início</button>
             
-
             <div class="materia-header-banner">
-    
-            <div class="materia-title-wrapper">
+                <div class="materia-title-wrapper">
                     <i class="fas fa-graduation-cap title-icon"></i>
                     <h2 id="hub-materia-titulo">Nome da Matéria</h2>
                 </div>
-    
-            <div class="bimestre-selector-wrapper">
+                <div class="bimestre-selector-wrapper">
                     <label for="hub-bimestre-select">Visualizar Período:</label>
                     <select id="hub-bimestre-select" onchange="changeBimestreHub()">
                         <option value="1">1º Bimestre</option>
@@ -201,51 +177,41 @@
             </div>
 
             <!-- Indicador de Distribuição de Pontos -->
-
             <div class="progress-container">
-    
-            <div class="progress-labels">
+                <div class="progress-labels">
                     <span>Pontos Distribuídos no Período:</span>
                     <span><strong id="hub-points-used">0.00</strong> / 25.00</span>
                 </div>
-    
-            <div class="progress-bar-bg">
-        
-            <div class="progress-bar-fill" id="hub-points-bar"></div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="hub-points-bar"></div>
                 </div>
                 <p id="hub-points-msg" class="points-msg"></p>
             </div>
 
             <!-- Grade com Opções do Hub + Botão Condicional de Recuperação Anual -->
-
             <div class="hub-options-grid">
                 <button class="hub-card-btn" onclick="openCriarAtividade()">
-        
-            <div class="icon-circle bc-blue"><i class="fas fa-plus"></i></div>
+                    <div class="icon-circle bc-blue"><i class="fas fa-plus"></i></div>
                     <span>Criar Atividade</span>
                     <small>Cadastrar avaliações</small>
                 </button>
                 <button class="hub-card-btn" onclick="openVerNotas()">
-        
-            <div class="icon-circle bc-green"><i class="fas fa-table"></i></div>
+                    <div class="icon-circle bc-green"><i class="fas fa-table"></i></div>
                     <span>Ver Notas</span>
                     <small>Somas diretas do ano</small>
                 </button>
                 <button class="hub-card-btn" onclick="openRecuperacaoBimestral()">
-        
-            <div class="icon-circle bc-orange"><i class="fas fa-medal"></i></div>
+                    <div class="icon-circle bc-orange"><i class="fas fa-medal"></i></div>
                     <span>Recuperação Bimestral</span>
                     <small>Alunos com nota baixa</small>
                 </button>
                 <button class="hub-card-btn" id="btn-hub-rec-anual" onclick="openRecuperacaoAnual()" style="display: none;">
-        
-            <div class="icon-circle bc-purple"><i class="fas fa-award"></i></div>
+                    <div class="icon-circle bc-purple"><i class="fas fa-award"></i></div>
                     <span>Recuperação Anual</span>
                     <small>Menos de 60 pts no ano</small>
                 </button>
                 <button class="hub-card-btn" onclick="exportBoletimCompletoPDF()">
-        
-            <div class="icon-circle bc-red"><i class="fas fa-file-pdf"></i></div>
+                    <div class="icon-circle bc-red"><i class="fas fa-file-pdf"></i></div>
                     <span>Exportar Notas</span>
                     <small>Tabela - 1 folha por aluno</small>
                 </button>
@@ -256,24 +222,20 @@
         <div id="screen-criar-atividade" class="screen">
             <button class="btn-back" onclick="navigate('materia-hub')"><i class="fas fa-chevron-left"></i> Voltar ao Menu da Matéria</button>
             
-
             <div class="card-box">
                 <h3 class="box-title"><i class="fas fa-pen-nib"></i> Cadastrar Nova Avaliação</h3>
                 <div id="wrapper-form-atividade">
                     <form id="form-atividade" onsubmit="saveAtividade(event)">
                         <input type="hidden" id="atv-edit-id" value="">
-            
-            <div class="input-group">
+                        <div class="input-group">
                             <label for="atv-nome">Nome Curto da Atividade *</label>
                             <input type="text" id="atv-nome" required placeholder="Ex: Prova Mensal, Trabalho 1">
                         </div>
-            
-            <div class="input-group">
+                        <div class="input-group">
                             <label for="atv-valor">Valor Máximo (Pontos) *</label>
                             <input type="number" id="atv-valor" step="0.01" min="0.01" required placeholder="Ex: 10.00">
                         </div>
-            
-            <div class="activity-form-actions">
+                        <div class="activity-form-actions">
                             <button type="submit" class="btn-submit-action" id="btn-salvar-atividade">
                                 <i class="fas fa-save"></i> Gravar e Publicar
                             </button>
@@ -288,16 +250,13 @@
                 </div>
             </div>
 
-
             <div class="section-header-block" style="margin-top: 25px;">
                 <h4 class="section-title">Quadro de Atividades e Notas</h4>
                 <p class="section-desc">Cada atividade fica lado a lado. Dentro de cada atividade aparecem, nesta ordem, <strong>Nota</strong>, <strong>Recuperação</strong> e <strong>Nota Final</strong>. A regra de recuperação continua sendo aplicada automaticamente.</p>
             </div>
 
-
             <div class="atividades-grade-wrapper">
-    
-            <div class="atividades-grade-scroll">
+                <div class="atividades-grade-scroll">
                     <table class="atividades-grade-table" id="atividades-grade-table">
                         <thead id="atividades-grade-head"></thead>
                         <tbody id="atividades-grade-body"></tbody>
@@ -310,13 +269,11 @@
         <div id="screen-lancar-notas" class="screen">
             <button class="btn-back" onclick="openCriarAtividade()"><i class="fas fa-chevron-left"></i> Voltar para Quadro de Atividades</button>
             
-
             <div class="table-meta-header">
                 <h3>Lançamento Coletivo de Notas</h3>
                 <div id="lancar-notas-subtitulo" class="sub-meta"></div>
                 <input type="text" class="search-box-input" id="search-aluno-nota" placeholder="🔍 Pesquisar aluno na lista..." onkeyup="filterTable('table-notas-corpo', this.value)">
             </div>
-
 
             <div class="table-responsive-container">
                 <table class="table-custom-format">
@@ -337,13 +294,11 @@
         <div id="screen-ver-notas" class="screen">
             <button class="btn-back" onclick="navigate('materia-hub')"><i class="fas fa-chevron-left"></i> Voltar ao Menu</button>
             
-
             <div class="table-meta-header">
                 <h3>Acompanhamento de Notas Totais</h3>
                 <p class="sub-meta">Soma direta e imediata das notas registradas para cada bimestre cadastrado.</p>
                 <input type="text" class="search-box-input" id="search-aluno-visao" placeholder="🔍 Pesquisar aluno..." onkeyup="filterTable('table-visao-corpo', this.value)">
             </div>
-
 
             <div class="table-responsive-container">
                 <table class="table-custom-format">
@@ -366,12 +321,10 @@
         <div id="screen-rec-bimestral" class="screen">
             <button class="btn-back" onclick="navigate('materia-hub')"><i class="fas fa-chevron-left"></i> Voltar ao Menu</button>
             
-
             <div class="table-meta-header">
                 <h3>Recuperação Bimestral Integrada</h3>
                 <p class="sub-meta">Período ativo avaliado em até 25.00 pontos. Sistema liberado apenas para alunos com nota menor que 15.00 pontos.</p>
             </div>
-
 
             <div class="table-responsive-container">
                 <table class="table-custom-format">
@@ -392,12 +345,10 @@
         <div id="screen-rec-anual" class="screen">
             <button class="btn-back" onclick="navigate('materia-hub')"><i class="fas fa-chevron-left"></i> Voltar ao Menu</button>
             
-
             <div class="table-meta-header">
                 <h3>Recuperação Anual Integrada</h3>
                 <p class="sub-meta">Avaliação anual acumulada em até 100.00 pontos. Liberada apenas para alunos que fecharam os 4 bimestres com menos de 60.00 pontos na disciplina.</p>
             </div>
-
 
             <div class="table-responsive-container">
                 <table class="table-custom-format">
@@ -416,72 +367,51 @@
 
         <!-- TELA 7: FECHAMENTO GLOBAL DE BIMESTRES -->
         <div id="screen-fechamento-global" class="screen">
-
             <div class="card-box decoration-border">
                 <h3 class="box-title"><i class="fas fa-lock"></i> Central de Controle de Ciclo Letivo</h3>
                 <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px;">
                     O fechamento bloqueia a alteração ou criação de notas em **todas as matérias** ao mesmo tempo. Para liberar o próximo bimestre, é obrigatório encerrar o atual.
                 </p>
 
-    
-            <div class="status-fechamento-dashboard">
-        
-            <div class="status-row-item">
+                <div class="status-fechamento-dashboard">
+                    <div class="status-row-item">
                         <span>Bimestre Letivo Atual Ativo:</span>
                         <strong id="admin-current-bimestre-text" class="text-blue">1º Bimestre</strong>
                     </div>
                 </div>
 
-    
-            <div class="timeline-lock-workflow">
-        
-            <div class="timeline-step-box" id="step-b1">
-            
-            <div class="step-info-group">
-                
-            <div class="step-indicator"><i class="fas fa-check-circle"></i></div>
-                
-            <div class="step-details"><h5>1º Bimestre</h5><p id="txt-status-b1">Aberto para Lançamentos</p></div>
+                <div class="timeline-lock-workflow">
+                    <div class="timeline-step-box" id="step-b1">
+                        <div class="step-info-group">
+                            <div class="step-indicator"><i class="fas fa-check-circle"></i></div>
+                            <div class="step-details"><h5>1º Bimestre</h5><p id="txt-status-b1">Aberto para Lançamentos</p></div>
                         </div>
                         <div id="action-step-b1"></div>
                     </div>
-        
-            <div class="timeline-step-box" id="step-b2">
-            
-            <div class="step-info-group">
-                
-            <div class="step-indicator"><i class="fas fa-lock"></i></div>
-                
-            <div class="step-details"><h5>2º Bimestre</h5><p id="txt-status-b2">Bloqueado - Aguardando anterior</p></div>
+                    <div class="timeline-step-box" id="step-b2">
+                        <div class="step-info-group">
+                            <div class="step-indicator"><i class="fas fa-lock"></i></div>
+                            <div class="step-details"><h5>2º Bimestre</h5><p id="txt-status-b2">Bloqueado - Aguardando anterior</p></div>
                         </div>
                         <div id="action-step-b2"></div>
                     </div>
-        
-            <div class="timeline-step-box" id="step-b3">
-            
-            <div class="step-info-group">
-                
-            <div class="step-indicator"><i class="fas fa-lock"></i></div>
-                
-            <div class="step-details"><h5>3º Bimestre</h5><p id="txt-status-b3">Bloqueado - Aguardando anterior</p></div>
+                    <div class="timeline-step-box" id="step-b3">
+                        <div class="step-info-group">
+                            <div class="step-indicator"><i class="fas fa-lock"></i></div>
+                            <div class="step-details"><h5>3º Bimestre</h5><p id="txt-status-b3">Bloqueado - Aguardando anterior</p></div>
                         </div>
                         <div id="action-step-b3"></div>
                     </div>
-        
-            <div class="timeline-step-box" id="step-b4">
-            
-            <div class="step-info-group">
-                
-            <div class="step-indicator"><i class="fas fa-lock"></i></div>
-                
-            <div class="step-details"><h5>4º Bimestre</h5><p id="txt-status-b4">Bloqueado - Aguardando anterior</p></div>
+                    <div class="timeline-step-box" id="step-b4">
+                        <div class="step-info-group">
+                            <div class="step-indicator"><i class="fas fa-lock"></i></div>
+                            <div class="step-details"><h5>4º Bimestre</h5><p id="txt-status-b4">Bloqueado - Aguardando anterior</p></div>
                         </div>
                         <div id="action-step-b4"></div>
                     </div>
                 </div>
 
-    
-            <div class="action-closure-wrapper" style="margin-top: 25px;" id="container-botao-fechamento">
+                <div class="action-closure-wrapper" style="margin-top: 25px;" id="container-botao-fechamento">
                     <!-- Botão dinâmico injetado via JS -->
                 </div>
             </div>
@@ -491,9 +421,7 @@
         <div id="screen-dashboard" class="screen">
             <h3>Painel Analítico de Rendimento</h3>
             <p class="section-desc">Métricas geradas em tempo real com base no fechamento atual do banco de dados.</p>
-
             <div class="analytics-card-deck" id="analytics-deck"></div>
-
             <div class="chart-container-card">
                 <canvas id="main-analytics-chart"></canvas>
             </div>
@@ -504,37 +432,27 @@
             <h3>Segurança e Sincronização dos Dados</h3>
             <p class="section-desc">Exporte arquivos para segurança ou limpe a memória local se houver lentidão.</p>
             
-
             <div class="backup-vertical-panel">
-    
-            <div class="backup-action-row bg-green-light" onclick="exportBackup()">
-        
-            <div class="action-icon-wrapper"><i class="fas fa-download"></i></div>
-        
-            <div class="action-text-wrapper">
+                <div class="backup-action-row bg-green-light" onclick="exportBackup()">
+                    <div class="action-icon-wrapper"><i class="fas fa-download"></i></div>
+                    <div class="action-text-wrapper">
                         <h4>Exportar Cópia de Segurança (JSON)</h4>
                         <p>Gera um arquivo com todas as notas e configurações salvas até agora.</p>
                     </div>
                 </div>
 
-    
-            <div class="backup-action-row bg-blue-light" onclick="document.getElementById('file-upload-input').click()">
-        
-            <div class="action-icon-wrapper"><i class="fas fa-upload"></i></div>
-        
-            <div class="action-text-wrapper">
+                <div class="backup-action-row bg-blue-light" onclick="document.getElementById('file-upload-input').click()">
+                    <div class="action-icon-wrapper"><i class="fas fa-upload"></i></div>
+                    <div class="action-text-wrapper">
                         <h4>Importar Banco de Dados Externo</h4>
                         <p>Recupera informações de um arquivo JSON salvo anteriormente.</p>
                     </div>
                 </div>
                 <input type="file" id="file-upload-input" style="display:none;" onchange="importBackup(event)">
 
-    
-            <div class="backup-action-row bg-red-light" onclick="cleanAllSystemData()">
-        
-            <div class="action-icon-wrapper"><i class="fas fa-trash-alt"></i></div>
-        
-            <div class="action-text-wrapper">
+                <div class="backup-action-row bg-red-light" onclick="cleanAllSystemData()">
+                    <div class="action-icon-wrapper"><i class="fas fa-trash-alt"></i></div>
+                    <div class="action-text-wrapper">
                         <h4>Zerar Todo o Sistema</h4>
                         <p>Apaga permanentemente as notas, histórico e redefine o sistema de fábrica.</p>
                     </div>
@@ -544,27 +462,13 @@
 
     </div>
 
-    <footer class="app-footer" aria-label="Informações do sistema">
-        <div class="footer-brand">
-            <img src="brasao.png" alt="Brasão da Escola">
-            <div>
-                <strong>SigeNotas 2026</strong>
-                <span>Gestão de notas e acompanhamento escolar</span>
-            </div>
-        </div>
-        <div class="footer-status">
-            <span class="footer-status-dot"></span>
-            Dados armazenados neste dispositivo
-        </div>
-    </footer>
-
     <!-- MODAL DE INSTRUÇÕES DE AJUDA -->
     <div class="modal-overlay-view" id="help-modal">
         <div class="modal-content-container">
             <h4>Manual Operacional Rápido</h4>
             <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
             <ul style="padding-left: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-light);">
-                <li><strong>Cores Importantes:</strong> Notas exibidas em <span style="color: #2563eb; font-weight:bold;">Azul</span> representam aproveitamento igual ou superior a 60%. Notas em <span style="color: #dc2626; font-weight:bold;">Vermelho</span> sinalizam que o estudante está abaixo da média estipulada.</li>
+                <li><strong>Cores Importantes:</strong> Notas com destaque principal representam aproveitamento igual ou superior a 60%. Notas em destaque de atenção sinalizam que o estudante está abaixo da média estipulada.</li>
                 <li><strong>Bloqueios:</strong> Se o bimestre foi encerrado na aba "Fechamento de Bimestre", você não conseguirá alterar nenhuma nota ou criar atividades para aquele período.</li>
                 <li><strong>Recuperações:</strong> O sistema cumpre rigorosamente as regras do diário de classe eletrônico da instituição.</li>
             </ul>
@@ -576,129 +480,5 @@
     <img src="brasao.png" id="img-brasao-base64" style="display:none;" alt="Brasão Oculto">
 
     <script src="script.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!--
-        NOTAS DE INTERFACE
-        01 - O layout utiliza uma escala fluida para celular, tablet e notebook.
-        02 - As tabelas preservam rolagem horizontal quando a quantidade de colunas exigir.
-        03 - Os controles possuem áreas de toque confortáveis em telas pequenas.
-        04 - O contraste dos estados de nota foi reforçado para leitura rápida.
-        05 - Os cartões utilizam bordas suaves e sombras discretas para hierarquia visual.
-        06 - O cabeçalho mantém o contexto da escola durante a navegação.
-        07 - O menu lateral permanece acessível por teclado e toque.
-        08 - O conteúdo principal expande no notebook para aproveitar a largura disponível.
-        09 - O quadro de atividades mantém uma coluna fixa para o nome do estudante.
-        10 - Os valores de notas usam ponto como separador decimal na interface.
-        11 - O boletim utiliza uma casa decimal para leitura mais limpa.
-        12 - As atividades continuam permitindo até duas casas decimais.
-        13 - A área de assinatura do responsável é impressa em cada bimestre.
-        14 - O brasão permanece no cabeçalho e nas áreas institucionais.
-        15 - O visual foi consolidado em azul institucional, dourado e superfícies claras.
-        16 - Elementos decorativos não interferem na navegação ou nos cálculos.
-        17 - O modo escuro preserva contraste e a mesma hierarquia de componentes.
-        18 - Campos numéricos continuam usando step de 0.01 para atividades.
-        19 - A recuperação permanece vinculada às regras já existentes no sistema.
-        20 - O fechamento de bimestre continua bloqueando alterações no período encerrado.
-        21 - A estrutura foi mantida para não quebrar os identificadores usados pelo JavaScript.
-        22 - Componentes novos são somente visuais e não alteram a base de dados.
-        23 - O rodapé informa o armazenamento local sem expor dados dos estudantes.
-        24 - A adaptação para notebook aumenta o espaço útil sem perder a legibilidade.
-        25 - A adaptação para celular prioriza toque, leitura e rolagem controlada.
-        26 - As tabelas permanecem semanticamente estruturadas para leitores de tela.
-        27 - Os botões preservam foco visível para navegação por teclado.
-        28 - As bordas possuem raio consistente entre cartões, tabelas e controles.
-        29 - A paleta foi centralizada em variáveis CSS para manutenção futura.
-        30 - A aparência geral foi refinada sem remover as disciplinas existentes.
-    -->
-
 </body>
 </html>

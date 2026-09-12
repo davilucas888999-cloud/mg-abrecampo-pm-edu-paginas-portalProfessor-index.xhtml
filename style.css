@@ -1320,639 +1320,251 @@ body {
     }
 }
 
-/* ========================================================================== */
-/* REFINAMENTO VISUAL 2026                                                    */
-/* ========================================================================== */
+
+/* =========================================================
+   IDENTIDADE VISUAL — PREFEITURA DE ABRE CAMPO
+   Referência: cabeçalho vinho, fundo claro, bordas suaves
+   e cartões arredondados do portal municipal.
+   ========================================================= */
 :root {
-    --bg: #f4f7fb;
+    --bg: #f8f5f2;
     --card: #ffffff;
-    --text: #12233f;
-    --text-light: #5f6f85;
-    --primary: #123b66;
-    --primary-light: #eaf1f8;
-    --secondary: #0b2948;
-    --border: #d8e1ec;
-    --border-strong: #b8c8da;
-    --accent: #c7a45a;
-    --accent-soft: #f7f1e3;
-    --success: #14845b;
-    --warning: #b87812;
-    --danger: #c63c3c;
+    --text: #172033;
+    --text-light: #647084;
+    --primary: #6b142d;
+    --primary-light: #f7e9ed;
+    --secondary: #8f1d39;
+    --border: #e3d9d4;
+    --success: #15803d;
+    --warning: #b7791f;
+    --danger: #dc2626;
     --radius-lg: 18px;
-    --radius-md: 12px;
-    --radius-sm: 9px;
-    --shadow: 0 10px 28px rgba(18, 59, 102, .08);
-    --shadow-hover: 0 16px 36px rgba(18, 59, 102, .14);
+    --radius-md: 11px;
+    --shadow: 0 10px 30px rgba(70, 28, 39, .08);
 }
-
-.dark-mode {
-    --bg: #0b1422;
-    --card: #111f31;
-    --text: #f5f8fc;
-    --text-light: #a8b7ca;
-    --primary: #5e91c4;
-    --primary-light: rgba(94, 145, 196, .16);
-    --secondary: #dfeaf5;
-    --border: #293d55;
-    --border-strong: #3b5571;
-    --accent: #d8b86d;
-    --accent-soft: rgba(216, 184, 109, .12);
-    --shadow: 0 12px 32px rgba(0, 0, 0, .22);
-    --shadow-hover: 0 18px 40px rgba(0, 0, 0, .30);
-}
-
-body {
-    background:
-        radial-gradient(circle at 10% 0%, rgba(199,164,90,.07), transparent 30%),
-        linear-gradient(180deg, var(--bg) 0%, #eef3f8 100%);
-    color: var(--text);
-}
-
-body.dark-mode {
-    background: radial-gradient(circle at 10% 0%, rgba(94,145,196,.08), transparent 32%), var(--bg);
-}
-
+body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 .topbar {
-    height: 72px;
-    padding: 0 24px;
-    background: rgba(255,255,255,.94);
-    border-bottom: 1px solid rgba(216,225,236,.95);
-    box-shadow: 0 6px 20px rgba(18,59,102,.06);
-    backdrop-filter: blur(14px);
+    height: 82px;
+    background: linear-gradient(105deg,#640f29,#8f1835);
+    border-bottom: 3px solid #d4af37;
+    color:#fff;
+    padding: 0 28px;
+    box-shadow: 0 5px 18px rgba(68,13,31,.18);
 }
-
-.dark-mode .topbar { background: rgba(17,31,49,.94); }
-
-.topbar-title { color: var(--primary); font-size: 1.25rem; letter-spacing: -.35px; }
-.menu-hamburger, .theme-toggle { border-radius: 10px; transition: .2s ease; }
-.menu-hamburger:hover, .theme-toggle:hover { background: var(--primary-light); color: var(--primary); }
-
+.topbar::before {
+    content:"";
+    width:48px;height:48px;flex:0 0 48px;
+    background:url('brasao.png') center/contain no-repeat;
+    margin-right:12px;
+}
+.topbar-title { color:#fff; font-size:1.05rem; letter-spacing:0; flex:1; }
+.topbar-title::after { content:"Secretaria Municipal de Educação • Prefeitura Municipal de Abre Campo"; display:block; font-size:.63rem; font-weight:500; opacity:.86; margin-top:3px; }
+.menu-hamburger,.theme-toggle { color:#fff; border-radius:10px; }
+.menu-hamburger { order:-1; margin-right:8px; }
 .sidebar {
-    width: 310px;
-    padding: 28px 18px;
-    border-right: 1px solid var(--border);
-    box-shadow: 14px 0 36px rgba(18,59,102,.12);
+    width:300px; left:-310px; background:#fff;
+    padding:22px 16px; box-shadow:10px 0 30px rgba(65,18,30,.15);
 }
-.sidebar-nav ul li { border-radius: 11px; }
-.sidebar-nav ul li:hover, .sidebar-nav ul li:active { transform: translateX(2px); }
-
-.main-container {
-    max-width: 1500px !important;
-    padding: 28px 30px 42px !important;
+.sidebar-header { border-bottom:1px solid var(--border); }
+.school-logo-menu { height:72px; }
+.sidebar-nav ul li { border-radius:12px; margin-bottom:7px; }
+.sidebar-nav ul li:hover,.sidebar-nav ul li:active { background:var(--primary-light); color:var(--primary); }
+.main-container { max-width:1280px; padding:28px; }
+.welcome-banner,.materia-header-banner,.table-meta-header,.card-box,.progress-container,.hub-card-btn,.table-responsive-container,.atividades-grade-wrapper {
+    border:1px solid #eadfdb; box-shadow:var(--shadow); border-radius:18px;
 }
-
-.responsive-device-note {
-    max-width: 1500px;
-    margin: 10px auto 0;
-    padding: 7px 13px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-light);
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .02em;
-}
-.device-dot, .footer-status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 4px rgba(20,132,91,.10);
-}
-
-.welcome-banner {
-    background: linear-gradient(135deg, #0b2948 0%, #174e7f 68%, #2d668f 100%);
-    border: 1px solid rgba(199,164,90,.38);
-    border-radius: 20px;
-    padding: 26px;
-    box-shadow: 0 18px 40px rgba(11,41,72,.20);
-}
-.welcome-banner h2 { font-size: 1.55rem; }
-.badge, .badge-active { border-radius: 999px; padding: 6px 11px; }
-.badge-active { background: var(--accent); color: #10233b; }
-
-.card-box,
-.table-meta-header,
-.chart-container-card,
-.backup-vertical-panel,
-.analytics-card-deck > *,
-.hub-card-btn,
-.disciplina-card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-}
-
-.card-box:hover,
-.hub-card-btn:hover,
-.disciplina-card:hover,
-.backup-action-row:hover { box-shadow: var(--shadow-hover); }
-
-.hub-card-btn {
-    background: var(--card);
-    border-color: var(--border);
-    min-height: 150px;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-.hub-card-btn:hover { transform: translateY(-3px); border-color: rgba(199,164,90,.65); }
-
-.icon-circle { border-radius: 14px; }
-
-.table-responsive-container,
-.atividades-grade-wrapper {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    background: var(--card);
-}
-
-.table-responsive-container { overflow-x: auto; }
-.table-custom-format,
-.atividades-grade-table { border-collapse: separate; border-spacing: 0; }
-.table-custom-format th,
-.atividades-grade-table th {
-    background: var(--primary) !important;
-    border-color: rgba(255,255,255,.16) !important;
-}
-.table-custom-format td,
-.atividades-grade-table td { border-color: var(--border) !important; }
-.table-custom-format tbody tr:hover td { background: var(--primary-light); }
-
-.atividade-column-head,
-.atividade-stacked-cell,
-.nota-bimestre-head,
-.nota-final-bimestre-cell { border-right: 1px solid var(--border) !important; }
-.nota-final-value,
-.nota-final-bimestre-cell strong { border-radius: 9px; }
-
-.search-box-input,
-input[type="text"],
-input[type="number"],
-select,
-textarea {
-    border: 1px solid var(--border-strong) !important;
-    border-radius: 10px !important;
-    min-height: 42px;
-    background: var(--card);
-    color: var(--text);
-}
-input:focus, select:focus, textarea:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px var(--primary-light) !important;
-}
-
-.btn-submit-action,
-.btn-action-atv,
-.btn-back,
-.btn-cancel-edit {
-    border-radius: 10px !important;
-    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-}
-.btn-submit-action:hover,
-.btn-action-atv:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(18,59,102,.16); }
-.btn-back { border: 1px solid var(--border) !important; background: var(--card) !important; color: var(--primary) !important; }
-
-.nota-alta { color: #075d8e !important; background: #eaf5fb !important; border-color: #c5e3f2 !important; }
-.nota-baixa { color: #b83232 !important; background: #fff0f0 !important; border-color: #f1caca !important; }
-
-.decoration-border { position: relative; overflow: hidden; }
-.decoration-border::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(180deg, var(--primary), var(--accent));
-}
-
-.app-footer {
-    max-width: 1500px;
-    margin: 6px auto 0;
-    padding: 18px 30px 28px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-    color: var(--text-light);
-}
-.footer-brand { display: flex; align-items: center; gap: 11px; }
-.footer-brand img { width: 38px; height: 38px; object-fit: contain; }
-.footer-brand div { display: flex; flex-direction: column; gap: 2px; }
-.footer-brand strong { color: var(--primary); font-size: .82rem; }
-.footer-brand span, .footer-status { font-size: .70rem; }
-.footer-status { display: flex; align-items: center; gap: 8px; }
-
-@media (min-width: 901px) {
-    body { padding-top: 72px; }
-    .topbar { padding-left: 30px; padding-right: 30px; }
-    .main-container { min-height: calc(100vh - 145px); }
-    .disciplinas-grid { grid-template-columns: repeat(3, minmax(230px, 1fr)) !important; gap: 18px !important; }
-    .hub-options-grid { grid-template-columns: repeat(4, minmax(210px, 1fr)) !important; gap: 18px !important; }
-}
-
-@media (max-width: 900px) {
-    .main-container { padding: 22px 18px 34px !important; }
-    .welcome-banner { padding: 22px; }
-    .disciplinas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .app-footer { padding-left: 18px; padding-right: 18px; }
-}
-
-@media (max-width: 600px) {
-    body { padding-top: 64px; }
-    .topbar { height: 64px; padding: 0 13px; }
-    .topbar-title { font-size: 1.05rem; }
-    .main-container { padding: 15px 12px 28px !important; }
-    .responsive-device-note { margin: 2px 12px 0; padding-left: 0; }
-    .welcome-banner { border-radius: 16px; padding: 18px; margin-bottom: 18px; }
-    .welcome-banner h2 { font-size: 1.25rem; }
-    .banner-logo { height: 42px; }
-    .banner-badge-container { flex-wrap: wrap; }
-    .disciplinas-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-    .hub-options-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-    .hub-card-btn { min-height: 128px; padding: 14px 9px; }
-    .table-meta-header { padding: 16px !important; }
-    .app-footer { flex-direction: column; align-items: flex-start; padding: 16px 12px 24px; }
-    .footer-status { align-self: flex-start; }
-    .atividade-column-head,
-    .atividade-stacked-cell { min-width: 155px; width: 155px; }
-    .aluno-fixed-head,
-    .aluno-grade-name { min-width: 178px; width: 178px; }
-    .nota-bimestre-head,
-    .nota-final-bimestre-cell { min-width: 132px; width: 132px; }
-}
-
-@media (max-width: 420px) {
-    .hub-options-grid { grid-template-columns: 1fr !important; }
-    .banner-flex { gap: 10px; }
-    .school-text { font-size: .72rem; }
-    .section-title { font-size: 1.05rem; }
-}
-
-/* ================================================================
-   REFINAMENTO VISUAL 2026 — PALETA AZUL-PETRÓLEO / SÁLVIA
-   Mantém a planilha de atividades e suas funções intactas.
-   ================================================================ */
-:root {
-    --bg: #f4f6f5;
-    --card: #ffffff;
-    --text: #26363a;
-    --text-light: #657477;
-    --primary: #42666a;
-    --primary-light: #edf3f2;
-    --secondary: #334f53;
-    --border: #b9c6c5;
-    --success: #66806f;
-    --warning: #b59663;
-    --danger: #8a6f69;
-    --radius-lg: 5px;
-    --radius-md: 4px;
-    --shadow: 0 3px 12px rgba(48, 68, 71, 0.07);
-}
-
-.dark-mode {
-    --bg: #182124;
-    --card: #202c2f;
-    --text: #edf2f1;
-    --text-light: #aab9b9;
-    --primary: #7f9fa0;
-    --primary-light: rgba(127, 159, 160, 0.13);
-    --secondary: #dfe9e8;
-    --border: #46575a;
-    --success: #8eab98;
-    --warning: #c7aa73;
-    --danger: #b3948d;
-    --shadow: 0 4px 18px rgba(0,0,0,.22);
-}
-
-/* Superfícies e bordas mais quadradas, sem aparência pesada. */
-.card-box,
-.table-responsive-container,
-.atividades-grade-wrapper,
-.table-meta-header,
-.section-header-block,
-.timeline-step-box,
-.status-fechamento-dashboard,
-.hub-card-btn,
-.info-alert,
-.form-section,
-.modal-content,
-.stat-card {
-    border-radius: 4px !important;
-}
-
-.card-box,
-.table-responsive-container,
-.atividades-grade-wrapper,
-.table-meta-header {
-    border: 1px solid var(--border) !important;
-    box-shadow: var(--shadow);
-}
-
-/* Azul-petróleo suave no lugar do vermelho forte. */
-.bc-red,
-.btn-danger,
-.danger-alert,
-.nota-baixa {
-    background-color: #8a6f69 !important;
-    border-color: #8a6f69 !important;
-}
-
-/* Estados de nota: contraste discreto e institucional. */
-.nota-alta {
-    color: #527060 !important;
-}
-
-.nota-baixa {
-    color: #8a6f69 !important;
-}
-
-/* Controles */
-input, select, textarea {
-    border-radius: 3px !important;
-    border: 1px solid #aebdbc !important;
-    background: var(--card) !important;
-    color: var(--text) !important;
-}
-
-input:focus, select:focus, textarea:focus {
-    outline: none !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 2px rgba(66, 102, 106, .10) !important;
-}
-
-button,
-.btn-submit-action,
-.btn-back,
-.btn-cancel-edit,
-.btn-primary,
-.btn-secondary {
-    border-radius: 4px !important;
-    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
-}
-
-button:hover:not(:disabled) {
-    box-shadow: 0 3px 9px rgba(48,68,71,.10);
-}
-
-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-/* Cabeçalhos de tabela mais limpos. */
-.table-custom-format thead th,
-.atividades-grade-table thead th {
-    background: var(--primary) !important;
-    color: #fff !important;
-    border-color: rgba(255,255,255,.20) !important;
-}
-
-.table-custom-format td,
-.table-custom-format th,
-.atividades-grade-table td,
-.atividades-grade-table th {
-    border-color: var(--border) !important;
-}
-
-.table-custom-format tbody tr:nth-child(even),
-.atividades-grade-table tbody tr:nth-child(even) {
-    background: rgba(66,102,106,.025);
-}
-
-.table-custom-format tbody tr:hover,
-.atividades-grade-table tbody tr:hover {
-    background: var(--primary-light) !important;
-}
-
-/* Ícones dos atalhos: paleta mais suave, sem vermelho. */
-.bc-blue { background: #5c7c80 !important; }
-.bc-green { background: #708a78 !important; }
-.bc-orange { background: #b59663 !important; }
-.bc-purple { background: #766f82 !important; }
-.bc-red { background: #8a6f69 !important; }
-
-/* Topbar e menu */
-.topbar {
-    border-bottom: 2px solid var(--border) !important;
-}
-
-.sidebar {
-    border-right: 2px solid var(--border);
-}
-
-.sidebar-nav ul li {
-    border: 1px solid transparent;
-}
-
-.sidebar-nav ul li:hover,
-.sidebar-nav ul li:active {
-    border-color: var(--border);
-}
-
-/* Melhor leitura em telas pequenas sem alterar a matriz de atividades. */
-@media (max-width: 700px) {
-    body { padding-top: 58px; }
-    .topbar { height: 58px; padding: 0 10px; }
-    .topbar-title { font-size: 1rem; }
-    .card-box, .table-meta-header, .section-header-block { padding: 14px !important; }
-    .table-responsive-container,
-    .atividades-grade-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .table-custom-format { min-width: 620px; }
-    .atividades-grade-table { min-width: 760px; }
-    input, select, textarea, button { min-height: 42px; }
-}
-
-@media (min-width: 1000px) {
-    .screen { max-width: 1280px; margin-left: auto; margin-right: auto; }
-}
-
-/* Impressão mais limpa, preservando os dados. */
-@media print {
-    body { background: #fff !important; padding-top: 0 !important; }
-    .topbar, .sidebar, .sidebar-overlay, button, .search-box-input { display: none !important; }
-    .card-box, .table-responsive-container, .table-meta-header { box-shadow: none !important; }
-}
-
-/* ========================================================================
-   SIGENOTAS 2026 — NOVA INTERFACE DESKTOP + NOTEBOOK + CELULAR
-   A matriz de atividades permanece intencionalmente sem alterações de layout.
-   ======================================================================== */
-:root {
-    --bg: #f5f7f7;
-    --card: #ffffff;
-    --text: #25363a;
-    --text-light: #68797c;
-    --primary: #486f72;
-    --primary-strong: #365a5d;
-    --primary-light: #edf4f3;
-    --secondary: #7a8f86;
-    --accent: #c3a46a;
-    --border: #cbd6d4;
-    --border-strong: #aebdb9;
-    --success: #65836f;
-    --warning: #ad9160;
-    --danger: #90736d;
-    --shadow: 0 8px 24px rgba(45, 68, 70, .07);
-    --shadow-hover: 0 12px 30px rgba(45, 68, 70, .11);
-}
-
-body { background: var(--bg); color: var(--text); }
-.topbar {
-    background: rgba(255,255,255,.96) !important;
-    border-bottom: 1px solid var(--border) !important;
-    box-shadow: 0 3px 14px rgba(35,55,57,.06);
-}
-.topbar-title { color: var(--primary-strong) !important; letter-spacing: .02em; font-weight: 800; }
-.menu-hamburger, .theme-toggle { background: var(--primary-light) !important; color: var(--primary-strong) !important; border: 1px solid var(--border) !important; border-radius: 5px !important; }
-
-.sidebar {
-    background: #fbfcfc !important;
-    border-right: 1px solid var(--border) !important;
-    box-shadow: 10px 0 35px rgba(34,56,58,.07);
-}
-.sidebar-header { border-bottom: 1px solid var(--border) !important; }
-.sidebar-nav ul li { border-radius: 4px !important; margin: 3px 12px; border: 1px solid transparent !important; }
-.sidebar-nav ul li:hover { background: var(--primary-light) !important; border-color: var(--border) !important; color: var(--primary-strong) !important; }
-.sidebar-footer { border-top: 1px solid var(--border) !important; }
-
-.main-container { max-width: 1480px !important; }
-.screen { animation: screenIn .22s ease both; }
-@keyframes screenIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-.welcome-banner {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f5f4 100%) !important;
-    border: 1px solid var(--border) !important;
-    border-left: 4px solid var(--primary) !important;
-    border-radius: 5px !important;
-    box-shadow: var(--shadow) !important;
-}
-.welcome-banner h2 { color: var(--primary-strong) !important; }
-.school-text { color: var(--text-light) !important; }
-.badge, .badge-active { border-radius: 4px !important; border: 1px solid var(--border); }
-.badge { background: #fff !important; color: var(--text) !important; }
-.badge-active { background: var(--primary-light) !important; color: var(--primary-strong) !important; }
-
-.section-header-block, .table-meta-header, .card-box, .status-fechamento-dashboard {
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 5px !important;
-    box-shadow: var(--shadow) !important;
-}
-.section-title, .box-title, .table-meta-header h3 { color: var(--primary-strong) !important; }
-
-.disciplinas-grid { gap: 15px !important; }
-.disciplina-card {
-    background: #fff !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 5px !important;
-    box-shadow: 0 4px 14px rgba(42,63,65,.045) !important;
-    min-height: 105px;
-}
-.disciplina-card:hover { transform: translateY(-2px); border-color: #9eb2ae !important; box-shadow: var(--shadow-hover) !important; }
-.disciplina-card i { color: var(--primary) !important; }
-.disciplina-card span { color: var(--text) !important; }
-
-.home-management-panel {
-    margin-top: 22px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-    background: #fff; border: 1px solid var(--border); border-radius: 5px; box-shadow: var(--shadow);
-}
-.home-management-panel h3 { margin: 5px 0 4px; color: var(--primary-strong); }
-.home-management-panel p { margin: 0; color: var(--text-light); font-size: .86rem; max-width: 780px; line-height: 1.5; }
-.panel-kicker { display:block; font-size: .65rem; font-weight: 800; letter-spacing: .12em; color: var(--primary); }
-.btn-student-primary { min-width: 190px; white-space: nowrap; }
-
-.btn-submit-action, .btn-back, .btn-cancel-edit, .btn-action-atv, .btn-action-danger, .btn-reabrir-step {
-    border-radius: 4px !important;
-    border: 1px solid transparent !important;
-}
-.btn-submit-action { background: var(--primary-strong) !important; color: #fff !important; }
-.btn-submit-action:hover { background: var(--primary) !important; }
-.btn-back { border-color: var(--border) !important; background: #fff !important; color: var(--primary-strong) !important; }
-.btn-cancel-edit { background: #f4f6f5 !important; color: var(--text) !important; border-color: var(--border) !important; }
-.btn-action-danger { background: #f1e9e7 !important; color: #765d58 !important; border-color: #d8c5c0 !important; }
-
-input, select, textarea, .search-box-input {
-    border-radius: 4px !important; border: 1px solid var(--border-strong) !important; box-shadow: none !important;
-}
-input:focus, select:focus, textarea:focus, .search-box-input:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(72,111,114,.10) !important; }
-
-/* ------------------------------------------------------------------------
-   NOVO CADASTRO DE ALUNOS
-   ------------------------------------------------------------------------ */
-.student-page-header {
-    display:flex; justify-content:space-between; align-items:flex-end; gap:25px; padding: 5px 2px 22px;
-}
-.student-page-header h2 { margin: 5px 0; color: var(--primary-strong); font-size: 1.65rem; }
-.student-page-header p { max-width: 850px; margin: 0; color: var(--text-light); line-height:1.5; font-size:.87rem; }
-.student-counter { padding: 9px 13px; border:1px solid var(--border); border-radius:4px; background:#fff; color:var(--primary-strong); font-size:.75rem; font-weight:800; white-space:nowrap; }
-.student-layout { display:grid; grid-template-columns:minmax(310px, .72fr) minmax(520px, 1.28fr); gap:18px; align-items:start; }
-.student-form-card, .student-list-card { padding: 21px !important; }
-.form-card-heading, .student-list-heading { display:flex; justify-content:space-between; align-items:center; gap:15px; padding-bottom:16px; margin-bottom:17px; border-bottom:1px solid var(--border); }
-.form-card-heading { justify-content:flex-start; }
-.form-card-heading h3, .student-list-heading h3 { margin:3px 0 0; color:var(--primary-strong); font-size:1.08rem; }
-.heading-icon { width:40px; height:40px; display:grid; place-items:center; background:var(--primary-light); color:var(--primary); border:1px solid var(--border); border-radius:4px; }
-.student-form-row { display:grid; grid-template-columns: .65fr 1.35fr; gap:12px; }
-.student-form-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-.form-hint { padding:11px 12px; background:var(--primary-light); border:1px solid #d5e2df; color:var(--text-light); font-size:.76rem; line-height:1.45; border-radius:4px; }
-.form-hint i { color:var(--primary); margin-right:5px; }
-.student-search { width: 230px !important; min-height:40px !important; }
-.student-table-wrap { border-radius:4px !important; box-shadow:none !important; }
-.student-table { min-width:700px !important; }
-.student-table th { background:var(--primary-strong) !important; }
-.student-table td { vertical-align:middle; }
-.student-index { width:45px; color:var(--text-light); text-align:center; font-weight:700; }
-.student-meta { display:block; margin-top:3px; color:var(--text-light); font-size:.67rem; font-weight:400; }
-.student-actions { white-space:nowrap; }
-.student-actions button { margin:2px; }
-.empty-state { text-align:center; color:var(--text-light); padding:35px !important; }
-
-/* O restante do sistema segue a mesma linguagem visual, sem alterar a matriz. */
-.materia-header-banner { border-radius:5px !important; border:1px solid var(--border) !important; box-shadow:var(--shadow) !important; background:#fff !important; }
-.hub-options-grid { gap:14px !important; }
-.hub-card-btn { border-radius:5px !important; border:1px solid var(--border) !important; background:#fff !important; box-shadow:var(--shadow) !important; }
-.hub-card-btn:hover { transform:translateY(-2px); border-color:#9eb2ae !important; box-shadow:var(--shadow-hover) !important; }
-.icon-circle { border-radius:4px !important; }
-.bc-blue { background:#5f8081 !important; } .bc-green { background:#738b7c !important; } .bc-orange { background:#ad9365 !important; } .bc-purple { background:#777481 !important; } .bc-red { background:#8b7772 !important; }
-.info-alert { border-radius:4px !important; }
-.progress-container { border:1px solid var(--border) !important; border-radius:5px !important; background:#fff !important; box-shadow:var(--shadow) !important; }
-.progress-bar-bg { background:#e7edeb !important; border-radius:2px !important; }
-.progress-bar-fill { background:var(--primary) !important; border-radius:2px !important; }
-
-/* Mantém a planilha de atividades como tabela horizontal, apenas integrando-a ao novo entorno. */
-.atividades-grade-wrapper { border-radius:4px !important; box-shadow:var(--shadow) !important; }
-.atividades-grade-table .atividade-column-head { background:var(--primary-strong) !important; }
-
-.table-custom-format { border-collapse:separate !important; border-spacing:0 !important; }
-.table-custom-format thead th { background:var(--primary-strong) !important; }
-.table-custom-format td, .table-custom-format th { border-color:var(--border) !important; }
-.table-custom-format tbody tr:hover td { background:var(--primary-light) !important; }
-
-.app-footer { border-top:1px solid var(--border) !important; }
-
-@media (min-width: 1100px) {
-    .main-container { padding-left: 34px !important; padding-right: 34px !important; }
-    .student-layout { grid-template-columns: 410px minmax(0, 1fr); }
-    .student-form-card { position:sticky; top:92px; }
-}
-@media (max-width: 1000px) {
-    .student-layout { grid-template-columns:1fr; }
-    .student-form-card { position:static; }
+.welcome-banner { background:linear-gradient(120deg,#6b142d,#941c3b); box-shadow:0 14px 32px rgba(107,20,45,.18); }
+.banner-logo { background:#fff; border-radius:50%; padding:6px; }
+.section-title,.box-title,.table-meta-header h3,.materia-title-wrapper h2 { color:var(--text); }
+.btn-submit-action,.hub-card-btn:hover { background:var(--primary) !important; }
+.btn-submit-action { border-radius:11px; box-shadow:0 6px 14px rgba(107,20,45,.16); }
+.hub-card-btn { background:#fff; }
+.hub-card-btn:hover { color:#fff; transform:translateY(-2px); }
+.input-group input,.input-group select,.search-box-input,select,input[type="number"],input[type="text"] { border-color:#d9cfca; border-radius:10px; }
+.table-custom-format,.atividades-grade-table { border-radius:14px; overflow:hidden; }
+.table-custom-format thead th,.atividades-grade-table thead th { background:var(--primary) !important; color:#fff !important; border-color:#8c304a !important; }
+.table-custom-format td,.table-custom-format th,.atividades-grade-table td,.atividades-grade-table th { border-color:#eadfdb !important; }
+.atividade-group-head { background:var(--primary) !important; }
+.aluno-fixed-head { background:var(--primary) !important; border-right-color:#8c304a !important; }
+.nota-final-value { background:#f7f9fc; border-color:#dfe5ec; }
+.nota-alta { color:#0756b6 !important; background:#e8f1ff !important; }
+.nota-baixa { color:#c62828 !important; background:#ffebeb !important; }
+.info-alert { border-radius:11px; }
+.decoration-border { position:relative; overflow:hidden; }
+.decoration-border::before { content:""; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg,#6b142d,#d4af37,#6b142d); }
+@media (min-width: 900px) {
+    .main-container { max-width:none !important; width:100% !important; padding:28px 34px !important; }
 }
 @media (max-width: 700px) {
-    .home-management-panel, .student-page-header { flex-direction:column; align-items:stretch; }
-    .btn-student-primary { width:100%; }
-    .student-form-row { grid-template-columns:1fr; }
-    .student-list-heading { align-items:stretch; flex-direction:column; }
-    .student-search { width:100% !important; }
-    .student-counter { align-self:flex-start; }
-    .student-page-header h2 { font-size:1.35rem; }
-    .student-layout { gap:12px; }
-    .student-form-card, .student-list-card { padding:15px !important; }
+    body { padding-top:68px; }
+    .topbar { height:68px; padding:0 12px; }
+    .topbar::before { width:38px;height:38px;flex-basis:38px;margin-right:5px; }
+    .topbar-title { font-size:.82rem; line-height:1.05; }
+    .topbar-title::after { font-size:.52rem; }
+    .main-container { padding:14px 12px 28px; width:100%; }
+    .welcome-banner,.materia-header-banner,.table-meta-header,.card-box,.progress-container { border-radius:15px; }
+    .hub-options-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    .hub-card-btn { min-height:112px; padding:12px 9px; }
+    .atividades-grade-wrapper { border-radius:14px; }
+    .atividade-stacked-cell { min-width:168px; width:168px; }
+    .aluno-fixed-head,.aluno-grade-name { min-width:205px; width:205px; }
+}
+@media (min-width: 701px) and (max-width: 1200px) {
+    .main-container { padding:22px; }
+    .atividade-stacked-cell { min-width:175px; width:175px; }
+}
+
+
+/* AJUSTES FINAIS — PORTAL DO PROFESSOR / IDENTIDADE MUNICIPAL */
+:root {
+    --bg: #f7f3f0;
+    --card: #ffffff;
+    --text: #182235;
+    --text-light: #667085;
+    --primary: #6b142d;
+    --primary-light: #f8e9ed;
+    --secondary: #8f1d39;
+    --border: #e5d9d5;
+    --success: #15803d;
+    --warning: #b7791f;
+    --danger: #c62828;
+    --radius-lg: 18px;
+    --radius-md: 11px;
+    --shadow: 0 10px 30px rgba(70, 28, 39, .08);
+}
+
+.student-registration-card { margin-top: 18px; }
+.input-grid-cadastro {
+    display:grid; grid-template-columns:minmax(0, 1fr) 260px; gap:16px; margin-bottom:18px;
+}
+.student-enrollment-date { display:block; margin-top:4px; font-size:.72rem; color:var(--text-light); font-weight:500; }
+#table-cadastro-alunos-corpo td:nth-child(1), #table-cadastro-alunos-corpo td:nth-child(2) { text-align:center; white-space:nowrap; }
+#table-cadastro-alunos-corpo td:nth-child(2) { font-weight:800; color:var(--primary); letter-spacing:.3px; }
+
+/* Identificação institucional */
+.topbar-title { font-weight:800; }
+.topbar-title::after { content:"Secretaria Municipal de Educação • Prefeitura Municipal de Abre Campo"; }
+
+/* Bordas e campos mais refinados */
+.card-box, .table-meta-header, .table-responsive-container, .atividades-grade-wrapper, .progress-container, .materia-header-banner, .welcome-banner, .hub-card-btn {
+    border:1px solid #e5d9d5 !important;
+    box-shadow:0 8px 24px rgba(72, 29, 41, .06);
+}
+input, select, textarea, .search-box-input { border:1px solid #d8cbc6 !important; border-radius:11px !important; }
+input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box-shadow:0 0 0 3px rgba(143,29,57,.10) !important; outline:none; }
+
+@media (max-width: 700px) {
+    .input-grid-cadastro { grid-template-columns:1fr; gap:10px; }
+    .student-registration-card { padding:14px; }
+    #table-cadastro-alunos-corpo td, #table-cadastro-alunos-corpo th { font-size:.78rem; }
+    .student-enrollment-date { font-size:.66rem; }
 }
 @media (min-width: 701px) {
-    .topbar-title { font-size:1.08rem; }
-    .main-container { min-height:calc(100vh - 150px); }
+    .student-registration-card { padding:22px; }
 }
+
+
+/* REFINO DA TABELA DE ALUNOS — LINHAS MAIS FORTES E ZEBRADO SUAVE */
+.table-custom-format,
+.atividades-grade-table,
+#table-notas {
+    border: 2px solid #cfc5c1 !important;
+}
+.table-custom-format th,
+.table-custom-format td,
+.atividades-grade-table th,
+.atividades-grade-table td,
+#table-notas th,
+#table-notas td {
+    border-right: 1.5px solid #c9bfbb !important;
+    border-bottom: 1.5px solid #c9bfbb !important;
+}
+.table-custom-format tbody tr:nth-child(odd),
+#table-notas tbody tr:nth-child(odd),
+.atividades-grade-table tbody tr:nth-child(odd) {
+    background: #ffffff !important;
+}
+.table-custom-format tbody tr:nth-child(even),
+#table-notas tbody tr:nth-child(even),
+.atividades-grade-table tbody tr:nth-child(even) {
+    background: #f1f3f5 !important;
+}
+.table-custom-format tbody tr:hover,
+#table-notas tbody tr:hover,
+.atividades-grade-table tbody tr:hover {
+    background: #e9ecef !important;
+}
+#table-notas td,
+#table-notas th {
+    padding: 10px 9px !important;
+}
+#table-notas td:first-child {
+    min-width: 285px;
+    text-align: left;
+}
+.student-actions-cell {
+    min-width: 115px;
+    text-align: center !important;
+    white-space: nowrap;
+}
+.btn-table-edit {
+    border: 1.5px solid #8c304a;
+    background: #fff;
+    color: #6b142d;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .18s ease;
+}
+.btn-table-edit:hover {
+    background: #6b142d;
+    color: #fff;
+    transform: translateY(-1px);
+}
+.input-grid-cadastro {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+.student-enrollment-date {
+    display: block;
+    margin-top: 4px;
+    color: #69727d;
+    font-size: .72rem;
+    line-height: 1.35;
+}
+@media (max-width: 700px) {
+    .input-grid-cadastro { grid-template-columns: 1fr !important; }
+    #table-notas td:first-child { min-width: 250px; }
+    .table-custom-format th,
+    .table-custom-format td,
+    #table-notas th,
+    #table-notas td { border-width: 1px !important; }
+}
+
+
+/* REFINAMENTO VISUAL FINAL */
+:root{--bg:#f3f6f7;--card:#fff;--text:#24313b;--text-light:#687780;--primary:#476b72;--primary-light:#eaf1f2;--secondary:#36555c;--border:#cbd6da;--border-strong:#aebdc2;--success:#5b806b;--warning:#a07d42;--danger:#8a6464;--accent-soft:#dfe9ea;--radius-lg:3px;--radius-md:2px;--shadow:0 5px 18px rgba(42,58,65,.07)}
+body.refined-portal{background:linear-gradient(180deg,#f7f9fa 0%,#eef3f4 100%);color:var(--text)}
+.refined-portal .topbar{height:76px;background:#fff;color:var(--text);border-bottom:2px solid var(--primary);box-shadow:0 3px 14px rgba(38,55,62,.08)}
+.refined-portal .topbar::before{width:44px;height:44px;flex-basis:44px}
+.refined-portal .topbar-title{color:var(--secondary);font-weight:850}.refined-portal .topbar-title::after{color:var(--text-light);opacity:1}
+.refined-portal .menu-hamburger,.refined-portal .theme-toggle{color:var(--secondary);border-radius:2px}
+.refined-portal .sidebar{width:310px;left:-320px;background:#fbfcfc;border-right:1px solid var(--border);border-radius:0;box-shadow:8px 0 24px rgba(38,55,62,.12)}
+.refined-portal .sidebar-nav ul li{border-radius:2px;border-left:3px solid transparent}.refined-portal .sidebar-nav ul li:hover,.refined-portal .sidebar-nav ul li:active{background:var(--primary-light);color:var(--secondary);border-left-color:var(--primary)}
+.refined-portal .main-container{max-width:1380px;padding:28px 34px 44px}
+.refined-portal .welcome-banner{background:linear-gradient(115deg,#3d5f66,#54777d 55%,#607f83);border:1px solid #3c5d63!important;border-radius:3px;box-shadow:0 10px 24px rgba(55,82,88,.15);padding:24px}
+.refined-portal .banner-logo{background:#fff;border:1px solid rgba(255,255,255,.65);border-radius:2px;padding:5px}
+.refined-portal .badge,.refined-portal .badge-active{border-radius:2px}.refined-portal .badge-active{background:#6e8f7d}
+.refined-portal .section-title,.refined-portal .box-title,.refined-portal .table-meta-header h3,.refined-portal .materia-title-wrapper h2{color:var(--secondary)}
+.refined-portal .disciplinas-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.refined-portal .disciplina-card{border:1px solid var(--border);border-top:3px solid var(--primary);border-radius:3px;box-shadow:var(--shadow);min-height:132px;background:#fff}.refined-portal .disciplina-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 9px 22px rgba(47,72,78,.11)}.refined-portal .disciplina-card i{color:var(--primary)}
+.refined-portal .materia-header-banner,.refined-portal .card-box,.refined-portal .table-meta-header,.refined-portal .progress-container,.refined-portal .hub-card-btn,.refined-portal .table-responsive-container,.refined-portal .atividades-grade-wrapper{border:1px solid var(--border)!important;border-radius:3px!important;box-shadow:var(--shadow)}
+.refined-portal .materia-header-banner{border-left:4px solid var(--primary)!important}.refined-portal .hub-options-grid{gap:12px}.refined-portal .hub-card-btn{position:relative;overflow:hidden;min-height:132px;background:#fff}.refined-portal .hub-card-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent-soft)}.refined-portal .hub-card-btn:hover{background:var(--primary);color:#fff;transform:translateY(-2px)}.refined-portal .hub-card-btn:hover small{color:rgba(255,255,255,.78)}
+.refined-portal .icon-circle{border-radius:2px;background:var(--primary)!important}.refined-portal .bc-green{background:#6e8f7d!important}.refined-portal .bc-orange{background:#9a7d4b!important}.refined-portal .bc-purple,.refined-portal .bc-red{background:#657386!important}
+.refined-portal .btn-submit-action{background:var(--primary)!important;border:1px solid var(--secondary);border-radius:2px!important;box-shadow:0 5px 12px rgba(48,75,81,.12)}.refined-portal .btn-submit-action:hover{background:var(--secondary)!important}
+.refined-portal .btn-back{color:var(--secondary);border-radius:2px;padding:7px 9px}.refined-portal .btn-back:hover{background:var(--primary-light);border-color:var(--border)}
+.refined-portal input,.refined-portal select,.refined-portal textarea,.refined-portal .search-box-input,.refined-portal input[type=number],.refined-portal input[type=text]{border:1px solid var(--border-strong)!important;border-radius:2px!important;background:#fbfcfc}.refined-portal input:focus,.refined-portal select:focus,.refined-portal textarea:focus,.refined-portal .search-box-input:focus{border-color:var(--primary)!important;box-shadow:0 0 0 3px rgba(71,107,114,.10)!important}
+.refined-portal .table-custom-format,.refined-portal .atividades-grade-table,.refined-portal #table-notas{border:2px solid var(--border-strong)!important;border-radius:2px!important}.refined-portal .table-custom-format th,.refined-portal .atividades-grade-table th,.refined-portal #table-notas th{background:#536f75!important;color:#fff!important;border-color:#8fa4a9!important}.refined-portal .table-custom-format td,.refined-portal .table-custom-format th,.refined-portal .atividades-grade-table td,.refined-portal .atividades-grade-table th,.refined-portal #table-notas td,.refined-portal #table-notas th{border-right:1px solid #c3cfd3!important;border-bottom:1px solid #c3cfd3!important}.refined-portal .table-custom-format tbody tr:nth-child(even),.refined-portal #table-notas tbody tr:nth-child(even),.refined-portal .atividades-grade-table tbody tr:nth-child(even){background:#f1f5f6!important}.refined-portal .table-custom-format tbody tr:hover,.refined-portal #table-notas tbody tr:hover,.refined-portal .atividades-grade-table tbody tr:hover{background:#e6edef!important}
+.refined-portal .btn-table-edit{border:1px solid var(--primary);background:#fff;color:var(--secondary);border-radius:2px}.refined-portal .btn-table-edit:hover{background:var(--primary);color:#fff}.refined-portal .nota-alta{color:#466f5a!important;background:#e8f1ec!important}.refined-portal .nota-baixa{color:#765f5f!important;background:#f2eaea!important}.refined-portal .info-alert{border-radius:2px!important}.refined-portal .decoration-border::before{height:3px;background:linear-gradient(90deg,#476b72,#9aadb1,#476b72)}
+.refined-portal .backup-action-row{border:1px solid var(--border)!important;border-radius:2px!important}.refined-portal .modal-content-container{border:1px solid var(--border-strong);border-radius:3px;box-shadow:0 18px 45px rgba(38,55,62,.16)}.refined-portal .progress-bar-bg,.refined-portal .progress-bar-fill{border-radius:0!important}.refined-portal .progress-bar-fill{background:var(--primary)!important}.refined-portal .atividade-group-head,.refined-portal .aluno-fixed-head{background:#536f75!important}
+@media(min-width:1200px){.refined-portal .main-container{padding-left:46px;padding-right:46px}.refined-portal .disciplinas-grid{grid-template-columns:repeat(5,minmax(180px,1fr))}.refined-portal .welcome-banner{padding:28px 32px}}
+@media(max-width:700px){body.refined-portal{padding-top:68px}.refined-portal .topbar{height:68px;padding:0 10px}.refined-portal .topbar::before{width:36px;height:36px;flex-basis:36px;margin-right:4px}.refined-portal .topbar-title{font-size:.80rem}.refined-portal .topbar-title::after{font-size:.48rem}.refined-portal .main-container{width:100%;padding:13px 10px 30px}.refined-portal .welcome-banner{padding:18px}.refined-portal .disciplinas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.refined-portal .disciplina-card{min-height:112px;padding:18px 8px}.refined-portal .hub-options-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.refined-portal .hub-card-btn{min-height:112px;padding:12px 8px}.refined-portal .table-responsive-container,.refined-portal .atividades-grade-wrapper{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.refined-portal .table-custom-format{min-width:680px}.refined-portal .atividades-grade-table{min-width:1050px}}

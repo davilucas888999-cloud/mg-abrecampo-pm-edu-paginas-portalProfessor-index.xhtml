@@ -1,5 +1,10 @@
+function formatarDecimalPortal(valor, casas = 2) {
+    const numero = Number.parseFloat(valor);
+    return Number.isFinite(numero) ? numero.toFixed(casas) : (0).toFixed(casas);
+}
+
 /**
- * SIGENOTAS 2026 - ARQUITETURA DE CÓDIGO FONTE EXPANDIDA
+ * PORTAL DO PROFESSOR 2026 - ARQUITETURA DE CÓDIGO FONTE EXPANDIDA
  * SISTEMA OPERACIONAL MÓVEL PARA LANÇAMENTO DE AVALIAÇÕES E NOTAS
  */
 
@@ -23,38 +28,15 @@ const ALUNOS_INICIAIS = [
     "WESLEY COTA BERNARDES", "YASMIN DOS SANTOS FERREIRA"
 ];
 
-// Lista dinâmica de estudantes. Os estudantes cadastrados pelo usuário
-// ficam no banco local e substituem a lista inicial sem quebrar dados antigos.
-function getAlunos() {
-    if (!Array.isArray(db.alunos) || db.alunos.length === 0) return ALUNOS_INICIAIS;
-    return db.alunos.map(a => typeof a === "string" ? a : a.nome).filter(Boolean);
-}
-
-function ensureAlunoInAllRecords(nome) {
-    DISCIPLINAS.forEach(d => {
-        if (!db.disciplinas[d]) db.disciplinas[d] = { recuperacaoAnual: {} };
-        if (!db.disciplinas[d].recuperacaoAnual) db.disciplinas[d].recuperacaoAnual = {};
-        for (let b = 1; b <= 4; b++) {
-            if (!db.disciplinas[d][b]) db.disciplinas[d][b] = { atividades: [], recuperacaoBimestral: {} };
-            if (!db.disciplinas[d][b].atividades) db.disciplinas[d][b].atividades = [];
-            if (!db.disciplinas[d][b].recuperacaoBimestral) db.disciplinas[d][b].recuperacaoBimestral = {};
-            db.disciplinas[d][b].atividades.forEach(a => {
-                if (!a.notas) a.notas = {};
-                if (!a.notas[nome]) a.notas[nome] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
-            });
-        }
-    });
-}
-
-function normalizarAlunosBanco() {
-    if (!Array.isArray(db.alunos)) {
-        db.alunos = ALUNOS_INICIAIS.map(nome => ({ nome, matricula: "", observacao: "" }));
-    } else {
-        db.alunos = db.alunos.map(a => typeof a === "string" ? ({ nome: a, matricula: "", observacao: "" }) : ({ nome: a.nome || "", matricula: a.matricula || "", observacao: a.observacao || "" })).filter(a => a.nome);
-    }
-    db.alunos.forEach(a => ensureAlunoInAllRecords(a.nome));
-}
-
+// Cadastro oficial da turma: a ordem do array é a ordem de chamada/matrícula.
+let ALUNOS = [];
+const DATAS_MATRICULA_INICIAIS = {
+    "ADRIELE APARECIDA MENDES ARAUJO": "09/02/2022",
+    "LUIS OTAVIO DA COSTA VITOR": "07/02/2023",
+    "HANIELE PEREIRA ALVES": "07/02/2023",
+    "JONATAS PASSOS BRAGA": "07/02/2023",
+    "JÚLIA DA SILVA LOBATO": "04/02/2026"
+};
 
 // Ordem Reorganizada das Disciplinas
 const DISCIPLINAS = [
@@ -87,6 +69,178 @@ document.addEventListener("DOMContentLoaded", () => {
     applyThemeLoad();
 });
 
+function gerarNumeroMatricula(ano, ordem) {
+    return `${ano}${CONFIG.turmaName.match(/\d{3}/)?.[0] || '800'}${String(ordem).padStart(2, '0')}`;
+}
+
+function obterDataMatriculaInicial(aluno) {
+    return DATAS_MATRICULA_INICIAIS[aluno] || "05/02/2024";
+}
+
+function inicializarCadastroAlunos() {
+    if (!Array.isArray(db.alunosCadastro)) {
+        db.alunosCadastro = ALUNOS_INICIAIS.map((nome, index) => {
+            const data = obterDataMatriculaInicial(nome);
+            const ano = Number(data.split('/')[2]);
+            return { nome, dataMatricula: data, dataNascimento: "", matricula: gerarNumeroMatricula(ano, index + 1) };
+        });
+    } else {
+        // Migração segura: garante cadastro completo dos alunos antigos sem alterar notas.
+        const nomesExistentes = new Set(db.alunosCadastro.map(a => a.nome));
+        ALUNOS_INICIAIS.forEach(nome => {
+            if (!nomesExistentes.has(nome)) {
+                const ordem = db.alunosCadastro.length + 1;
+                const data = obterDataMatriculaInicial(nome);
+                const ano = Number(data.split('/')[2]);
+                db.alunosCadastro.push({ nome, dataMatricula: data, dataNascimento: "", matricula: gerarNumeroMatricula(ano, ordem) });
+            }
+        });
+        db.alunosCadastro.forEach((a, index) => {
+            if (!a.dataMatricula) a.dataMatricula = obterDataMatriculaInicial(a.nome);
+            if (a.dataNascimento === undefined) a.dataNascimento = "";
+            const ano = Number(String(a.dataMatricula).split('/')[2]) || CONFIG.ano;
+            a.matricula = gerarNumeroMatricula(ano, index + 1);
+        });
+    }
+    ALUNOS = db.alunosCadastro.map(a => a.nome);
+    saveStorage();
+}
+
+function getCadastroAluno(nome) {
+    return (db.alunosCadastro || []).find(a => a.nome === nome) || { nome, dataMatricula: "", dataNascimento: "", matricula: "" };
+}
+
+function formatarDataMatricula(data) {
+    if (!data) return '';
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) return data;
+    const d = new Date(data + 'T00:00:00');
+    if (Number.isNaN(d.getTime())) return data;
+    return d.toLocaleDateString('pt-BR');
+}
+
+function formatarDataNascimento(data) {
+    return formatarDataMatricula(data);
+}
+
+function dataBRParaISO(data) {
+    if (!data) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data;
+    const m = String(data).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+}
+
+function renderCadastroAlunos() {
+    const corpo = document.getElementById('table-cadastro-alunos-corpo');
+    if (!corpo) return;
+    corpo.innerHTML = ALUNOS.map((aluno, index) => {
+        const c = getCadastroAluno(aluno);
+        return `<tr>
+            <td>${String(index + 1).padStart(2, '0')}</td>
+            <td><strong>${escapeHtml(c.matricula)}</strong></td>
+            <td><strong>${escapeHtml(aluno)}</strong></td>
+            <td>${formatarDataMatricula(c.dataMatricula)}</td>
+            <td>${formatarDataNascimento(c.dataNascimento)}</td>
+            <td class="student-actions-cell"><button class="btn-table-edit" onclick="editarAluno('${escapeAttr(aluno)}')"><i class="fas fa-pen"></i> Alterar</button></td>
+        </tr>`;
+    }).join('');
+}
+
+function abrirCadastroAlunos() {
+    navigate('cadastro-alunos');
+    renderCadastroAlunos();
+}
+
+function cadastrarNovoAluno(event) {
+    event.preventDefault();
+    const nomeInput = document.getElementById('novo-aluno-nome');
+    const dataInput = document.getElementById('novo-aluno-data');
+    const nascimentoInput = document.getElementById('novo-aluno-nascimento');
+    const nome = (nomeInput.value || '').trim().replace(/\s+/g, ' ').toUpperCase();
+    if (!nome) return alert('Informe o nome completo do aluno.');
+    if (ALUNOS.some(a => a.toUpperCase() === nome)) return alert('Este aluno já está cadastrado.');
+
+    const data = dataInput.value ? formatarDataMatricula(dataInput.value) : new Date().toLocaleDateString('pt-BR');
+    const nascimento = nascimentoInput?.value ? formatarDataMatricula(nascimentoInput.value) : '';
+    const ordem = (db.alunosCadastro || []).length + 1;
+    const ano = Number(data.split('/')[2]) || CONFIG.ano;
+    const cadastro = { nome, dataMatricula: data, dataNascimento: nascimento, matricula: gerarNumeroMatricula(ano, ordem) };
+    db.alunosCadastro.push(cadastro);
+    ALUNOS.push(nome);
+
+    DISCIPLINAS.forEach(m => {
+        for (let b = 1; b <= 4; b++) {
+            (db.disciplinas[m][b].atividades || []).forEach(atv => {
+                if (!atv.notas) atv.notas = {};
+                if (!atv.notas[nome]) atv.notas[nome] = { notaOrig: '', notaRec: '', notaFinal: 0.0 };
+            });
+            if (!db.disciplinas[m][b].recuperacaoBimestral) db.disciplinas[m][b].recuperacaoBimestral = {};
+        }
+    });
+    saveStorage();
+    renderCadastroAlunos();
+    renderMateriaBlocks();
+    if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
+    event.target.reset();
+    alert(`Aluno cadastrado com sucesso.\nMatrícula: ${cadastro.matricula}\nOrdem de chamada: ${String(ordem).padStart(2, '0')}`);
+}
+
+function editarAluno(nomeAtual) {
+    const c = getCadastroAluno(nomeAtual);
+    const novoNome = prompt('Nome completo do aluno:', c.nome);
+    if (novoNome === null) return;
+    const nome = novoNome.trim().replace(/\s+/g, ' ').toUpperCase();
+    if (!nome) return alert('Informe o nome completo do aluno.');
+    if (nome !== nomeAtual && ALUNOS.some(a => a.toUpperCase() === nome)) return alert('Já existe outro aluno com esse nome.');
+
+    const dataMatriculaInput = prompt('Data de matrícula (DD/MM/AAAA):', c.dataMatricula || '');
+    if (dataMatriculaInput === null) return;
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMatriculaInput.trim())) return alert('Use a data no formato DD/MM/AAAA.');
+
+    const dataNascimentoInput = prompt('Data de nascimento (DD/MM/AAAA):', c.dataNascimento || '');
+    if (dataNascimentoInput === null) return;
+    if (dataNascimentoInput.trim() && !/^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimentoInput.trim())) return alert('Use a data de nascimento no formato DD/MM/AAAA.');
+
+    c.nome = nome;
+    c.dataMatricula = dataMatriculaInput.trim();
+    c.dataNascimento = dataNascimentoInput.trim();
+
+    if (nome !== nomeAtual) {
+        DISCIPLINAS.forEach(m => {
+            for (let b = 1; b <= 4; b++) {
+                const bData = db.disciplinas[m][b];
+                (bData.atividades || []).forEach(atv => {
+                    if (atv.notas && Object.prototype.hasOwnProperty.call(atv.notas, nomeAtual)) {
+                        atv.notas[nome] = atv.notas[nomeAtual];
+                        delete atv.notas[nomeAtual];
+                    }
+                });
+                if (bData.recuperacaoBimestral && Object.prototype.hasOwnProperty.call(bData.recuperacaoBimestral, nomeAtual)) {
+                    bData.recuperacaoBimestral[nome] = bData.recuperacaoBimestral[nomeAtual];
+                    delete bData.recuperacaoBimestral[nomeAtual];
+                }
+            }
+        });
+        const idx = ALUNOS.indexOf(nomeAtual);
+        if (idx >= 0) ALUNOS[idx] = nome;
+    }
+
+    // A matrícula permanece vinculada à ordem da turma; apenas o ano dela acompanha a data de matrícula.
+    const idx = db.alunosCadastro.findIndex(a => a.nome === nome);
+    if (idx >= 0) {
+        const ordem = idx + 1;
+        const ano = Number(c.dataMatricula.split('/')[2]) || CONFIG.ano;
+        c.matricula = gerarNumeroMatricula(ano, ordem);
+    }
+    saveStorage();
+    renderCadastroAlunos();
+    renderMateriaBlocks();
+    if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
+    if (selectedAtividadeId) {
+        const atv = db.disciplinas[selectedMateria]?.[selectedBimestre]?.atividades?.find(a => a.id === selectedAtividadeId);
+        if (atv) renderNotasTable(atv);
+    }
+}
+
 /**
  * MOTOR DE BANCO DE DADOS LOCAL E CONVERSOR DE SEGURANÇA
  */
@@ -109,8 +263,7 @@ function initDatabaseEngine() {
                 currentBimestre: 1,
                 bimestresFechados: { 1: false, 2: false, 3: false, 4: false }
             },
-            disciplinas: {},
-            alunos: []
+            disciplinas: {}
         };
         
         DISCIPLINAS.forEach(d => {
@@ -127,7 +280,7 @@ function initDatabaseEngine() {
         saveStorage();
     }
 
-    normalizarAlunosBanco();
+    inicializarCadastroAlunos();
 
     // Garante compatibilidade de chaves para recuperação anual em bases migradas
     DISCIPLINAS.forEach(d => {
@@ -423,7 +576,7 @@ function recalcularNotasDaAtividade(atv) {
 
     const corteMediaAtv = Number(atv.valor) * CONFIG.passingScorePct;
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         if (!atv.notas[aluno]) {
             atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
         }
@@ -519,7 +672,7 @@ function renderAtividadesCriadasList() {
                     <div class="atividade-header-text">
                         <span class="atividade-index">ATIVIDADE ${index + 1}</span>
                         <strong class="atividade-name">${escapeHtml(a.nome)}</strong>
-                        <small>Valor: ${Number(a.valor).toFixed(2)} pts</small>
+                        <small>Valor: ${formatarDecimalPortal(a.valor, 2)} pts</small>
                     </div>
                     <div class="atividade-header-actions">
                         <button type="button" class="btn-grade-edit"
@@ -536,12 +689,13 @@ function renderAtividadesCriadasList() {
     `;
     head.appendChild(headRow);
 
-    getAlunos().forEach((aluno, alunoIndex) => {
+    ALUNOS.forEach((aluno, alunoIndex) => {
         const tr = document.createElement('tr');
         let cells = `
             <td class="aluno-grade-name">
                 <span class="aluno-number">${alunoIndex + 1}.</span>
-                <strong>${escapeHtml(aluno)}</strong>
+                <strong>${escapeHtml(getCadastroAluno(aluno).matricula)} • ${escapeHtml(aluno)}</strong>
+                <small class="student-enrollment-date">Matrícula: ${escapeHtml(formatarDataMatricula(getCadastroAluno(aluno).dataMatricula))}</small>
             </td>`;
 
         atividades.forEach((atv) => {
@@ -723,7 +877,7 @@ function openLancarNotas(atvId) {
     const atv = db.disciplinas[selectedMateria][selectedBimestre].atividades.find(a => a.id === atvId);
     
     document.getElementById('lancar-notas-subtitulo').innerHTML = `
-        Avaliação: <strong>${atv.nome}</strong> | Pontuação Máxima: <strong>${atv.valor.toFixed(2)}</strong>
+        Avaliação: <strong>${atv.nome}</strong> | Pontuação Máxima: <strong>${formatarDecimalPortal(atv.valor, 2)}</strong>
     `;
     
     renderNotasTable(atv);
@@ -738,7 +892,7 @@ function renderNotasTable(atv) {
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
     const corteMediaAtv = atv.valor * CONFIG.passingScorePct; // 60% do valor da atividade
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         if (!atv.notas[aluno]) {
             atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
         }
@@ -752,7 +906,7 @@ function renderNotasTable(atv) {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${aluno}</strong></td>
+            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td>
                 <input type="number" step="0.01" min="0" max="${atv.valor}" 
                     value="${nData.notaOrig}" 
@@ -841,7 +995,7 @@ function openVerNotas() {
 
     const todosFechados = [1, 2, 3, 4].every(b => db.configGlobal.bimestresFechados[b]);
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         let somas = { 1: 0, 2: 0, 3: 0, 4: 0 };
         let totalAnual = 0;
 
@@ -908,7 +1062,7 @@ function openRecuperacaoBimestral() {
     const bData = db.disciplinas[selectedMateria][selectedBimestre];
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         let notaOrigBimestre = bData.atividades.reduce((sum, a) => sum + (parseFloat(a.notas[aluno]?.notaFinal) || 0), 0);
         
         // Elegível apenas se nota for inferior a 15.00 (60% de 25.00)
@@ -994,7 +1148,7 @@ function openRecuperacaoAnual() {
 
     const recAnualObj = db.disciplinas[selectedMateria].recuperacaoAnual || {};
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         let totalAnual = 0;
         for (let b = 1; b <= 4; b++) {
             const bData = db.disciplinas[selectedMateria][b];
@@ -1191,7 +1345,7 @@ function exportBoletimCompletoPDF() {
 
     const todosFechados = [1, 2, 3, 4].every(b => db.configGlobal.bimestresFechados[b]);
 
-    getAlunos().forEach((aluno, index) => {
+    ALUNOS.forEach((aluno, index) => {
         if (index > 0) doc.addPage();
 
         // Cabeçalho Oficial Estruturado
@@ -1243,7 +1397,7 @@ function exportBoletimCompletoPDF() {
             // Injeta subtotal estruturado do bimestre na tabela
             tableBody.push([
                 { content: `SOMA FECHAMENTO DO ${b}º BIMESTRE`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                { content: "25.00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                { content: CONFIG.limitPoints.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: totalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: rbVal, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 // Azul da tabela pdf corrigido para [43, 53, 62] que equivale a #2b353e
@@ -1310,7 +1464,7 @@ function generateAnalyticalDashboard() {
     let totalLancamentos = 0;
     let alunosAbaixoMedia = 0;
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         DISCIPLINAS.forEach(m => {
             for (let b = 1; b <= 4; b++) {
                 const atvs = db.disciplinas[m][b].atividades;
@@ -1345,7 +1499,7 @@ function generateAnalyticalDashboard() {
 
         const dataMedias = DISCIPLINAS.map(m => {
             let somaM = 0, qtdM = 0;
-            getAlunos().forEach(a => {
+            ALUNOS.forEach(a => {
                 for(let b=1; b<=4; b++) {
                     db.disciplinas[m][b].atividades.forEach(atv => {
                         somaM += parseFloat(atv.notas[a]?.notaFinal || 0);
@@ -1375,121 +1529,6 @@ function generateAnalyticalDashboard() {
         });
     }, 100);
 }
-
-/**
- * MÓDULO DE CADASTRO DE ESTUDANTES
- * Permite incluir, editar e excluir estudantes. Novos estudantes recebem
- * automaticamente campos de notas em todas as disciplinas e bimestres.
- */
-function openCadastroAlunos() {
-    renderAlunosCadastro();
-    navigate('cadastro-alunos');
-}
-
-function renderAlunosCadastro(filtro = '') {
-    const corpo = document.getElementById('table-alunos-cadastro');
-    const contador = document.getElementById('alunos-contador');
-    if (!corpo) return;
-    const termo = String(filtro || '').trim().toLocaleUpperCase('pt-BR');
-    const lista = getAlunos().filter(nome => nome.toLocaleUpperCase('pt-BR').includes(termo));
-    if (contador) contador.textContent = `${lista.length} estudante(s) cadastrado(s)`;
-    corpo.innerHTML = '';
-    lista.forEach((nome, i) => {
-        const dados = db.alunos.find(a => a.nome === nome) || { nome, matricula: '', observacao: '' };
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="student-index">${i + 1}</td>
-            <td><strong>${escapeHtml(nome)}</strong>${dados.matricula ? `<small class="student-meta">Matrícula: ${escapeHtml(dados.matricula)}</small>` : ''}</td>
-            <td>${escapeHtml(dados.observacao || '—')}</td>
-            <td class="student-actions">
-                <button class="btn-action-atv" onclick="editarAluno('${escapeAttr(nome)}')"><i class="fas fa-pen"></i> Editar</button>
-                <button class="btn-action-danger" onclick="excluirAluno('${escapeAttr(nome)}')"><i class="fas fa-trash"></i> Excluir</button>
-            </td>`;
-        corpo.appendChild(tr);
-    });
-    if (!lista.length) corpo.innerHTML = `<tr><td colspan="4" class="empty-state">Nenhum estudante encontrado.</td></tr>`;
-}
-
-function abrirFormAluno(nome = '') {
-    const form = document.getElementById('form-aluno');
-    if (!form) return;
-    form.reset();
-    document.getElementById('aluno-original').value = nome;
-    if (nome) {
-        const dados = db.alunos.find(a => a.nome === nome);
-        document.getElementById('aluno-nome').value = dados?.nome || nome;
-        document.getElementById('aluno-matricula').value = dados?.matricula || '';
-        document.getElementById('aluno-observacao').value = dados?.observacao || '';
-        document.getElementById('titulo-form-aluno').textContent = 'Editar estudante';
-        document.getElementById('btn-salvar-aluno').innerHTML = '<i class="fas fa-save"></i> Salvar alterações';
-    } else {
-        document.getElementById('titulo-form-aluno').textContent = 'Cadastrar novo estudante';
-        document.getElementById('btn-salvar-aluno').innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar estudante';
-    }
-    document.getElementById('aluno-nome').focus();
-    document.getElementById('form-aluno-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function salvarAluno(event) {
-    event.preventDefault();
-    const original = document.getElementById('aluno-original').value.trim();
-    const nome = document.getElementById('aluno-nome').value.trim().toLocaleUpperCase('pt-BR').replace(/\s+/g, ' ');
-    const matricula = document.getElementById('aluno-matricula').value.trim();
-    const observacao = document.getElementById('aluno-observacao').value.trim();
-    if (!nome) return alert('Informe o nome completo do estudante.');
-    const duplicado = getAlunos().some(a => a.toLocaleUpperCase('pt-BR') === nome && a !== original);
-    if (duplicado) return alert('Já existe um estudante com este nome.');
-    if (!Array.isArray(db.alunos)) db.alunos = [];
-    if (original) {
-        const registro = db.alunos.find(a => a.nome === original);
-        if (registro) {
-            renameStudentInAllRecords(original, nome);
-            registro.nome = nome; registro.matricula = matricula; registro.observacao = observacao;
-        }
-    } else {
-        db.alunos.push({ nome, matricula, observacao });
-        ensureAlunoInAllRecords(nome);
-    }
-    normalizarAlunosBanco();
-    saveStorage();
-    renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || '');
-    abrirFormAluno('');
-    alert(original ? 'Cadastro atualizado com sucesso.' : 'Estudante cadastrado com sucesso. Agora ele já aparece para lançamento de notas em todos os bimestres.');
-}
-
-function renameStudentInAllRecords(oldName, newName) {
-    DISCIPLINAS.forEach(d => {
-        const disc = db.disciplinas[d];
-        for (let b = 1; b <= 4; b++) {
-            const bd = disc[b];
-            if (!bd) continue;
-            bd.atividades?.forEach(a => {
-                if (a.notas?.[oldName] !== undefined) { a.notas[newName] = a.notas[oldName]; delete a.notas[oldName]; }
-            });
-            if (bd.recuperacaoBimestral?.[oldName] !== undefined) { bd.recuperacaoBimestral[newName] = bd.recuperacaoBimestral[oldName]; delete bd.recuperacaoBimestral[oldName]; }
-        }
-        if (disc.recuperacaoAnual?.[oldName] !== undefined) { disc.recuperacaoAnual[newName] = disc.recuperacaoAnual[oldName]; delete disc.recuperacaoAnual[oldName]; }
-    });
-}
-
-function editarAluno(nome) { abrirFormAluno(nome); }
-
-function excluirAluno(nome) {
-    if (getAlunos().length <= 1) return alert('O sistema precisa manter pelo menos um estudante cadastrado.');
-    if (!confirm(`Excluir o cadastro de ${nome}? As notas e recuperações desse estudante também serão removidas.`)) return;
-    db.alunos = db.alunos.filter(a => a.nome !== nome);
-    DISCIPLINAS.forEach(d => {
-        for (let b = 1; b <= 4; b++) {
-            const bd = db.disciplinas[d][b];
-            bd.atividades?.forEach(a => { if (a.notas) delete a.notas[nome]; });
-            if (bd.recuperacaoBimestral) delete bd.recuperacaoBimestral[nome];
-        }
-        if (db.disciplinas[d].recuperacaoAnual) delete db.disciplinas[d].recuperacaoAnual[nome];
-    });
-    saveStorage(); renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || '');
-}
-
-function filtrarAlunosCadastro() { renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || ''); }
 
 /**
  * SISTEMA COMPLEMENTAR UTILIÁRIO (FILTROS, MODELOS E BACKUPS)
@@ -1534,7 +1573,7 @@ function exportBackup() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
     const dlNode = document.createElement('a');
     dlNode.setAttribute("href", dataStr);
-    dlNode.setAttribute("download", `sigenotas_backup_global_2026.json`);
+    dlNode.setAttribute("download", `portal_professor_backup_portal_professor_2026.json`);
     dlNode.click();
 }
 
@@ -1551,7 +1590,7 @@ function importBackup(e) {
                 alert("Base de dados importada e sincronizada com sucesso!");
                 location.reload();
             } else {
-                alert("Erro: Arquivo JSON incompatível com o SigeNotas.");
+                alert("Erro: Arquivo JSON incompatível com o Portal do Professor.");
             }
         } catch(err) { alert("Arquivo corrompido ou inválido."); }
     };
@@ -1575,10 +1614,10 @@ function renderBoletimIndividualList() {
     if (!corpo) return;
     corpo.innerHTML = '';
 
-    getAlunos().forEach(aluno => {
+    ALUNOS.forEach(aluno => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${aluno}</strong></td>
+            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td style="text-align: center;">
                 <button class="btn-action-atv" style="background-color: #0c2c5c; color: #ffffff;" onclick="gerarBoletimPDF('${aluno}')">
                     <i class="fas fa-file-pdf"></i> Gerar Boletim
@@ -1597,6 +1636,7 @@ function obterFichaRendimentoAluno(aluno) {
         ficha[m] = {
             somas: { 1: 0, 2: 0, 3: 0, 4: 0 },
             totalAnual: 0,
+            media: 0,
             situacao: ""
         };
         for (let b = 1; b <= 4; b++) {
@@ -1626,6 +1666,7 @@ function obterFichaRendimentoAluno(aluno) {
         }
 
         ficha[m].totalAnual = totalFinalComRecAnual;
+        ficha[m].media = ficha[m].totalAnual / 4;
         
         // Determina situação oficial baseado na média institucional (Aprovado se >= 60.00 pts)
         if (ficha[m].totalAnual >= 60.00) {
@@ -1641,7 +1682,7 @@ function obterFichaRendimentoAluno(aluno) {
 
 function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     // Moldura decorativa oficial externa (Azul) e interna (Dourada)
-    doc.setDrawColor(12, 44, 92);
+    doc.setDrawColor(107, 20, 45);
     doc.setLineWidth(1);
     doc.rect(10, 10, 190, 277);
 
@@ -1657,7 +1698,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     // Cabeçalho institucional com visual unificado
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
-    doc.setTextColor(12, 44, 92);
+    doc.setTextColor(107, 20, 45);
     doc.text("PREFEITURA MUNICIPAL DE ABRE CAMPO", 40, 20);
     
     doc.setFontSize(9);
@@ -1677,7 +1718,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     // Metadados do Boletim
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.setTextColor(12, 44, 92);
+    doc.setTextColor(107, 20, 45);
     doc.text("BOLETIM DE RENDIMENTO ESCOLAR INDIVIDUAL", 15, 44);
 
     doc.setFont("helvetica", "normal");
@@ -1695,6 +1736,10 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     doc.text(CONFIG.turmaName, 88, 51);
     doc.text(new Date().toLocaleDateString('pt-BR'), 168, 51);
     doc.text(aluno, 34, 57);
+    const cadastro = getCadastroAluno(aluno);
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Matrícula: ${cadastro.matricula}   |   Data de matrícula: ${formatarDataMatricula(cadastro.dataMatricula)}`, 15, 62);
 
     // Processamento da Ficha Acadêmica
     const ficha = obterFichaRendimentoAluno(aluno);
@@ -1715,13 +1760,13 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
 
     // Injeção da tabela utilizando AutoTable customizada nas cores solicitadas
     doc.autoTable({
-        startY: 63,
+        startY: 67,
         margin: { left: 15, right: 15 },
         head: [['Componente Curricular', '1º Bim', '2º Bim', '3º Bim', '4º Bim', 'Total', 'Situação']],
         body: tableBody,
         theme: 'grid',
         headStyles: { 
-            fillColor: [12, 44, 92], // Azul do Brasão
+            fillColor: [107, 20, 45], // Azul do Brasão
             textColor: [255, 255, 255], 
             fontStyle: 'bold', 
             halign: 'center',
@@ -1769,37 +1814,74 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         }
     });
 
-    // Área de assinaturas do responsável para cada bimestre.
-    const signatureY = 226;
-    const signatureW = 41;
-    const signatureX = [18, 65, 112, 159];
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(12, 44, 92);
-    doc.text("ACOMPANHAMENTO DO RESPONSÁVEL", 15, 216);
-
-    signatureX.forEach((x, index) => {
-        doc.setDrawColor(212, 175, 55);
-        doc.setLineWidth(0.35);
-        doc.roundedRect(x, signatureY - 7, signatureW, 28, 2, 2);
+    // Áreas de assinatura do responsável em cada bimestre
+    const assinaturaY = 204;
+    const boxW = 42.5;
+    const boxH = 31;
+    const gap = 2.5;
+    const labelsBim = ['1º BIMESTRE', '2º BIMESTRE', '3º BIMESTRE', '4º BIMESTRE'];
+    labelsBim.forEach((label, i) => {
+        const x = 15 + i * (boxW + gap);
+        doc.setFillColor(250, 251, 252);
+        doc.setDrawColor(203, 213, 225);
+        doc.setLineWidth(0.45);
+        doc.rect(x, assinaturaY, boxW, boxH, 'FD');
+        doc.setFillColor(239, 244, 248);
+        doc.rect(x, assinaturaY, boxW, 9, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(67, 84, 102);
+        doc.text(label, x + boxW / 2, assinaturaY + 6, { align: 'center' });
         doc.setDrawColor(148, 163, 184);
-        doc.setLineWidth(0.25);
-        doc.line(x + 4, signatureY + 9, x + signatureW - 4, signatureY + 9);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(8);
-        doc.setTextColor(71, 85, 105);
-        doc.text(`${index + 1}º BIMESTRE`, x + signatureW / 2, signatureY, { align: "center" });
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(6.7);
-        doc.text("Assinatura do Responsável", x + signatureW / 2, signatureY + 14, { align: "center" });
+        doc.setLineWidth(0.3);
+        doc.line(x + 5, assinaturaY + 21, x + boxW - 5, assinaturaY + 21);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.3);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Assinatura do Responsável', x + boxW / 2, assinaturaY + 26, { align: 'center' });
     });
 
-    doc.setFontSize(6.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text("A assinatura registra ciência do acompanhamento escolar em cada período.", 15, 261);
+    // Bloco Inferior de Assinaturas
+    const lineY = 252;
+    doc.setDrawColor(148, 163, 184);
+    doc.setLineWidth(0.3);
+    
+    doc.line(20, lineY, 65, lineY);
+    doc.line(82, lineY, 127, lineY);
+    doc.line(144, lineY, 189, lineY);
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(71, 85, 105);
+    doc.text("DIREÇÃO", 42.5, lineY + 4, { align: "center" });
+    doc.text("PROFESSOR(A)", 104.5, lineY + 4, { align: "center" });
+    doc.text("SECRETARIA", 166.5, lineY + 4, { align: "center" });
 }
 
+
+function exportarTodosBoletinsPDF() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Biblioteca PDF ainda não foi carregada. Tente novamente.");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    let imgLogo = null;
+    const imgEl = document.getElementById('img-brasao-base64');
+    if (imgEl && imgEl.complete && imgEl.naturalWidth) {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = imgEl.naturalWidth; canvas.height = imgEl.naturalHeight;
+            canvas.getContext('2d').drawImage(imgEl, 0, 0);
+            imgLogo = canvas.toDataURL('image/png');
+        } catch (e) {}
+    }
+    ALUNOS.forEach((aluno, index) => {
+        if (index > 0) doc.addPage();
+        adicionarPaginaBoletim(doc, aluno, imgLogo);
+    });
+    doc.save('boletins_2026_todos_os_alunos.pdf');
+}
 function gerarBoletimPDF(aluno) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
