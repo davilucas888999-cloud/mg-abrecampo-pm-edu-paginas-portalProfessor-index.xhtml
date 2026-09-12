@@ -12,7 +12,7 @@ const CONFIG = {
     passingScorePct: 0.60 // Média institucional de 60% para definição das cores
 };
 
-const ALUNOS = [
+const ALUNOS_INICIAIS = [
     "ADRIELE APARECIDA MENDES ARAUJO", "ANA JULIA SILVA DE LAIA", "DAVI LUCAS PAULINO DA COSTA",
     "EMANUELLY CRISTINA DA COSTA LEVINO", "FABIELLY HIGINO DIAS", "GABRIEL COTTA QUEIROZ",
     "GLENO HENRIQUE MARTINS GOMES DE MIRANDA", "HANIELE PEREIRA ALVES", "IKARO EMANUEL DE LIMA MIRANDA",
@@ -22,6 +22,39 @@ const ALUNOS = [
     "MARIA SOPHIA FERNANDES DE SOUZA", "NATHAN MIRANDA ALVES", "NICOLE DE OLIVEIRA LIMA",
     "WESLEY COTA BERNARDES", "YASMIN DOS SANTOS FERREIRA"
 ];
+
+// Lista dinâmica de estudantes. Os estudantes cadastrados pelo usuário
+// ficam no banco local e substituem a lista inicial sem quebrar dados antigos.
+function getAlunos() {
+    if (!Array.isArray(db.alunos) || db.alunos.length === 0) return ALUNOS_INICIAIS;
+    return db.alunos.map(a => typeof a === "string" ? a : a.nome).filter(Boolean);
+}
+
+function ensureAlunoInAllRecords(nome) {
+    DISCIPLINAS.forEach(d => {
+        if (!db.disciplinas[d]) db.disciplinas[d] = { recuperacaoAnual: {} };
+        if (!db.disciplinas[d].recuperacaoAnual) db.disciplinas[d].recuperacaoAnual = {};
+        for (let b = 1; b <= 4; b++) {
+            if (!db.disciplinas[d][b]) db.disciplinas[d][b] = { atividades: [], recuperacaoBimestral: {} };
+            if (!db.disciplinas[d][b].atividades) db.disciplinas[d][b].atividades = [];
+            if (!db.disciplinas[d][b].recuperacaoBimestral) db.disciplinas[d][b].recuperacaoBimestral = {};
+            db.disciplinas[d][b].atividades.forEach(a => {
+                if (!a.notas) a.notas = {};
+                if (!a.notas[nome]) a.notas[nome] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
+            });
+        }
+    });
+}
+
+function normalizarAlunosBanco() {
+    if (!Array.isArray(db.alunos)) {
+        db.alunos = ALUNOS_INICIAIS.map(nome => ({ nome, matricula: "", observacao: "" }));
+    } else {
+        db.alunos = db.alunos.map(a => typeof a === "string" ? ({ nome: a, matricula: "", observacao: "" }) : ({ nome: a.nome || "", matricula: a.matricula || "", observacao: a.observacao || "" })).filter(a => a.nome);
+    }
+    db.alunos.forEach(a => ensureAlunoInAllRecords(a.nome));
+}
+
 
 // Ordem Reorganizada das Disciplinas
 const DISCIPLINAS = [
@@ -76,7 +109,8 @@ function initDatabaseEngine() {
                 currentBimestre: 1,
                 bimestresFechados: { 1: false, 2: false, 3: false, 4: false }
             },
-            disciplinas: {}
+            disciplinas: {},
+            alunos: []
         };
         
         DISCIPLINAS.forEach(d => {
@@ -92,6 +126,8 @@ function initDatabaseEngine() {
         });
         saveStorage();
     }
+
+    normalizarAlunosBanco();
 
     // Garante compatibilidade de chaves para recuperação anual em bases migradas
     DISCIPLINAS.forEach(d => {
@@ -387,7 +423,7 @@ function recalcularNotasDaAtividade(atv) {
 
     const corteMediaAtv = Number(atv.valor) * CONFIG.passingScorePct;
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         if (!atv.notas[aluno]) {
             atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
         }
@@ -500,7 +536,7 @@ function renderAtividadesCriadasList() {
     `;
     head.appendChild(headRow);
 
-    ALUNOS.forEach((aluno, alunoIndex) => {
+    getAlunos().forEach((aluno, alunoIndex) => {
         const tr = document.createElement('tr');
         let cells = `
             <td class="aluno-grade-name">
@@ -702,7 +738,7 @@ function renderNotasTable(atv) {
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
     const corteMediaAtv = atv.valor * CONFIG.passingScorePct; // 60% do valor da atividade
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         if (!atv.notas[aluno]) {
             atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
         }
@@ -805,7 +841,7 @@ function openVerNotas() {
 
     const todosFechados = [1, 2, 3, 4].every(b => db.configGlobal.bimestresFechados[b]);
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         let somas = { 1: 0, 2: 0, 3: 0, 4: 0 };
         let totalAnual = 0;
 
@@ -872,7 +908,7 @@ function openRecuperacaoBimestral() {
     const bData = db.disciplinas[selectedMateria][selectedBimestre];
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         let notaOrigBimestre = bData.atividades.reduce((sum, a) => sum + (parseFloat(a.notas[aluno]?.notaFinal) || 0), 0);
         
         // Elegível apenas se nota for inferior a 15.00 (60% de 25.00)
@@ -958,7 +994,7 @@ function openRecuperacaoAnual() {
 
     const recAnualObj = db.disciplinas[selectedMateria].recuperacaoAnual || {};
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         let totalAnual = 0;
         for (let b = 1; b <= 4; b++) {
             const bData = db.disciplinas[selectedMateria][b];
@@ -1155,7 +1191,7 @@ function exportBoletimCompletoPDF() {
 
     const todosFechados = [1, 2, 3, 4].every(b => db.configGlobal.bimestresFechados[b]);
 
-    ALUNOS.forEach((aluno, index) => {
+    getAlunos().forEach((aluno, index) => {
         if (index > 0) doc.addPage();
 
         // Cabeçalho Oficial Estruturado
@@ -1274,7 +1310,7 @@ function generateAnalyticalDashboard() {
     let totalLancamentos = 0;
     let alunosAbaixoMedia = 0;
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         DISCIPLINAS.forEach(m => {
             for (let b = 1; b <= 4; b++) {
                 const atvs = db.disciplinas[m][b].atividades;
@@ -1309,7 +1345,7 @@ function generateAnalyticalDashboard() {
 
         const dataMedias = DISCIPLINAS.map(m => {
             let somaM = 0, qtdM = 0;
-            ALUNOS.forEach(a => {
+            getAlunos().forEach(a => {
                 for(let b=1; b<=4; b++) {
                     db.disciplinas[m][b].atividades.forEach(atv => {
                         somaM += parseFloat(atv.notas[a]?.notaFinal || 0);
@@ -1339,6 +1375,121 @@ function generateAnalyticalDashboard() {
         });
     }, 100);
 }
+
+/**
+ * MÓDULO DE CADASTRO DE ESTUDANTES
+ * Permite incluir, editar e excluir estudantes. Novos estudantes recebem
+ * automaticamente campos de notas em todas as disciplinas e bimestres.
+ */
+function openCadastroAlunos() {
+    renderAlunosCadastro();
+    navigate('cadastro-alunos');
+}
+
+function renderAlunosCadastro(filtro = '') {
+    const corpo = document.getElementById('table-alunos-cadastro');
+    const contador = document.getElementById('alunos-contador');
+    if (!corpo) return;
+    const termo = String(filtro || '').trim().toLocaleUpperCase('pt-BR');
+    const lista = getAlunos().filter(nome => nome.toLocaleUpperCase('pt-BR').includes(termo));
+    if (contador) contador.textContent = `${lista.length} estudante(s) cadastrado(s)`;
+    corpo.innerHTML = '';
+    lista.forEach((nome, i) => {
+        const dados = db.alunos.find(a => a.nome === nome) || { nome, matricula: '', observacao: '' };
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="student-index">${i + 1}</td>
+            <td><strong>${escapeHtml(nome)}</strong>${dados.matricula ? `<small class="student-meta">Matrícula: ${escapeHtml(dados.matricula)}</small>` : ''}</td>
+            <td>${escapeHtml(dados.observacao || '—')}</td>
+            <td class="student-actions">
+                <button class="btn-action-atv" onclick="editarAluno('${escapeAttr(nome)}')"><i class="fas fa-pen"></i> Editar</button>
+                <button class="btn-action-danger" onclick="excluirAluno('${escapeAttr(nome)}')"><i class="fas fa-trash"></i> Excluir</button>
+            </td>`;
+        corpo.appendChild(tr);
+    });
+    if (!lista.length) corpo.innerHTML = `<tr><td colspan="4" class="empty-state">Nenhum estudante encontrado.</td></tr>`;
+}
+
+function abrirFormAluno(nome = '') {
+    const form = document.getElementById('form-aluno');
+    if (!form) return;
+    form.reset();
+    document.getElementById('aluno-original').value = nome;
+    if (nome) {
+        const dados = db.alunos.find(a => a.nome === nome);
+        document.getElementById('aluno-nome').value = dados?.nome || nome;
+        document.getElementById('aluno-matricula').value = dados?.matricula || '';
+        document.getElementById('aluno-observacao').value = dados?.observacao || '';
+        document.getElementById('titulo-form-aluno').textContent = 'Editar estudante';
+        document.getElementById('btn-salvar-aluno').innerHTML = '<i class="fas fa-save"></i> Salvar alterações';
+    } else {
+        document.getElementById('titulo-form-aluno').textContent = 'Cadastrar novo estudante';
+        document.getElementById('btn-salvar-aluno').innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar estudante';
+    }
+    document.getElementById('aluno-nome').focus();
+    document.getElementById('form-aluno-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function salvarAluno(event) {
+    event.preventDefault();
+    const original = document.getElementById('aluno-original').value.trim();
+    const nome = document.getElementById('aluno-nome').value.trim().toLocaleUpperCase('pt-BR').replace(/\s+/g, ' ');
+    const matricula = document.getElementById('aluno-matricula').value.trim();
+    const observacao = document.getElementById('aluno-observacao').value.trim();
+    if (!nome) return alert('Informe o nome completo do estudante.');
+    const duplicado = getAlunos().some(a => a.toLocaleUpperCase('pt-BR') === nome && a !== original);
+    if (duplicado) return alert('Já existe um estudante com este nome.');
+    if (!Array.isArray(db.alunos)) db.alunos = [];
+    if (original) {
+        const registro = db.alunos.find(a => a.nome === original);
+        if (registro) {
+            renameStudentInAllRecords(original, nome);
+            registro.nome = nome; registro.matricula = matricula; registro.observacao = observacao;
+        }
+    } else {
+        db.alunos.push({ nome, matricula, observacao });
+        ensureAlunoInAllRecords(nome);
+    }
+    normalizarAlunosBanco();
+    saveStorage();
+    renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || '');
+    abrirFormAluno('');
+    alert(original ? 'Cadastro atualizado com sucesso.' : 'Estudante cadastrado com sucesso. Agora ele já aparece para lançamento de notas em todos os bimestres.');
+}
+
+function renameStudentInAllRecords(oldName, newName) {
+    DISCIPLINAS.forEach(d => {
+        const disc = db.disciplinas[d];
+        for (let b = 1; b <= 4; b++) {
+            const bd = disc[b];
+            if (!bd) continue;
+            bd.atividades?.forEach(a => {
+                if (a.notas?.[oldName] !== undefined) { a.notas[newName] = a.notas[oldName]; delete a.notas[oldName]; }
+            });
+            if (bd.recuperacaoBimestral?.[oldName] !== undefined) { bd.recuperacaoBimestral[newName] = bd.recuperacaoBimestral[oldName]; delete bd.recuperacaoBimestral[oldName]; }
+        }
+        if (disc.recuperacaoAnual?.[oldName] !== undefined) { disc.recuperacaoAnual[newName] = disc.recuperacaoAnual[oldName]; delete disc.recuperacaoAnual[oldName]; }
+    });
+}
+
+function editarAluno(nome) { abrirFormAluno(nome); }
+
+function excluirAluno(nome) {
+    if (getAlunos().length <= 1) return alert('O sistema precisa manter pelo menos um estudante cadastrado.');
+    if (!confirm(`Excluir o cadastro de ${nome}? As notas e recuperações desse estudante também serão removidas.`)) return;
+    db.alunos = db.alunos.filter(a => a.nome !== nome);
+    DISCIPLINAS.forEach(d => {
+        for (let b = 1; b <= 4; b++) {
+            const bd = db.disciplinas[d][b];
+            bd.atividades?.forEach(a => { if (a.notas) delete a.notas[nome]; });
+            if (bd.recuperacaoBimestral) delete bd.recuperacaoBimestral[nome];
+        }
+        if (db.disciplinas[d].recuperacaoAnual) delete db.disciplinas[d].recuperacaoAnual[nome];
+    });
+    saveStorage(); renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || '');
+}
+
+function filtrarAlunosCadastro() { renderAlunosCadastro(document.getElementById('search-aluno-cadastro')?.value || ''); }
 
 /**
  * SISTEMA COMPLEMENTAR UTILIÁRIO (FILTROS, MODELOS E BACKUPS)
@@ -1424,7 +1575,7 @@ function renderBoletimIndividualList() {
     if (!corpo) return;
     corpo.innerHTML = '';
 
-    ALUNOS.forEach(aluno => {
+    getAlunos().forEach(aluno => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong>${aluno}</strong></td>

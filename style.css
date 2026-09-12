@@ -1775,3 +1775,184 @@ button:active:not(:disabled) {
     .topbar, .sidebar, .sidebar-overlay, button, .search-box-input { display: none !important; }
     .card-box, .table-responsive-container, .table-meta-header { box-shadow: none !important; }
 }
+
+/* ========================================================================
+   SIGENOTAS 2026 — NOVA INTERFACE DESKTOP + NOTEBOOK + CELULAR
+   A matriz de atividades permanece intencionalmente sem alterações de layout.
+   ======================================================================== */
+:root {
+    --bg: #f5f7f7;
+    --card: #ffffff;
+    --text: #25363a;
+    --text-light: #68797c;
+    --primary: #486f72;
+    --primary-strong: #365a5d;
+    --primary-light: #edf4f3;
+    --secondary: #7a8f86;
+    --accent: #c3a46a;
+    --border: #cbd6d4;
+    --border-strong: #aebdb9;
+    --success: #65836f;
+    --warning: #ad9160;
+    --danger: #90736d;
+    --shadow: 0 8px 24px rgba(45, 68, 70, .07);
+    --shadow-hover: 0 12px 30px rgba(45, 68, 70, .11);
+}
+
+body { background: var(--bg); color: var(--text); }
+.topbar {
+    background: rgba(255,255,255,.96) !important;
+    border-bottom: 1px solid var(--border) !important;
+    box-shadow: 0 3px 14px rgba(35,55,57,.06);
+}
+.topbar-title { color: var(--primary-strong) !important; letter-spacing: .02em; font-weight: 800; }
+.menu-hamburger, .theme-toggle { background: var(--primary-light) !important; color: var(--primary-strong) !important; border: 1px solid var(--border) !important; border-radius: 5px !important; }
+
+.sidebar {
+    background: #fbfcfc !important;
+    border-right: 1px solid var(--border) !important;
+    box-shadow: 10px 0 35px rgba(34,56,58,.07);
+}
+.sidebar-header { border-bottom: 1px solid var(--border) !important; }
+.sidebar-nav ul li { border-radius: 4px !important; margin: 3px 12px; border: 1px solid transparent !important; }
+.sidebar-nav ul li:hover { background: var(--primary-light) !important; border-color: var(--border) !important; color: var(--primary-strong) !important; }
+.sidebar-footer { border-top: 1px solid var(--border) !important; }
+
+.main-container { max-width: 1480px !important; }
+.screen { animation: screenIn .22s ease both; }
+@keyframes screenIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.welcome-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f5f4 100%) !important;
+    border: 1px solid var(--border) !important;
+    border-left: 4px solid var(--primary) !important;
+    border-radius: 5px !important;
+    box-shadow: var(--shadow) !important;
+}
+.welcome-banner h2 { color: var(--primary-strong) !important; }
+.school-text { color: var(--text-light) !important; }
+.badge, .badge-active { border-radius: 4px !important; border: 1px solid var(--border); }
+.badge { background: #fff !important; color: var(--text) !important; }
+.badge-active { background: var(--primary-light) !important; color: var(--primary-strong) !important; }
+
+.section-header-block, .table-meta-header, .card-box, .status-fechamento-dashboard {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 5px !important;
+    box-shadow: var(--shadow) !important;
+}
+.section-title, .box-title, .table-meta-header h3 { color: var(--primary-strong) !important; }
+
+.disciplinas-grid { gap: 15px !important; }
+.disciplina-card {
+    background: #fff !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 5px !important;
+    box-shadow: 0 4px 14px rgba(42,63,65,.045) !important;
+    min-height: 105px;
+}
+.disciplina-card:hover { transform: translateY(-2px); border-color: #9eb2ae !important; box-shadow: var(--shadow-hover) !important; }
+.disciplina-card i { color: var(--primary) !important; }
+.disciplina-card span { color: var(--text) !important; }
+
+.home-management-panel {
+    margin-top: 22px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    background: #fff; border: 1px solid var(--border); border-radius: 5px; box-shadow: var(--shadow);
+}
+.home-management-panel h3 { margin: 5px 0 4px; color: var(--primary-strong); }
+.home-management-panel p { margin: 0; color: var(--text-light); font-size: .86rem; max-width: 780px; line-height: 1.5; }
+.panel-kicker { display:block; font-size: .65rem; font-weight: 800; letter-spacing: .12em; color: var(--primary); }
+.btn-student-primary { min-width: 190px; white-space: nowrap; }
+
+.btn-submit-action, .btn-back, .btn-cancel-edit, .btn-action-atv, .btn-action-danger, .btn-reabrir-step {
+    border-radius: 4px !important;
+    border: 1px solid transparent !important;
+}
+.btn-submit-action { background: var(--primary-strong) !important; color: #fff !important; }
+.btn-submit-action:hover { background: var(--primary) !important; }
+.btn-back { border-color: var(--border) !important; background: #fff !important; color: var(--primary-strong) !important; }
+.btn-cancel-edit { background: #f4f6f5 !important; color: var(--text) !important; border-color: var(--border) !important; }
+.btn-action-danger { background: #f1e9e7 !important; color: #765d58 !important; border-color: #d8c5c0 !important; }
+
+input, select, textarea, .search-box-input {
+    border-radius: 4px !important; border: 1px solid var(--border-strong) !important; box-shadow: none !important;
+}
+input:focus, select:focus, textarea:focus, .search-box-input:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(72,111,114,.10) !important; }
+
+/* ------------------------------------------------------------------------
+   NOVO CADASTRO DE ALUNOS
+   ------------------------------------------------------------------------ */
+.student-page-header {
+    display:flex; justify-content:space-between; align-items:flex-end; gap:25px; padding: 5px 2px 22px;
+}
+.student-page-header h2 { margin: 5px 0; color: var(--primary-strong); font-size: 1.65rem; }
+.student-page-header p { max-width: 850px; margin: 0; color: var(--text-light); line-height:1.5; font-size:.87rem; }
+.student-counter { padding: 9px 13px; border:1px solid var(--border); border-radius:4px; background:#fff; color:var(--primary-strong); font-size:.75rem; font-weight:800; white-space:nowrap; }
+.student-layout { display:grid; grid-template-columns:minmax(310px, .72fr) minmax(520px, 1.28fr); gap:18px; align-items:start; }
+.student-form-card, .student-list-card { padding: 21px !important; }
+.form-card-heading, .student-list-heading { display:flex; justify-content:space-between; align-items:center; gap:15px; padding-bottom:16px; margin-bottom:17px; border-bottom:1px solid var(--border); }
+.form-card-heading { justify-content:flex-start; }
+.form-card-heading h3, .student-list-heading h3 { margin:3px 0 0; color:var(--primary-strong); font-size:1.08rem; }
+.heading-icon { width:40px; height:40px; display:grid; place-items:center; background:var(--primary-light); color:var(--primary); border:1px solid var(--border); border-radius:4px; }
+.student-form-row { display:grid; grid-template-columns: .65fr 1.35fr; gap:12px; }
+.student-form-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.form-hint { padding:11px 12px; background:var(--primary-light); border:1px solid #d5e2df; color:var(--text-light); font-size:.76rem; line-height:1.45; border-radius:4px; }
+.form-hint i { color:var(--primary); margin-right:5px; }
+.student-search { width: 230px !important; min-height:40px !important; }
+.student-table-wrap { border-radius:4px !important; box-shadow:none !important; }
+.student-table { min-width:700px !important; }
+.student-table th { background:var(--primary-strong) !important; }
+.student-table td { vertical-align:middle; }
+.student-index { width:45px; color:var(--text-light); text-align:center; font-weight:700; }
+.student-meta { display:block; margin-top:3px; color:var(--text-light); font-size:.67rem; font-weight:400; }
+.student-actions { white-space:nowrap; }
+.student-actions button { margin:2px; }
+.empty-state { text-align:center; color:var(--text-light); padding:35px !important; }
+
+/* O restante do sistema segue a mesma linguagem visual, sem alterar a matriz. */
+.materia-header-banner { border-radius:5px !important; border:1px solid var(--border) !important; box-shadow:var(--shadow) !important; background:#fff !important; }
+.hub-options-grid { gap:14px !important; }
+.hub-card-btn { border-radius:5px !important; border:1px solid var(--border) !important; background:#fff !important; box-shadow:var(--shadow) !important; }
+.hub-card-btn:hover { transform:translateY(-2px); border-color:#9eb2ae !important; box-shadow:var(--shadow-hover) !important; }
+.icon-circle { border-radius:4px !important; }
+.bc-blue { background:#5f8081 !important; } .bc-green { background:#738b7c !important; } .bc-orange { background:#ad9365 !important; } .bc-purple { background:#777481 !important; } .bc-red { background:#8b7772 !important; }
+.info-alert { border-radius:4px !important; }
+.progress-container { border:1px solid var(--border) !important; border-radius:5px !important; background:#fff !important; box-shadow:var(--shadow) !important; }
+.progress-bar-bg { background:#e7edeb !important; border-radius:2px !important; }
+.progress-bar-fill { background:var(--primary) !important; border-radius:2px !important; }
+
+/* Mantém a planilha de atividades como tabela horizontal, apenas integrando-a ao novo entorno. */
+.atividades-grade-wrapper { border-radius:4px !important; box-shadow:var(--shadow) !important; }
+.atividades-grade-table .atividade-column-head { background:var(--primary-strong) !important; }
+
+.table-custom-format { border-collapse:separate !important; border-spacing:0 !important; }
+.table-custom-format thead th { background:var(--primary-strong) !important; }
+.table-custom-format td, .table-custom-format th { border-color:var(--border) !important; }
+.table-custom-format tbody tr:hover td { background:var(--primary-light) !important; }
+
+.app-footer { border-top:1px solid var(--border) !important; }
+
+@media (min-width: 1100px) {
+    .main-container { padding-left: 34px !important; padding-right: 34px !important; }
+    .student-layout { grid-template-columns: 410px minmax(0, 1fr); }
+    .student-form-card { position:sticky; top:92px; }
+}
+@media (max-width: 1000px) {
+    .student-layout { grid-template-columns:1fr; }
+    .student-form-card { position:static; }
+}
+@media (max-width: 700px) {
+    .home-management-panel, .student-page-header { flex-direction:column; align-items:stretch; }
+    .btn-student-primary { width:100%; }
+    .student-form-row { grid-template-columns:1fr; }
+    .student-list-heading { align-items:stretch; flex-direction:column; }
+    .student-search { width:100% !important; }
+    .student-counter { align-self:flex-start; }
+    .student-page-header h2 { font-size:1.35rem; }
+    .student-layout { gap:12px; }
+    .student-form-card, .student-list-card { padding:15px !important; }
+}
+@media (min-width: 701px) {
+    .topbar-title { font-size:1.08rem; }
+    .main-container { min-height:calc(100vh - 150px); }
+}
