@@ -14,7 +14,7 @@
 
     <!-- TOPBAR MOBILE -->
     <div class="topbar">
-        <button class="menu-hamburger" onclick="toggleMenu()" aria-label="Abrir Menu">
+        <button class="menu-hamburger" id="main-menu-button" onclick="toggleQuickMenu()" aria-label="Abrir menu principal" aria-expanded="false">
             <i class="fas fa-bars"></i>
         </button>
         <div class="topbar-title">Portal do Professor 2026</div>
@@ -22,6 +22,31 @@
             <i class="fas fa-moon" id="theme-icon"></i>
         </div>
     </div>
+
+    <!-- MENU HAMBÚRGUER POP-UP -->
+    <div class="quick-overlay" id="quick-overlay" onclick="closeQuickMenu()"></div>
+    <aside class="quick-menu-v3" id="quick-menu-v3" aria-hidden="true">
+        <div class="quick-menu-v3-head">
+            <div>
+                <span class="menu-kicker">PORTAL DO PROFESSOR</span>
+                <strong>Acesso rápido</strong>
+                <small>Todos os módulos em um só lugar</small>
+            </div>
+            <button class="quick-close" onclick="closeQuickMenu()" aria-label="Fechar menu">×</button>
+        </div>
+        <div class="quick-menu-v3-body">
+            <button onclick="quickGo('home')"><i class="fas fa-home"></i><span>Início</span><small>Disciplinas</small></button>
+            <button onclick="quickGo('boletim-individual')"><i class="fas fa-file-invoice"></i><span>Boletins</span><small>Individual</small></button>
+            <button onclick="quickGo('cadastro-alunos')"><i class="fas fa-user-plus"></i><span>Alunos</span><small>Cadastro</small></button>
+            <button onclick="quickGo('fechamento-global')"><i class="fas fa-lock"></i><span>Bimestres</span><small>Fechamento</small></button>
+            <button onclick="quickGo('dashboard')"><i class="fas fa-chart-pie"></i><span>Dashboard</span><small>Rendimento</small></button>
+            <button onclick="quickGo('backup')"><i class="fas fa-shield-alt"></i><span>Segurança</span><small>Backup</small></button>
+            <button onclick="window.print();closeQuickMenu()"><i class="fas fa-print"></i><span>Imprimir</span><small>Tela atual</small></button>
+            <button onclick="toggleFullscreen();closeQuickMenu()"><i class="fas fa-expand"></i><span>Tela cheia</span><small>Mais espaço</small></button>
+            <button onclick="openAjudaModal();closeQuickMenu()"><i class="fas fa-circle-question"></i><span>Ajuda</span><small>Instruções</small></button>
+        </div>
+        <div class="quick-menu-v3-foot"><span class="live-dot"></span> Sistema local • Dados no dispositivo</div>
+    </aside>
 
     <!-- MENU LATERAL POP-UP (HAMBÚRGUER) -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMenu()"></div>
@@ -422,6 +447,11 @@
             <h3>Painel Analítico de Rendimento</h3>
             <p class="section-desc">Métricas geradas em tempo real com base no fechamento atual do banco de dados.</p>
             <div class="analytics-card-deck" id="analytics-deck"></div>
+            <div class="dashboard-tools">
+                <button onclick="generateAnalyticalDashboard()"><i class="fas fa-rotate"></i><span>Atualizar análise</span></button>
+                <button onclick="window.print()"><i class="fas fa-print"></i><span>Imprimir painel</span></button>
+                <button onclick="scrollToTopPage()"><i class="fas fa-arrow-up"></i><span>Voltar ao topo</span></button>
+            </div>
             <div class="chart-container-card">
                 <canvas id="main-analytics-chart"></canvas>
             </div>

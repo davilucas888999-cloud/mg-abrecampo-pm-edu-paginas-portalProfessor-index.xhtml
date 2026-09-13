@@ -1911,3 +1911,42 @@ function gerarBoletimPDF(aluno) {
     const n=document.querySelector(nav); if(n) n.click();
   }));
 })();
+
+/* PORTAL V3 — navegação rápida, utilidades e experiência de tela */
+function toggleQuickMenu(){
+    const menu=document.getElementById('quick-menu-v3');
+    const overlay=document.getElementById('quick-overlay');
+    const btn=document.getElementById('main-menu-button');
+    if(!menu||!overlay) return;
+    const open=!menu.classList.contains('open');
+    menu.classList.toggle('open',open);
+    overlay.classList.toggle('open',open);
+    menu.setAttribute('aria-hidden', String(!open));
+    if(btn) btn.setAttribute('aria-expanded',String(open));
+}
+function closeQuickMenu(){
+    const menu=document.getElementById('quick-menu-v3');
+    const overlay=document.getElementById('quick-overlay');
+    const btn=document.getElementById('main-menu-button');
+    if(menu) { menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); }
+    if(overlay) overlay.classList.remove('open');
+    if(btn) btn.setAttribute('aria-expanded','false');
+}
+function quickGo(screenId){
+    closeQuickMenu();
+    if(typeof navigate==='function') navigate(screenId);
+}
+function toggleFullscreen(){
+    try{
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+    }catch(e){}
+}
+function scrollToTopPage(){ window.scrollTo({top:0,behavior:'smooth'}); }
+
+document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeQuickMenu();
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
+        e.preventDefault(); toggleQuickMenu();
+    }
+});
