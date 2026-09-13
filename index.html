@@ -14,7 +14,7 @@
 
     <!-- TOPBAR MOBILE -->
     <div class="topbar">
-        <button class="menu-hamburger" id="main-menu-button" onclick="toggleQuickMenu()" aria-label="Abrir menu principal" aria-expanded="false">
+        <button class="menu-hamburger" onclick="toggleMenu()" aria-label="Abrir Menu">
             <i class="fas fa-bars"></i>
         </button>
         <div class="topbar-title">Portal do Professor 2026</div>
@@ -23,52 +23,40 @@
         </div>
     </div>
 
-    <!-- MENU HAMBÚRGUER POP-UP -->
-    <div class="quick-overlay" id="quick-overlay" onclick="closeQuickMenu()"></div>
-    <aside class="quick-menu-v3" id="quick-menu-v3" aria-hidden="true">
-        <div class="quick-menu-v3-head">
-            <div>
-                <span class="menu-kicker">PORTAL DO PROFESSOR</span>
-                <strong>Acesso rápido</strong>
-                <small>Todos os módulos em um só lugar</small>
-            </div>
-            <button class="quick-close" onclick="closeQuickMenu()" aria-label="Fechar menu">×</button>
-        </div>
-        <div class="quick-menu-v3-body">
-            <button onclick="quickGo('home')"><i class="fas fa-home"></i><span>Início</span><small>Disciplinas</small></button>
-            <button onclick="quickGo('boletim-individual')"><i class="fas fa-file-invoice"></i><span>Boletins</span><small>Individual</small></button>
-            <button onclick="quickGo('cadastro-alunos')"><i class="fas fa-user-plus"></i><span>Alunos</span><small>Cadastro</small></button>
-            <button onclick="quickGo('fechamento-global')"><i class="fas fa-lock"></i><span>Bimestres</span><small>Fechamento</small></button>
-            <button onclick="quickGo('dashboard')"><i class="fas fa-chart-pie"></i><span>Dashboard</span><small>Rendimento</small></button>
-            <button onclick="quickGo('backup')"><i class="fas fa-shield-alt"></i><span>Segurança</span><small>Backup</small></button>
-            <button onclick="window.print();closeQuickMenu()"><i class="fas fa-print"></i><span>Imprimir</span><small>Tela atual</small></button>
-            <button onclick="toggleFullscreen();closeQuickMenu()"><i class="fas fa-expand"></i><span>Tela cheia</span><small>Mais espaço</small></button>
-            <button onclick="openAjudaModal();closeQuickMenu()"><i class="fas fa-circle-question"></i><span>Ajuda</span><small>Instruções</small></button>
-        </div>
-        <div class="quick-menu-v3-foot"><span class="live-dot"></span> Sistema local • Dados no dispositivo</div>
-    </aside>
-
     <!-- MENU LATERAL POP-UP (HAMBÚRGUER) -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMenu()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="brasao.png" alt="Brasão da Escola" class="school-logo-menu">
-            <h3>Painel de Controle</h3>
-            <p class="sidebar-sub">Gestão Escolar Eficiente</p>
+            <div class="sidebar-brand-row">
+                <img src="brasao.png" alt="Brasão da Escola" class="school-logo-menu">
+                <button class="sidebar-close-btn" onclick="toggleMenu()" aria-label="Fechar menu"><i class="fas fa-times"></i></button>
+            </div>
+            <h3>Portal do Professor</h3>
+            <p class="sidebar-sub">Gestão Escolar • 2026</p>
+            <div class="sidebar-status"><span class="status-dot"></span><span id="menu-status-text">Sistema operacional</span></div>
         </div>
         <nav class="sidebar-nav">
+            <div class="menu-section-label">NAVEGAÇÃO</div>
             <ul>
-                <li onclick="navigate('home')"><i class="fas fa-th-large"></i> Disciplinas em Bloco</li>
-                <li onclick="navigate('boletim-individual')"><i class="fas fa-file-invoice"></i> Boletim Individual</li>
-                <li onclick="abrirCadastroAlunos()"><i class="fas fa-user-plus"></i> Cadastro de Alunos</li>
-                <li onclick="navigate('fechamento-global')"><i class="fas fa-lock"></i> Fechamento de Bimestre</li>
-                <li onclick="navigate('dashboard')"><i class="fas fa-chart-line"></i> Estatísticas e Gráficos</li>
-                <li onclick="navigate('backup')"><i class="fas fa-server"></i> Manutenção de Dados</li>
-                <li onclick="openAjudaModal()"><i class="fas fa-question-circle"></i> Ajuda & Instruções</li>
+                <li onclick="navigate('home')" data-menu="home"><i class="fas fa-house"></i><span>Início</span><b>⌂</b></li>
+                <li onclick="navigate('boletim-individual')" data-menu="boletim"><i class="fas fa-file-invoice"></i><span>Boletim Individual</span><b>→</b></li>
+                <li onclick="abrirCadastroAlunos()" data-menu="alunos"><i class="fas fa-user-plus"></i><span>Cadastro de Alunos</span><b>→</b></li>
+                <li onclick="navigate('fechamento-global')" data-menu="fechamento"><i class="fas fa-lock"></i><span>Fechamento de Bimestre</span><b>→</b></li>
+                <li onclick="navigate('dashboard')" data-menu="dashboard"><i class="fas fa-chart-line"></i><span>Estatísticas e Gráficos</span><b>→</b></li>
+                <li onclick="navigate('backup')" data-menu="backup"><i class="fas fa-database"></i><span>Backup e Dados</span><b>→</b></li>
             </ul>
+
+            <div class="menu-section-label">FERRAMENTAS RÁPIDAS</div>
+            <div class="quick-tools-grid">
+                <button type="button" onclick="quickPrint()"><i class="fas fa-print"></i><span>Imprimir</span></button>
+                <button type="button" onclick="toggleFullscreen()"><i class="fas fa-expand"></i><span>Tela cheia</span></button>
+                <button type="button" onclick="exportBackup()"><i class="fas fa-download"></i><span>Backup</span></button>
+                <button type="button" onclick="openAjudaModal()"><i class="fas fa-circle-question"></i><span>Ajuda</span></button>
+            </div>
         </nav>
         <div class="sidebar-footer">
-            <span>Portal do Professor 2026 • Versão Responsiva</span>
+            <strong>EM DR CUSTÓDIO DE PAULA RODRIGUES</strong>
+            <span>Portal do Professor 2026 • Interface responsiva</span>
         </div>
     </div>
 
@@ -96,6 +84,13 @@
                 <p class="section-desc">Toque em um bloco para gerenciar atividades, notas ou emitir boletins.</p>
             </div>
             
+            <div class="home-quick-actions" aria-label="Acessos rápidos">
+                <button onclick="navigate('boletim-individual')"><i class="fas fa-file-lines"></i><span>Boletins</span><small>Consultar</small></button>
+                <button onclick="abrirCadastroAlunos()"><i class="fas fa-users"></i><span>Alunos</span><small>Cadastrar</small></button>
+                <button onclick="navigate('dashboard')"><i class="fas fa-chart-pie"></i><span>Resumo</span><small>Desempenho</small></button>
+                <button onclick="navigate('backup')"><i class="fas fa-shield-halved"></i><span>Segurança</span><small>Backup</small></button>
+            </div>
+
             <div class="disciplinas-grid" id="disciplinas-grid"></div>
         </div>
 
@@ -447,11 +442,6 @@
             <h3>Painel Analítico de Rendimento</h3>
             <p class="section-desc">Métricas geradas em tempo real com base no fechamento atual do banco de dados.</p>
             <div class="analytics-card-deck" id="analytics-deck"></div>
-            <div class="dashboard-tools">
-                <button onclick="generateAnalyticalDashboard()"><i class="fas fa-rotate"></i><span>Atualizar análise</span></button>
-                <button onclick="window.print()"><i class="fas fa-print"></i><span>Imprimir painel</span></button>
-                <button onclick="scrollToTopPage()"><i class="fas fa-arrow-up"></i><span>Voltar ao topo</span></button>
-            </div>
             <div class="chart-container-card">
                 <canvas id="main-analytics-chart"></canvas>
             </div>

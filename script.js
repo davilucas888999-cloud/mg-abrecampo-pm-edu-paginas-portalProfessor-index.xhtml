@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMateriaBlocks();
     updateGlobalBimestreUI();
     applyThemeLoad();
+    atualizarStatusMenu();
 });
 
 function gerarNumeroMatricula(ano, ordem) {
@@ -300,6 +301,14 @@ function navigate(screenId) {
     }
     
     // Fechamentos automáticos de segurança ao navegar
+    document.querySelectorAll('.sidebar-nav li[data-menu]').forEach(item => item.classList.remove('menu-current'));
+    const currentMap = {
+        home:'home', 'boletim-individual':'boletim', 'cadastro-alunos':'alunos',
+        'fechamento-global':'fechamento', dashboard:'dashboard', backup:'backup'
+    };
+    const currentItem = document.querySelector(`.sidebar-nav li[data-menu="${currentMap[screenId] || ''}"]`);
+    currentItem?.classList.add('menu-current');
+
     const side = document.getElementById('sidebar');
     const over = document.getElementById('sidebar-overlay');
     if (side.classList.contains('active')) {
@@ -1891,62 +1900,53 @@ function gerarBoletimPDF(aluno) {
 }
 
 
-/* PORTAL V2 — menu pop-up */
-(function(){
-  const menu = document.getElementById('quickMenu');
-  const overlay = document.getElementById('appOverlay');
-  const toggle = document.getElementById('menuToggle');
-  const close = document.getElementById('closeQuickMenu');
-  if(!menu || !toggle) return;
-  function openMenu(){ menu.classList.add('open'); overlay?.classList.add('open'); menu.setAttribute('aria-hidden','false'); overlay?.setAttribute('aria-hidden','false'); document.body.classList.add('menu-open'); }
-  function closeMenu(){ menu.classList.remove('open'); overlay?.classList.remove('open'); menu.setAttribute('aria-hidden','true'); overlay?.setAttribute('aria-hidden','true'); document.body.classList.remove('menu-open'); }
-  toggle.addEventListener('click', e=>{e.preventDefault(); menu.classList.contains('open')?closeMenu():openMenu();});
-  close?.addEventListener('click', closeMenu); overlay?.addEventListener('click', closeMenu);
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
-  menu.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
-    const a=btn.dataset.action; closeMenu();
-    const map={home:['#inicio','.nav-home'],alunos:['#alunos','.nav-alunos'],notas:['#notas','.nav-notas'],boletim:['#boletim','.nav-boletim'],estatisticas:['#estatisticas','.nav-estatisticas'],backup:['#backup','.nav-backup']};
-    const [id,nav]=map[a]||[];
-    const el=document.querySelector(id); if(el){el.scrollIntoView({behavior:'smooth',block:'start'}); return;}
-    const n=document.querySelector(nav); if(n) n.click();
-  }));
-})();
-
-/* PORTAL V3 — navegação rápida, utilidades e experiência de tela */
-function toggleQuickMenu(){
-    const menu=document.getElementById('quick-menu-v3');
-    const overlay=document.getElementById('quick-overlay');
-    const btn=document.getElementById('main-menu-button');
-    if(!menu||!overlay) return;
-    const open=!menu.classList.contains('open');
-    menu.classList.toggle('open',open);
-    overlay.classList.toggle('open',open);
-    menu.setAttribute('aria-hidden', String(!open));
-    if(btn) btn.setAttribute('aria-expanded',String(open));
+/* PORTAL — ferramentas rápidas e menu hambúrguer */
+function openMenu(){
+    const side=document.getElementById('sidebar');
+    const overlay=document.getElementById('sidebar-overlay');
+    if(!side) return;
+    side.classList.add('active');
+    overlay?.classList.add('active');
+    side.setAttribute('aria-hidden','false');
+    document.body.classList.add('menu-open');
+    atualizarStatusMenu();
 }
-function closeQuickMenu(){
-    const menu=document.getElementById('quick-menu-v3');
-    const overlay=document.getElementById('quick-overlay');
-    const btn=document.getElementById('main-menu-button');
-    if(menu) { menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); }
-    if(overlay) overlay.classList.remove('open');
-    if(btn) btn.setAttribute('aria-expanded','false');
+function closeMenu(){
+    const side=document.getElementById('sidebar');
+    const overlay=document.getElementById('sidebar-overlay');
+    side?.classList.remove('active');
+    overlay?.classList.remove('active');
+    side?.setAttribute('aria-hidden','true');
+    document.body.classList.remove('menu-open');
 }
-function quickGo(screenId){
-    closeQuickMenu();
-    if(typeof navigate==='function') navigate(screenId);
+function toggleMenu(){
+    const side=document.getElementById('sidebar');
+    if(side?.classList.contains('active')) closeMenu(); else openMenu();
+}
+function atualizarStatusMenu(){
+    const el=document.getElementById('menu-status-text');
+    if(!el || !db?.configGlobal) return;
+    const b=Number(db.configGlobal.currentBimestre||1);
+    el.textContent=b<=4 ? `${b}º Bimestre aberto` : 'Ano letivo encerrado';
+}
+function quickPrint(){
+    closeMenu();
+    setTimeout(()=>window.print(),100);
 }
 function toggleFullscreen(){
-    try{
-        if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
-        else document.exitFullscreen?.();
-    }catch(e){}
-}
-function scrollToTopPage(){ window.scrollTo({top:0,behavior:'smooth'}); }
-
-document.addEventListener('keydown',function(e){
-    if(e.key==='Escape') closeQuickMenu();
-    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
-        e.preventDefault(); toggleQuickMenu();
+    closeMenu();
+    const root=document.documentElement;
+    if(!document.fullscreenElement){
+        root.requestFullscreen?.().catch(()=>{});
+    }else{
+        document.exitFullscreen?.().catch(()=>{});
     }
+}
+document.addEventListener('keydown', e=>{
+    if(e.key==='Escape') closeMenu();
+});
+document.addEventListener('DOMContentLoaded', ()=>{
+    const overlay=document.getElementById('sidebar-overlay');
+    overlay?.addEventListener('click', closeMenu);
+    atualizarStatusMenu();
 });
