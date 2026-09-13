@@ -1889,3 +1889,25 @@ function gerarBoletimPDF(aluno) {
     adicionarPaginaBoletim(doc, aluno, imgLogo);
     doc.save(`boletim_2026_${aluno.replace(/ /g, '_')}.pdf`);
 }
+
+
+/* PORTAL V2 — menu pop-up */
+(function(){
+  const menu = document.getElementById('quickMenu');
+  const overlay = document.getElementById('appOverlay');
+  const toggle = document.getElementById('menuToggle');
+  const close = document.getElementById('closeQuickMenu');
+  if(!menu || !toggle) return;
+  function openMenu(){ menu.classList.add('open'); overlay?.classList.add('open'); menu.setAttribute('aria-hidden','false'); overlay?.setAttribute('aria-hidden','false'); document.body.classList.add('menu-open'); }
+  function closeMenu(){ menu.classList.remove('open'); overlay?.classList.remove('open'); menu.setAttribute('aria-hidden','true'); overlay?.setAttribute('aria-hidden','true'); document.body.classList.remove('menu-open'); }
+  toggle.addEventListener('click', e=>{e.preventDefault(); menu.classList.contains('open')?closeMenu():openMenu();});
+  close?.addEventListener('click', closeMenu); overlay?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
+  menu.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
+    const a=btn.dataset.action; closeMenu();
+    const map={home:['#inicio','.nav-home'],alunos:['#alunos','.nav-alunos'],notas:['#notas','.nav-notas'],boletim:['#boletim','.nav-boletim'],estatisticas:['#estatisticas','.nav-estatisticas'],backup:['#backup','.nav-backup']};
+    const [id,nav]=map[a]||[];
+    const el=document.querySelector(id); if(el){el.scrollIntoView({behavior:'smooth',block:'start'}); return;}
+    const n=document.querySelector(nav); if(n) n.click();
+  }));
+})();
