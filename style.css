@@ -1320,274 +1320,223 @@ body {
     }
 }
 
-/* ========================================================================== */
-/* REFINAMENTO VISUAL 2026                                                    */
-/* ========================================================================== */
+
+/* =========================================================
+   IDENTIDADE VISUAL — PREFEITURA DE ABRE CAMPO
+   Referência: cabeçalho vinho, fundo claro, bordas suaves
+   e cartões arredondados do portal municipal.
+   ========================================================= */
 :root {
-    --bg: #f4f7fb;
+    --bg: #f8f5f2;
     --card: #ffffff;
-    --text: #12233f;
-    --text-light: #5f6f85;
-    --primary: #123b66;
-    --primary-light: #eaf1f8;
-    --secondary: #0b2948;
-    --border: #d8e1ec;
-    --border-strong: #b8c8da;
-    --accent: #c7a45a;
-    --accent-soft: #f7f1e3;
-    --success: #14845b;
-    --warning: #b87812;
-    --danger: #c63c3c;
+    --text: #172033;
+    --text-light: #647084;
+    --primary: #6b142d;
+    --primary-light: #f7e9ed;
+    --secondary: #8f1d39;
+    --border: #e3d9d4;
+    --success: #15803d;
+    --warning: #b7791f;
+    --danger: #dc2626;
     --radius-lg: 18px;
-    --radius-md: 12px;
-    --radius-sm: 9px;
-    --shadow: 0 10px 28px rgba(18, 59, 102, .08);
-    --shadow-hover: 0 16px 36px rgba(18, 59, 102, .14);
+    --radius-md: 11px;
+    --shadow: 0 10px 30px rgba(70, 28, 39, .08);
 }
-
-.dark-mode {
-    --bg: #0b1422;
-    --card: #111f31;
-    --text: #f5f8fc;
-    --text-light: #a8b7ca;
-    --primary: #5e91c4;
-    --primary-light: rgba(94, 145, 196, .16);
-    --secondary: #dfeaf5;
-    --border: #293d55;
-    --border-strong: #3b5571;
-    --accent: #d8b86d;
-    --accent-soft: rgba(216, 184, 109, .12);
-    --shadow: 0 12px 32px rgba(0, 0, 0, .22);
-    --shadow-hover: 0 18px 40px rgba(0, 0, 0, .30);
-}
-
-body {
-    background:
-        radial-gradient(circle at 10% 0%, rgba(199,164,90,.07), transparent 30%),
-        linear-gradient(180deg, var(--bg) 0%, #eef3f8 100%);
-    color: var(--text);
-}
-
-body.dark-mode {
-    background: radial-gradient(circle at 10% 0%, rgba(94,145,196,.08), transparent 32%), var(--bg);
-}
-
+body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 .topbar {
-    height: 72px;
-    padding: 0 24px;
-    background: rgba(255,255,255,.94);
-    border-bottom: 1px solid rgba(216,225,236,.95);
-    box-shadow: 0 6px 20px rgba(18,59,102,.06);
-    backdrop-filter: blur(14px);
+    height: 82px;
+    background: linear-gradient(105deg,#640f29,#8f1835);
+    border-bottom: 3px solid #d4af37;
+    color:#fff;
+    padding: 0 28px;
+    box-shadow: 0 5px 18px rgba(68,13,31,.18);
 }
-
-.dark-mode .topbar { background: rgba(17,31,49,.94); }
-
-.topbar-title { color: var(--primary); font-size: 1.25rem; letter-spacing: -.35px; }
-.menu-hamburger, .theme-toggle { border-radius: 10px; transition: .2s ease; }
-.menu-hamburger:hover, .theme-toggle:hover { background: var(--primary-light); color: var(--primary); }
-
+.topbar::before {
+    content:"";
+    width:48px;height:48px;flex:0 0 48px;
+    background:url('brasao.png') center/contain no-repeat;
+    margin-right:12px;
+}
+.topbar-title { color:#fff; font-size:1.05rem; letter-spacing:0; flex:1; }
+.topbar-title::after { content:"Secretaria Municipal de Educação • Prefeitura Municipal de Abre Campo"; display:block; font-size:.63rem; font-weight:500; opacity:.86; margin-top:3px; }
+.menu-hamburger,.theme-toggle { color:#fff; border-radius:10px; }
+.menu-hamburger { order:-1; margin-right:8px; }
 .sidebar {
-    width: 310px;
-    padding: 28px 18px;
-    border-right: 1px solid var(--border);
-    box-shadow: 14px 0 36px rgba(18,59,102,.12);
+    width:300px; left:-310px; background:#fff;
+    padding:22px 16px; box-shadow:10px 0 30px rgba(65,18,30,.15);
 }
-.sidebar-nav ul li { border-radius: 11px; }
-.sidebar-nav ul li:hover, .sidebar-nav ul li:active { transform: translateX(2px); }
-
-.main-container {
-    max-width: 1500px !important;
-    padding: 28px 30px 42px !important;
+.sidebar-header { border-bottom:1px solid var(--border); }
+.school-logo-menu { height:72px; }
+.sidebar-nav ul li { border-radius:12px; margin-bottom:7px; }
+.sidebar-nav ul li:hover,.sidebar-nav ul li:active { background:var(--primary-light); color:var(--primary); }
+.main-container { max-width:1280px; padding:28px; }
+.welcome-banner,.materia-header-banner,.table-meta-header,.card-box,.progress-container,.hub-card-btn,.table-responsive-container,.atividades-grade-wrapper {
+    border:1px solid #eadfdb; box-shadow:var(--shadow); border-radius:18px;
 }
-
-.responsive-device-note {
-    max-width: 1500px;
-    margin: 10px auto 0;
-    padding: 7px 13px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-light);
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .02em;
+.welcome-banner { background:linear-gradient(120deg,#6b142d,#941c3b); box-shadow:0 14px 32px rgba(107,20,45,.18); }
+.banner-logo { background:#fff; border-radius:50%; padding:6px; }
+.section-title,.box-title,.table-meta-header h3,.materia-title-wrapper h2 { color:var(--text); }
+.btn-submit-action,.hub-card-btn:hover { background:var(--primary) !important; }
+.btn-submit-action { border-radius:11px; box-shadow:0 6px 14px rgba(107,20,45,.16); }
+.hub-card-btn { background:#fff; }
+.hub-card-btn:hover { color:#fff; transform:translateY(-2px); }
+.input-group input,.input-group select,.search-box-input,select,input[type="number"],input[type="text"] { border-color:#d9cfca; border-radius:10px; }
+.table-custom-format,.atividades-grade-table { border-radius:14px; overflow:hidden; }
+.table-custom-format thead th,.atividades-grade-table thead th { background:var(--primary) !important; color:#fff !important; border-color:#8c304a !important; }
+.table-custom-format td,.table-custom-format th,.atividades-grade-table td,.atividades-grade-table th { border-color:#eadfdb !important; }
+.atividade-group-head { background:var(--primary) !important; }
+.aluno-fixed-head { background:var(--primary) !important; border-right-color:#8c304a !important; }
+.nota-final-value { background:#f7f9fc; border-color:#dfe5ec; }
+.nota-alta { color:#0756b6 !important; background:#e8f1ff !important; }
+.nota-baixa { color:#c62828 !important; background:#ffebeb !important; }
+.info-alert { border-radius:11px; }
+.decoration-border { position:relative; overflow:hidden; }
+.decoration-border::before { content:""; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg,#6b142d,#d4af37,#6b142d); }
+@media (min-width: 900px) {
+    .main-container { max-width:none !important; width:100% !important; padding:28px 34px !important; }
 }
-.device-dot, .footer-status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 4px rgba(20,132,91,.10);
+@media (max-width: 700px) {
+    body { padding-top:68px; }
+    .topbar { height:68px; padding:0 12px; }
+    .topbar::before { width:38px;height:38px;flex-basis:38px;margin-right:5px; }
+    .topbar-title { font-size:.82rem; line-height:1.05; }
+    .topbar-title::after { font-size:.52rem; }
+    .main-container { padding:14px 12px 28px; width:100%; }
+    .welcome-banner,.materia-header-banner,.table-meta-header,.card-box,.progress-container { border-radius:15px; }
+    .hub-options-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    .hub-card-btn { min-height:112px; padding:12px 9px; }
+    .atividades-grade-wrapper { border-radius:14px; }
+    .atividade-stacked-cell { min-width:168px; width:168px; }
+    .aluno-fixed-head,.aluno-grade-name { min-width:205px; width:205px; }
 }
-
-.welcome-banner {
-    background: linear-gradient(135deg, #0b2948 0%, #174e7f 68%, #2d668f 100%);
-    border: 1px solid rgba(199,164,90,.38);
-    border-radius: 20px;
-    padding: 26px;
-    box-shadow: 0 18px 40px rgba(11,41,72,.20);
-}
-.welcome-banner h2 { font-size: 1.55rem; }
-.badge, .badge-active { border-radius: 999px; padding: 6px 11px; }
-.badge-active { background: var(--accent); color: #10233b; }
-
-.card-box,
-.table-meta-header,
-.chart-container-card,
-.backup-vertical-panel,
-.analytics-card-deck > *,
-.hub-card-btn,
-.disciplina-card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
+@media (min-width: 701px) and (max-width: 1200px) {
+    .main-container { padding:22px; }
+    .atividade-stacked-cell { min-width:175px; width:175px; }
 }
 
-.card-box:hover,
-.hub-card-btn:hover,
-.disciplina-card:hover,
-.backup-action-row:hover { box-shadow: var(--shadow-hover); }
 
-.hub-card-btn {
-    background: var(--card);
-    border-color: var(--border);
-    min-height: 150px;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-.hub-card-btn:hover { transform: translateY(-3px); border-color: rgba(199,164,90,.65); }
-
-.icon-circle { border-radius: 14px; }
-
-.table-responsive-container,
-.atividades-grade-wrapper {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    background: var(--card);
+/* AJUSTES FINAIS — PORTAL DO PROFESSOR / IDENTIDADE MUNICIPAL */
+:root {
+    --bg: #f7f3f0;
+    --card: #ffffff;
+    --text: #182235;
+    --text-light: #667085;
+    --primary: #6b142d;
+    --primary-light: #f8e9ed;
+    --secondary: #8f1d39;
+    --border: #e5d9d5;
+    --success: #15803d;
+    --warning: #b7791f;
+    --danger: #c62828;
+    --radius-lg: 18px;
+    --radius-md: 11px;
+    --shadow: 0 10px 30px rgba(70, 28, 39, .08);
 }
 
-.table-responsive-container { overflow-x: auto; }
+.student-registration-card { margin-top: 18px; }
+.input-grid-cadastro {
+    display:grid; grid-template-columns:minmax(0, 1fr) 260px; gap:16px; margin-bottom:18px;
+}
+.student-enrollment-date { display:block; margin-top:4px; font-size:.72rem; color:var(--text-light); font-weight:500; }
+#table-cadastro-alunos-corpo td:nth-child(1), #table-cadastro-alunos-corpo td:nth-child(2) { text-align:center; white-space:nowrap; }
+#table-cadastro-alunos-corpo td:nth-child(2) { font-weight:800; color:var(--primary); letter-spacing:.3px; }
+
+/* Identificação institucional */
+.topbar-title { font-weight:800; }
+.topbar-title::after { content:"Secretaria Municipal de Educação • Prefeitura Municipal de Abre Campo"; }
+
+/* Bordas e campos mais refinados */
+.card-box, .table-meta-header, .table-responsive-container, .atividades-grade-wrapper, .progress-container, .materia-header-banner, .welcome-banner, .hub-card-btn {
+    border:1px solid #e5d9d5 !important;
+    box-shadow:0 8px 24px rgba(72, 29, 41, .06);
+}
+input, select, textarea, .search-box-input { border:1px solid #d8cbc6 !important; border-radius:11px !important; }
+input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box-shadow:0 0 0 3px rgba(143,29,57,.10) !important; outline:none; }
+
+@media (max-width: 700px) {
+    .input-grid-cadastro { grid-template-columns:1fr; gap:10px; }
+    .student-registration-card { padding:14px; }
+    #table-cadastro-alunos-corpo td, #table-cadastro-alunos-corpo th { font-size:.78rem; }
+    .student-enrollment-date { font-size:.66rem; }
+}
+@media (min-width: 701px) {
+    .student-registration-card { padding:22px; }
+}
+
+
+/* REFINO DA TABELA DE ALUNOS — LINHAS MAIS FORTES E ZEBRADO SUAVE */
 .table-custom-format,
-.atividades-grade-table { border-collapse: separate; border-spacing: 0; }
+.atividades-grade-table,
+#table-notas {
+    border: 2px solid #cfc5c1 !important;
+}
 .table-custom-format th,
-.atividades-grade-table th {
-    background: var(--primary) !important;
-    border-color: rgba(255,255,255,.16) !important;
-}
 .table-custom-format td,
-.atividades-grade-table td { border-color: var(--border) !important; }
-.table-custom-format tbody tr:hover td { background: var(--primary-light); }
-
-.atividade-column-head,
-.atividade-stacked-cell,
-.nota-bimestre-head,
-.nota-final-bimestre-cell { border-right: 1px solid var(--border) !important; }
-.nota-final-value,
-.nota-final-bimestre-cell strong { border-radius: 9px; }
-
-.search-box-input,
-input[type="text"],
-input[type="number"],
-select,
-textarea {
-    border: 1px solid var(--border-strong) !important;
-    border-radius: 10px !important;
-    min-height: 42px;
-    background: var(--card);
-    color: var(--text);
+.atividades-grade-table th,
+.atividades-grade-table td,
+#table-notas th,
+#table-notas td {
+    border-right: 1.5px solid #c9bfbb !important;
+    border-bottom: 1.5px solid #c9bfbb !important;
 }
-input:focus, select:focus, textarea:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px var(--primary-light) !important;
+.table-custom-format tbody tr:nth-child(odd),
+#table-notas tbody tr:nth-child(odd),
+.atividades-grade-table tbody tr:nth-child(odd) {
+    background: #ffffff !important;
 }
-
-.btn-submit-action,
-.btn-action-atv,
-.btn-back,
-.btn-cancel-edit {
-    border-radius: 10px !important;
-    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+.table-custom-format tbody tr:nth-child(even),
+#table-notas tbody tr:nth-child(even),
+.atividades-grade-table tbody tr:nth-child(even) {
+    background: #f1f3f5 !important;
 }
-.btn-submit-action:hover,
-.btn-action-atv:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(18,59,102,.16); }
-.btn-back { border: 1px solid var(--border) !important; background: var(--card) !important; color: var(--primary) !important; }
-
-.nota-alta { color: #075d8e !important; background: #eaf5fb !important; border-color: #c5e3f2 !important; }
-.nota-baixa { color: #b83232 !important; background: #fff0f0 !important; border-color: #f1caca !important; }
-
-.decoration-border { position: relative; overflow: hidden; }
-.decoration-border::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(180deg, var(--primary), var(--accent));
+.table-custom-format tbody tr:hover,
+#table-notas tbody tr:hover,
+.atividades-grade-table tbody tr:hover {
+    background: #e9ecef !important;
 }
-
-.app-footer {
-    max-width: 1500px;
-    margin: 6px auto 0;
-    padding: 18px 30px 28px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-    color: var(--text-light);
+#table-notas td,
+#table-notas th {
+    padding: 10px 9px !important;
 }
-.footer-brand { display: flex; align-items: center; gap: 11px; }
-.footer-brand img { width: 38px; height: 38px; object-fit: contain; }
-.footer-brand div { display: flex; flex-direction: column; gap: 2px; }
-.footer-brand strong { color: var(--primary); font-size: .82rem; }
-.footer-brand span, .footer-status { font-size: .70rem; }
-.footer-status { display: flex; align-items: center; gap: 8px; }
-
-@media (min-width: 901px) {
-    body { padding-top: 72px; }
-    .topbar { padding-left: 30px; padding-right: 30px; }
-    .main-container { min-height: calc(100vh - 145px); }
-    .disciplinas-grid { grid-template-columns: repeat(3, minmax(230px, 1fr)) !important; gap: 18px !important; }
-    .hub-options-grid { grid-template-columns: repeat(4, minmax(210px, 1fr)) !important; gap: 18px !important; }
+#table-notas td:first-child {
+    min-width: 285px;
+    text-align: left;
 }
-
-@media (max-width: 900px) {
-    .main-container { padding: 22px 18px 34px !important; }
-    .welcome-banner { padding: 22px; }
-    .disciplinas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .app-footer { padding-left: 18px; padding-right: 18px; }
+.student-actions-cell {
+    min-width: 115px;
+    text-align: center !important;
+    white-space: nowrap;
 }
-
-@media (max-width: 600px) {
-    body { padding-top: 64px; }
-    .topbar { height: 64px; padding: 0 13px; }
-    .topbar-title { font-size: 1.05rem; }
-    .main-container { padding: 15px 12px 28px !important; }
-    .responsive-device-note { margin: 2px 12px 0; padding-left: 0; }
-    .welcome-banner { border-radius: 16px; padding: 18px; margin-bottom: 18px; }
-    .welcome-banner h2 { font-size: 1.25rem; }
-    .banner-logo { height: 42px; }
-    .banner-badge-container { flex-wrap: wrap; }
-    .disciplinas-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-    .hub-options-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-    .hub-card-btn { min-height: 128px; padding: 14px 9px; }
-    .table-meta-header { padding: 16px !important; }
-    .app-footer { flex-direction: column; align-items: flex-start; padding: 16px 12px 24px; }
-    .footer-status { align-self: flex-start; }
-    .atividade-column-head,
-    .atividade-stacked-cell { min-width: 155px; width: 155px; }
-    .aluno-fixed-head,
-    .aluno-grade-name { min-width: 178px; width: 178px; }
-    .nota-bimestre-head,
-    .nota-final-bimestre-cell { min-width: 132px; width: 132px; }
+.btn-table-edit {
+    border: 1.5px solid #8c304a;
+    background: #fff;
+    color: #6b142d;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .18s ease;
 }
-
-@media (max-width: 420px) {
-    .hub-options-grid { grid-template-columns: 1fr !important; }
-    .banner-flex { gap: 10px; }
-    .school-text { font-size: .72rem; }
-    .section-title { font-size: 1.05rem; }
+.btn-table-edit:hover {
+    background: #6b142d;
+    color: #fff;
+    transform: translateY(-1px);
+}
+.input-grid-cadastro {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+.student-enrollment-date {
+    display: block;
+    margin-top: 4px;
+    color: #69727d;
+    font-size: .72rem;
+    line-height: 1.35;
+}
+@media (max-width: 700px) {
+    .input-grid-cadastro { grid-template-columns: 1fr !important; }
+    #table-notas td:first-child { min-width: 250px; }
+    .table-custom-format th,
+    .table-custom-format td,
+    #table-notas th,
+    #table-notas td { border-width: 1px !important; }
 }
