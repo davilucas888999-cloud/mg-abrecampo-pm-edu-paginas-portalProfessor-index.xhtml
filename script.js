@@ -1,8 +1,3 @@
-function formatarDecimalPortal(valor, casas = 2) {
-    const numero = Number.parseFloat(valor);
-    return Number.isFinite(numero) ? numero.toFixed(casas) : (0).toFixed(casas);
-}
-
 /**
  * PORTAL DO PROFESSOR 2026 - ARQUITETURA DE CÓDIGO FONTE EXPANDIDA
  * SISTEMA OPERACIONAL MÓVEL PARA LANÇAMENTO DE AVALIAÇÕES E NOTAS
@@ -672,7 +667,7 @@ function renderAtividadesCriadasList() {
                     <div class="atividade-header-text">
                         <span class="atividade-index">ATIVIDADE ${index + 1}</span>
                         <strong class="atividade-name">${escapeHtml(a.nome)}</strong>
-                        <small>Valor: ${formatarDecimalPortal(a.valor, 2)} pts</small>
+                        <small>Valor: ${Number(a.valor).toFixed(2)} pts</small>
                     </div>
                     <div class="atividade-header-actions">
                         <button type="button" class="btn-grade-edit"
@@ -877,7 +872,7 @@ function openLancarNotas(atvId) {
     const atv = db.disciplinas[selectedMateria][selectedBimestre].atividades.find(a => a.id === atvId);
     
     document.getElementById('lancar-notas-subtitulo').innerHTML = `
-        Avaliação: <strong>${atv.nome}</strong> | Pontuação Máxima: <strong>${formatarDecimalPortal(atv.valor, 2)}</strong>
+        Avaliação: <strong>${atv.nome}</strong> | Pontuação Máxima: <strong>${atv.valor.toFixed(2)}</strong>
     `;
     
     renderNotasTable(atv);
@@ -1397,7 +1392,7 @@ function exportBoletimCompletoPDF() {
             // Injeta subtotal estruturado do bimestre na tabela
             tableBody.push([
                 { content: `SOMA FECHAMENTO DO ${b}º BIMESTRE`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                { content: CONFIG.limitPoints.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                { content: "25,00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: totalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: rbVal, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 // Azul da tabela pdf corrigido para [43, 53, 62] que equivale a #2b353e
@@ -1815,30 +1810,26 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     });
 
     // Áreas de assinatura do responsável em cada bimestre
-    const assinaturaY = 204;
-    const boxW = 42.5;
-    const boxH = 31;
-    const gap = 2.5;
+    const assinaturaY = 205;
+    const boxW = 42;
+    const boxH = 30;
+    const gap = 3;
     const labelsBim = ['1º BIMESTRE', '2º BIMESTRE', '3º BIMESTRE', '4º BIMESTRE'];
     labelsBim.forEach((label, i) => {
         const x = 15 + i * (boxW + gap);
-        doc.setFillColor(250, 251, 252);
         doc.setDrawColor(203, 213, 225);
-        doc.setLineWidth(0.45);
-        doc.rect(x, assinaturaY, boxW, boxH, 'FD');
-        doc.setFillColor(239, 244, 248);
-        doc.rect(x, assinaturaY, boxW, 9, 'F');
+        doc.setLineWidth(0.35);
+        doc.roundedRect(x, assinaturaY, boxW, boxH, 2, 2);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
-        doc.setTextColor(67, 84, 102);
-        doc.text(label, x + boxW / 2, assinaturaY + 6, { align: 'center' });
+        doc.setTextColor(107, 20, 45);
+        doc.text(label, x + boxW / 2, assinaturaY + 7, { align: 'center' });
         doc.setDrawColor(148, 163, 184);
-        doc.setLineWidth(0.3);
-        doc.line(x + 5, assinaturaY + 21, x + boxW - 5, assinaturaY + 21);
+        doc.line(x + 5, assinaturaY + 20, x + boxW - 5, assinaturaY + 20);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(6.3);
-        doc.setTextColor(100, 116, 139);
-        doc.text('Assinatura do Responsável', x + boxW / 2, assinaturaY + 26, { align: 'center' });
+        doc.setFontSize(6.5);
+        doc.setTextColor(71, 85, 105);
+        doc.text('Assinatura do Responsável', x + boxW / 2, assinaturaY + 25, { align: 'center' });
     });
 
     // Bloco Inferior de Assinaturas
