@@ -27,36 +27,23 @@
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMenu()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-brand-row">
-                <img src="brasao.png" alt="Brasão da Escola" class="school-logo-menu">
-                <button class="sidebar-close-btn" onclick="toggleMenu()" aria-label="Fechar menu"><i class="fas fa-times"></i></button>
-            </div>
-            <h3>Portal do Professor</h3>
-            <p class="sidebar-sub">Gestão Escolar • 2026</p>
-            <div class="sidebar-status"><span class="status-dot"></span><span id="menu-status-text">Sistema operacional</span></div>
+            <img src="brasao.png" alt="Brasão da Escola" class="school-logo-menu">
+            <h3>Painel de Controle</h3>
+            <p class="sidebar-sub">Gestão Escolar Eficiente</p>
         </div>
         <nav class="sidebar-nav">
-            <div class="menu-section-label">NAVEGAÇÃO</div>
             <ul>
-                <li onclick="navigate('home')" data-menu="home"><i class="fas fa-house"></i><span>Início</span><b>⌂</b></li>
-                <li onclick="navigate('boletim-individual')" data-menu="boletim"><i class="fas fa-file-invoice"></i><span>Boletim Individual</span><b>→</b></li>
-                <li onclick="abrirCadastroAlunos()" data-menu="alunos"><i class="fas fa-user-plus"></i><span>Cadastro de Alunos</span><b>→</b></li>
-                <li onclick="navigate('fechamento-global')" data-menu="fechamento"><i class="fas fa-lock"></i><span>Fechamento de Bimestre</span><b>→</b></li>
-                <li onclick="navigate('dashboard')" data-menu="dashboard"><i class="fas fa-chart-line"></i><span>Estatísticas e Gráficos</span><b>→</b></li>
-                <li onclick="navigate('backup')" data-menu="backup"><i class="fas fa-database"></i><span>Backup e Dados</span><b>→</b></li>
+                <li onclick="navigate('home')"><i class="fas fa-th-large"></i> Disciplinas em Bloco</li>
+                <li onclick="navigate('boletim-individual')"><i class="fas fa-file-invoice"></i> Boletim Individual</li>
+                <li onclick="abrirCadastroAlunos()"><i class="fas fa-user-plus"></i> Cadastro de Alunos</li>
+                <li onclick="navigate('fechamento-global')"><i class="fas fa-lock"></i> Fechamento de Bimestre</li>
+                <li onclick="navigate('dashboard')"><i class="fas fa-chart-line"></i> Estatísticas e Gráficos</li>
+                <li onclick="navigate('backup')"><i class="fas fa-server"></i> Manutenção de Dados</li>
+                <li onclick="openAjudaModal()"><i class="fas fa-question-circle"></i> Ajuda & Instruções</li>
             </ul>
-
-            <div class="menu-section-label">FERRAMENTAS RÁPIDAS</div>
-            <div class="quick-tools-grid">
-                <button type="button" onclick="quickPrint()"><i class="fas fa-print"></i><span>Imprimir</span></button>
-                <button type="button" onclick="toggleFullscreen()"><i class="fas fa-expand"></i><span>Tela cheia</span></button>
-                <button type="button" onclick="exportBackup()"><i class="fas fa-download"></i><span>Backup</span></button>
-                <button type="button" onclick="openAjudaModal()"><i class="fas fa-circle-question"></i><span>Ajuda</span></button>
-            </div>
         </nav>
         <div class="sidebar-footer">
-            <strong>EM DR CUSTÓDIO DE PAULA RODRIGUES</strong>
-            <span>Portal do Professor 2026 • Interface responsiva</span>
+            <span>Portal do Professor 2026 • Versão Responsiva</span>
         </div>
     </div>
 
@@ -84,13 +71,6 @@
                 <p class="section-desc">Toque em um bloco para gerenciar atividades, notas ou emitir boletins.</p>
             </div>
             
-            <div class="home-quick-actions" aria-label="Acessos rápidos">
-                <button onclick="navigate('boletim-individual')"><i class="fas fa-file-lines"></i><span>Boletins</span><small>Consultar</small></button>
-                <button onclick="abrirCadastroAlunos()"><i class="fas fa-users"></i><span>Alunos</span><small>Cadastrar</small></button>
-                <button onclick="navigate('dashboard')"><i class="fas fa-chart-pie"></i><span>Resumo</span><small>Desempenho</small></button>
-                <button onclick="navigate('backup')"><i class="fas fa-shield-halved"></i><span>Segurança</span><small>Backup</small></button>
-            </div>
-
             <div class="disciplinas-grid" id="disciplinas-grid"></div>
         </div>
 
@@ -154,7 +134,7 @@
                 <p class="sub-meta">Gere e visualize o rendimento unificado de todas as disciplinas do ano.</p>
                 
                 <div style="margin-top: 15px; margin-bottom: 5px;">
-                    <button class="btn-submit-action" onclick="exportarTodosBoletinsPDF()" class="btn-export-all">
+                    <button class="btn-submit-action" onclick="exportarTodosBoletinsPDF()" style="background-color: #d4af37; color: #0f172a; font-weight: 800;">
                         <i class="fas fa-file-pdf"></i> Exportar Todos os Boletins (1 por Aluno)
                     </button>
                 </div>
@@ -488,7 +468,7 @@
             <h4>Manual Operacional Rápido</h4>
             <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
             <ul style="padding-left: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-light);">
-                <li><strong>Cores Importantes:</strong> Notas exibidas em <span style="color: #2563eb; font-weight:bold;">Azul</span> representam aproveitamento igual ou superior a 60%. Notas em <span class="help-below-color">Âmbar</span> sinalizam que o estudante está abaixo da média estipulada.</li>
+                <li><strong>Cores Importantes:</strong> Notas exibidas em <span style="color: #2563eb; font-weight:bold;">Azul</span> representam aproveitamento igual ou superior a 60%. Notas em <span style="color: #dc2626; font-weight:bold;">Vermelho</span> sinalizam que o estudante está abaixo da média estipulada.</li>
                 <li><strong>Bloqueios:</strong> Se o bimestre foi encerrado na aba "Fechamento de Bimestre", você não conseguirá alterar nenhuma nota ou criar atividades para aquele período.</li>
                 <li><strong>Recuperações:</strong> O sistema cumpre rigorosamente as regras do diário de classe eletrônico da instituição.</li>
             </ul>

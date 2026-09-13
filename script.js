@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMateriaBlocks();
     updateGlobalBimestreUI();
     applyThemeLoad();
-    atualizarStatusMenu();
 });
 
 function gerarNumeroMatricula(ano, ordem) {
@@ -301,14 +300,6 @@ function navigate(screenId) {
     }
     
     // Fechamentos automáticos de segurança ao navegar
-    document.querySelectorAll('.sidebar-nav li[data-menu]').forEach(item => item.classList.remove('menu-current'));
-    const currentMap = {
-        home:'home', 'boletim-individual':'boletim', 'cadastro-alunos':'alunos',
-        'fechamento-global':'fechamento', dashboard:'dashboard', backup:'backup'
-    };
-    const currentItem = document.querySelector(`.sidebar-nav li[data-menu="${currentMap[screenId] || ''}"]`);
-    currentItem?.classList.add('menu-current');
-
     const side = document.getElementById('sidebar');
     const over = document.getElementById('sidebar-overlay');
     if (side.classList.contains('active')) {
@@ -904,7 +895,7 @@ function renderNotasTable(atv) {
         const nData = atv.notas[aluno];
         const isBlockedRec = (nData.notaOrig !== "" && parseFloat(nData.notaOrig) >= corteMediaAtv);
 
-        // Define a classe de cor da nota final da atividade (Âmbar/Azul)
+        // Define a classe de cor da nota final da atividade (Vermelho/Azul)
         const notaFinalNum = parseFloat(nData.notaFinal || 0);
         const corClasse = notaFinalNum >= corteMediaAtv ? 'nota-alta' : 'nota-baixa';
 
@@ -978,7 +969,7 @@ function autoSaveNotaEngine(aluno, campo, input, valorAtv) {
     
     if (displayFinal) {
         displayFinal.textContent = finalScore.toFixed(2);
-        // Atualização de cor em tempo real na digitação (Azul/Âmbar)
+        // Atualização de cor em tempo real na digitação (Azul/Vermelho)
         if (finalScore >= corteMediaAtv) {
             displayFinal.className = 'nota-alta';
         } else {
@@ -1401,7 +1392,7 @@ function exportBoletimCompletoPDF() {
             // Injeta subtotal estruturado do bimestre na tabela
             tableBody.push([
                 { content: `SOMA FECHAMENTO DO ${b}º BIMESTRE`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                { content: "25.00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                { content: "25,00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: totalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: rbVal, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 // Azul da tabela pdf corrigido para [43, 53, 62] que equivale a #2b353e
@@ -1623,7 +1614,7 @@ function renderBoletimIndividualList() {
         tr.innerHTML = `
             <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td style="text-align: center;">
-                <button class="btn-action-atv" class="btn-action-atv btn-pdf" onclick="gerarBoletimPDF('${aluno}')">
+                <button class="btn-action-atv" style="background-color: #0c2c5c; color: #ffffff;" onclick="gerarBoletimPDF('${aluno}')">
                     <i class="fas fa-file-pdf"></i> Gerar Boletim
                 </button>
             </td>
@@ -1640,6 +1631,7 @@ function obterFichaRendimentoAluno(aluno) {
         ficha[m] = {
             somas: { 1: 0, 2: 0, 3: 0, 4: 0 },
             totalAnual: 0,
+            media: 0,
             situacao: ""
         };
         for (let b = 1; b <= 4; b++) {
@@ -1669,6 +1661,7 @@ function obterFichaRendimentoAluno(aluno) {
         }
 
         ficha[m].totalAnual = totalFinalComRecAnual;
+        ficha[m].media = ficha[m].totalAnual / 4;
         
         // Determina situação oficial baseado na média institucional (Aprovado se >= 60.00 pts)
         if (ficha[m].totalAnual >= 60.00) {
@@ -1768,12 +1761,12 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         body: tableBody,
         theme: 'grid',
         headStyles: { 
-            fillColor: [49, 92, 98], // Azul do Brasão
+            fillColor: [107, 20, 45], // Azul do Brasão
             textColor: [255, 255, 255], 
             fontStyle: 'bold', 
             halign: 'center',
             valign: 'middle',
-            lineColor: [198, 169, 107], // Dourado
+            lineColor: [212, 175, 55], // Dourado
             lineWidth: 0.5
         },
         styles: { 
@@ -1792,7 +1785,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
                 if (data.column.index >= 1 && data.column.index <= 4) {
                     const val = parseFloat(data.cell.raw.replace(',', '.'));
                     if (val < 15.00) {
-                        data.cell.styles.textColor = [166, 105, 67];
+                        data.cell.styles.textColor = [220, 38, 38];
                     } else {
                         // Azul corrigido para o novo escuro #2b353e
                         data.cell.styles.textColor = [43, 53, 62]; 
@@ -1800,16 +1793,16 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
                 }
                 if (data.column.index === 5) {
                     const val = parseFloat(data.cell.raw.replace(',', '.'));
-                    if (val < 60.00) data.cell.styles.textColor = [166, 105, 67];
+                    if (val < 60.00) data.cell.styles.textColor = [220, 38, 38];
                     else data.cell.styles.textColor = [16, 185, 129];
                 }
                 if (data.column.index === 6) {
                     if (data.cell.raw === "Aprovado") {
                         data.cell.styles.textColor = [16, 185, 129];
                     } else if (data.cell.raw === "Em Curso") {
-                        data.cell.styles.textColor = [183, 121, 31];
+                        data.cell.styles.textColor = [245, 158, 11];
                     } else {
-                        data.cell.styles.textColor = [166, 105, 67];
+                        data.cell.styles.textColor = [220, 38, 38];
                     }
                 }
             }
@@ -1826,7 +1819,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         const x = 15 + i * (boxW + gap);
         doc.setDrawColor(203, 213, 225);
         doc.setLineWidth(0.35);
-        doc.rect(x, assinaturaY, boxW, boxH);
+        doc.roundedRect(x, assinaturaY, boxW, boxH, 2, 2);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
         doc.setTextColor(107, 20, 45);
@@ -1898,55 +1891,3 @@ function gerarBoletimPDF(aluno) {
     adicionarPaginaBoletim(doc, aluno, imgLogo);
     doc.save(`boletim_2026_${aluno.replace(/ /g, '_')}.pdf`);
 }
-
-
-/* PORTAL — ferramentas rápidas e menu hambúrguer */
-function openMenu(){
-    const side=document.getElementById('sidebar');
-    const overlay=document.getElementById('sidebar-overlay');
-    if(!side) return;
-    side.classList.add('active');
-    overlay?.classList.add('active');
-    side.setAttribute('aria-hidden','false');
-    document.body.classList.add('menu-open');
-    atualizarStatusMenu();
-}
-function closeMenu(){
-    const side=document.getElementById('sidebar');
-    const overlay=document.getElementById('sidebar-overlay');
-    side?.classList.remove('active');
-    overlay?.classList.remove('active');
-    side?.setAttribute('aria-hidden','true');
-    document.body.classList.remove('menu-open');
-}
-function toggleMenu(){
-    const side=document.getElementById('sidebar');
-    if(side?.classList.contains('active')) closeMenu(); else openMenu();
-}
-function atualizarStatusMenu(){
-    const el=document.getElementById('menu-status-text');
-    if(!el || !db?.configGlobal) return;
-    const b=Number(db.configGlobal.currentBimestre||1);
-    el.textContent=b<=4 ? `${b}º Bimestre aberto` : 'Ano letivo encerrado';
-}
-function quickPrint(){
-    closeMenu();
-    setTimeout(()=>window.print(),100);
-}
-function toggleFullscreen(){
-    closeMenu();
-    const root=document.documentElement;
-    if(!document.fullscreenElement){
-        root.requestFullscreen?.().catch(()=>{});
-    }else{
-        document.exitFullscreen?.().catch(()=>{});
-    }
-}
-document.addEventListener('keydown', e=>{
-    if(e.key==='Escape') closeMenu();
-});
-document.addEventListener('DOMContentLoaded', ()=>{
-    const overlay=document.getElementById('sidebar-overlay');
-    overlay?.addEventListener('click', closeMenu);
-    atualizarStatusMenu();
-});
