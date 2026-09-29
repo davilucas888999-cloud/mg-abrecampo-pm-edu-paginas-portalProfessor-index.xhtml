@@ -653,6 +653,16 @@ function buscarLancamentoFaltas(){
 function obterFaltasAlunoBimestre(aluno,b){garantirEstruturaFaltas();return DISCIPLINAS.reduce((t,d)=>t+calcularFaltasDisciplinaBimestre(b,d,aluno),0);}
 function obterFaltasAlunoDisciplina(aluno,disciplina,bimestre){garantirEstruturaFaltas();return calcularFaltasDisciplinaBimestre(Number(bimestre),disciplina,aluno);}
 function totalFaltasDisciplina(aluno,disciplina){let t=0;for(let b=1;b<=4;b++)t+=obterFaltasAlunoDisciplina(aluno,disciplina,b);return t;}
+function getNotaFinalBimestre(disciplina,bimestre,aluno){
+ const bData=db.disciplinas[disciplina]?.[Number(bimestre)]||{};
+ let total=(bData.atividades||[]).reduce((s,a)=>s+(parseFloat(a.notas?.[aluno]?.notaFinal)||0),0);
+ const rec=bData.recuperacaoBimestral?.[aluno];
+ if(total<15&&rec!==undefined&&rec!==''){
+  const r=Number(String(rec).replace(',','.'))||0;
+  total=r>=15?15:Math.max(total,r);
+ }
+ return Number(total.toFixed(1));
+}
 function abrirNotaFinalDisciplina(){garantirEstruturaFaltas();const s=document.getElementById('final-disciplina-select');if(s)s.innerHTML='<option value="" selected disabled>SELECIONE</option>'+listaDisciplinasOptions();const c=document.getElementById('table-nota-final-disciplina-corpo');if(c)c.innerHTML='<tr><td colspan="12" class="empty-state">Selecione uma disciplina e clique em Buscar.</td></tr>';const t=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');if(t)t.style.display='none';navigate('nota-final-disciplina');}
 function buscarNotaFinalDisciplina(){
  garantirEstruturaFaltas();const disciplina=document.getElementById('final-disciplina-select')?.value,corpo=document.getElementById('table-nota-final-disciplina-corpo');if(!disciplina){alert('Selecione a DISCIPLINA antes de buscar.');return;}
