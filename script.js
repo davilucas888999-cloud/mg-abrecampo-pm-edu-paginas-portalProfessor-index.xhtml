@@ -663,12 +663,44 @@ function getNotaFinalBimestre(disciplina,bimestre,aluno){
  }
  return Number(total.toFixed(1));
 }
-function abrirNotaFinalDisciplina(){garantirEstruturaFaltas();const s=document.getElementById('final-disciplina-select');if(s)s.innerHTML='<option value="" selected disabled>SELECIONE</option>'+listaDisciplinasOptions();const c=document.getElementById('table-nota-final-disciplina-corpo');if(c)c.innerHTML='<tr><td colspan="12" class="empty-state">Selecione uma disciplina e clique em Buscar.</td></tr>';const t=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');if(t)t.style.display='none';navigate('nota-final-disciplina');}
+function abrirNotaFinalDisciplina(){
+    garantirEstruturaFaltas();
+    const tela=document.getElementById('screen-nota-final-disciplina');
+    if(!tela){console.error('Tela de Nota Final por Disciplina não encontrada.');return;}
+    const s=document.getElementById('final-disciplina-select');
+    if(s){
+        s.innerHTML='<option value="" selected disabled>SELECIONE</option>'+listaDisciplinasOptions();
+        s.value='';
+    }
+    const c=document.getElementById('table-nota-final-disciplina-corpo');
+    if(c)c.innerHTML='<tr><td colspan="12" class="empty-state">Selecione uma disciplina e clique em Buscar.</td></tr>';
+    const t=tela.querySelector('.nota-final-disc-table');
+    if(t)t.style.display='table';
+    navigate('nota-final-disciplina');
+}
+
 function buscarNotaFinalDisciplina(){
- garantirEstruturaFaltas();const disciplina=document.getElementById('final-disciplina-select')?.value,corpo=document.getElementById('table-nota-final-disciplina-corpo');if(!disciplina){alert('Selecione a DISCIPLINA antes de buscar.');return;}
- const tabela=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');if(tabela)tabela.style.display='table';
- const todosFechados=[1,2,3,4].every(b=>db.configGlobal.bimestresFechados[b]);
- corpo.innerHTML=ALUNOS.map(aluno=>{const notas=[1,2,3,4].map(b=>getNotaFinalBimestre(disciplina,b,aluno)),faltas=[1,2,3,4].map(b=>obterFaltasAlunoDisciplina(aluno,disciplina,b)),anual=notas.reduce((a,v)=>a+v,0);let final=anual;const recAnual=db.disciplinas[disciplina]?.recuperacaoAnual?.[aluno];if(todosFechados&&anual<60&&recAnual!==undefined&&recAnual!==''){const r=Number(String(recAnual).replace(',','.'))||0;final=r>=60?60:Math.max(anual,r);}const situacao=final>=60?'Aprovado':'Abaixo de 60 pontos';return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${notas.map((n,i)=>`<td>${n.toFixed(1)}</td><td>${faltas[i]}</td>`).join('')}<td><strong>${final.toFixed(1)}</strong></td><td><strong>${faltas.reduce((a,v)=>a+v,0)}</strong></td><td>${situacao}</td></tr>`}).join('');
+    garantirEstruturaFaltas();
+    const disciplina=document.getElementById('final-disciplina-select')?.value||'';
+    const corpo=document.getElementById('table-nota-final-disciplina-corpo');
+    if(!corpo)return;
+    if(!disciplina){alert('Selecione a DISCIPLINA antes de buscar.');return;}
+    const tabela=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');
+    if(tabela)tabela.style.display='table';
+    const todosFechados=[1,2,3,4].every(b=>!!db.configGlobal?.bimestresFechados?.[b]);
+    corpo.innerHTML=ALUNOS.map(aluno=>{
+        const notas=[1,2,3,4].map(b=>getNotaFinalBimestre(disciplina,b,aluno));
+        const faltas=[1,2,3,4].map(b=>obterFaltasAlunoDisciplina(aluno,disciplina,b));
+        const anual=notas.reduce((a,v)=>a+v,0);
+        let final=anual;
+        const recAnual=db.disciplinas[disciplina]?.recuperacaoAnual?.[aluno];
+        if(todosFechados&&anual<60&&recAnual!==undefined&&recAnual!==''){
+            const r=Number(String(recAnual).replace(',','.'))||0;
+            final=r>=60?60:Math.max(anual,r);
+        }
+        const situacao=final>=60?'Aprovado':'Abaixo de 60 pontos';
+        return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${notas.map((n,i)=>`<td>${n.toFixed(2)}</td><td>${faltas[i]}</td>`).join('')}<td><strong>${final.toFixed(2)}</strong></td><td><strong>${faltas.reduce((a,v)=>a+v,0)}</strong></td><td>${situacao}</td></tr>`;
+    }).join('');
 }
 
 function buscarLancamentoNotas(){
