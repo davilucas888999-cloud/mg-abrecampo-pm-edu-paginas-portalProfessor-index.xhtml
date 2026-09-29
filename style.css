@@ -4,13 +4,13 @@
     --card: #ffffff;
     --text: #0f172a;
     --text-light: #475569;
-    --primary: #2b353e;       /* Azul Alterado para Dark Slate */
-    --primary-light: #eff6ff;
+    --primary: #2b4e80;       /* Identidade principal */
+    --primary-light: #e9f0f8;
     --secondary: #1e293b;
     --border: #cbd5e1;
     --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #dc2626;        /* Vermelho Padrão para Notas Abaixo da Média */
+    --warning: #526276;
+    --danger: #2b4e80;        /* Identidade única, sem vermelho */
     --radius-lg: 0px;         /* Bordas Retas */
     --radius-md: 0px;         /* Bordas Retas */
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -21,8 +21,8 @@
     --card: #1e293b;
     --text: #f8fafc;
     --text-light: #94a3b8;
-    --primary: #2b353e;       /* Azul Alterado para Dark Slate */
-    --primary-light: rgba(43, 53, 62, 0.3);
+    --primary: #2b4e80;       /* Identidade principal */
+    --primary-light: rgba(43, 78, 128, 0.30);
     --secondary: #f8fafc;
     --border: #334155;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -206,12 +206,12 @@ body {
 
 /* COMPONENTE: BANNER DE BOAS-VINDAS */
 .welcome-banner {
-    background: linear-gradient(135deg, #1a202c, #2b353e);
+    background: linear-gradient(135deg, #252a30, #343a40);
     color: #ffffff;
     padding: 20px;
     border-radius: var(--radius-lg);
     margin-bottom: 24px;
-    box-shadow: 0 10px 15px -3px rgba(43, 53, 62, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(43, 78, 128, 0.25);
 }
 
 .banner-flex {
@@ -400,8 +400,8 @@ body {
 
 .bc-blue { background: var(--primary); }
 .bc-green { background: #10b981; }
-.bc-orange { background: #f59e0b; }
-.bc-red { background: #dc2626; }
+.bc-orange { background: #526276; }
+.bc-red { background: #495057; }
 .bc-purple { background: #8b5cf6; }
 
 /* COMPONENTE: ELEMENTOS DE FORMULÁRIO */
@@ -438,7 +438,7 @@ body {
 .input-group input {
     padding: 12px;
     border-radius: 0px; /* Bordas Retas */
-    border: 2px solid orange; /* Bordas Laranjas Adicionadas */
+    border: 1px solid var(--border); /* Bordas Laranjas Adicionadas */
     background-color: var(--bg);
     color: var(--text);
     font-size: 1rem;
@@ -555,7 +555,7 @@ body {
     width: 100%;
     padding: 10px 12px;
     border-radius: 0px; /* Bordas Retas */
-    border: 2px solid orange; /* Bordas Laranjas Adicionadas */
+    border: 1px solid var(--border); /* Bordas Laranjas Adicionadas */
     background-color: var(--bg);
     color: var(--text);
     font-size: 0.85rem;
@@ -599,7 +599,7 @@ body {
 .table-custom-format input[type="number"] {
     width: 72px;
     padding: 8px;
-    border: 2px solid orange; /* Bordas Laranjas Adicionadas */
+    border: 1px solid var(--border); /* Bordas Laranjas Adicionadas */
     border-radius: 0px; /* Bordas Retas */
     background-color: var(--bg);
     color: var(--text);
@@ -767,8 +767,8 @@ body {
 .action-text-wrapper p { font-size: 0.75rem; opacity: 0.85; margin-top: 2px; }
 
 .bg-green-light { background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
-.bg-blue-light { background-color: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
-.bg-red-light { background-color: #fef2f2; color: #991b1b; border-color: #fca5a5; }
+.bg-blue-light { background-color: #eef3fa; color: #2b4e80; border-color: #c7d4e4; }
+.bg-red-light { background-color: #eef3fa; color: #2b4e80; border-color: #c7d4e4; }
 
 /* COMPONENTE: MODAIS DE ALERTA */
 .modal-overlay-view {
@@ -1001,7 +1001,7 @@ body {
 .grade-input-cell input[type="number"] {
     width: 76px;
     padding: 7px 4px;
-    border: 2px solid orange;
+    border: 1px solid var(--border);
     border-radius: 0;
     background: var(--bg);
     color: var(--text);
@@ -1302,13 +1302,13 @@ body {
 }
 
 .nota-alta {
-    color: #0756b6 !important;
+    color: #2b4e80 !important;
     background: #e8f1ff !important;
 }
 
 .nota-baixa {
-    color: #c62828 !important;
-    background: #ffebeb !important;
+    color: #495057 !important;
+    background: #eef0f2 !important;
 }
 
 @media (min-width: 900px) {
@@ -1331,13 +1331,13 @@ body {
     --card: #ffffff;
     --text: #172033;
     --text-light: #647084;
-    --primary: #6b142d;
+    --primary: #343a40;
     --primary-light: #f7e9ed;
-    --secondary: #8f1d39;
+    --secondary: #495057;
     --border: #e3d9d4;
     --success: #15803d;
     --warning: #b7791f;
-    --danger: #dc2626;
+    --danger: #495057;
     --radius-lg: 18px;
     --radius-md: 11px;
     --shadow: 0 10px 30px rgba(70, 28, 39, .08);
@@ -1346,7 +1346,7 @@ body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 .topbar {
     height: 82px;
     background: linear-gradient(105deg,#640f29,#8f1835);
-    border-bottom: 3px solid #d4af37;
+    border-bottom: 3px solid #2b4e80;
     color:#fff;
     padding: 0 28px;
     box-shadow: 0 5px 18px rgba(68,13,31,.18);
@@ -1371,9 +1371,9 @@ body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 .sidebar-nav ul li:hover,.sidebar-nav ul li:active { background:var(--primary-light); color:var(--primary); }
 .main-container { max-width:1280px; padding:28px; }
 .welcome-banner,.materia-header-banner,.table-meta-header,.card-box,.progress-container,.hub-card-btn,.table-responsive-container,.atividades-grade-wrapper {
-    border:1px solid #eadfdb; box-shadow:var(--shadow); border-radius:18px;
+    border:1px solid #e5ebf3; box-shadow:var(--shadow); border-radius:18px;
 }
-.welcome-banner { background:linear-gradient(120deg,#6b142d,#941c3b); box-shadow:0 14px 32px rgba(107,20,45,.18); }
+.welcome-banner { background:linear-gradient(120deg,#343a40,#343a40); box-shadow:0 14px 32px rgba(107,20,45,.18); }
 .banner-logo { background:#fff; border-radius:50%; padding:6px; }
 .section-title,.box-title,.table-meta-header h3,.materia-title-wrapper h2 { color:var(--text); }
 .btn-submit-action,.hub-card-btn:hover { background:var(--primary) !important; }
@@ -1382,16 +1382,16 @@ body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 .hub-card-btn:hover { color:#fff; transform:translateY(-2px); }
 .input-group input,.input-group select,.search-box-input,select,input[type="number"],input[type="text"] { border-color:#d9cfca; border-radius:10px; }
 .table-custom-format,.atividades-grade-table { border-radius:14px; overflow:hidden; }
-.table-custom-format thead th,.atividades-grade-table thead th { background:var(--primary) !important; color:#fff !important; border-color:#8c304a !important; }
-.table-custom-format td,.table-custom-format th,.atividades-grade-table td,.atividades-grade-table th { border-color:#eadfdb !important; }
+.table-custom-format thead th,.atividades-grade-table thead th { background:var(--primary) !important; color:#fff !important; border-color:#2b4e80 !important; }
+.table-custom-format td,.table-custom-format th,.atividades-grade-table td,.atividades-grade-table th { border-color:#e5ebf3 !important; }
 .atividade-group-head { background:var(--primary) !important; }
-.aluno-fixed-head { background:var(--primary) !important; border-right-color:#8c304a !important; }
+.aluno-fixed-head { background:var(--primary) !important; border-right-color:#2b4e80 !important; }
 .nota-final-value { background:#f7f9fc; border-color:#dfe5ec; }
-.nota-alta { color:#0756b6 !important; background:#e8f1ff !important; }
-.nota-baixa { color:#c62828 !important; background:#ffebeb !important; }
+.nota-alta { color:#2b4e80 !important; background:#e8f1ff !important; }
+.nota-baixa { color:#495057 !important; background:#eef0f2 !important; }
 .info-alert { border-radius:11px; }
 .decoration-border { position:relative; overflow:hidden; }
-.decoration-border::before { content:""; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg,#6b142d,#d4af37,#6b142d); }
+.decoration-border::before { content:""; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg,#343a40,#2b4e80,#343a40); }
 @media (min-width: 900px) {
     .main-container { max-width:none !important; width:100% !important; padding:28px 34px !important; }
 }
@@ -1421,13 +1421,13 @@ body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
     --card: #ffffff;
     --text: #182235;
     --text-light: #667085;
-    --primary: #6b142d;
+    --primary: #343a40;
     --primary-light: #f8e9ed;
-    --secondary: #8f1d39;
-    --border: #e5d9d5;
+    --secondary: #495057;
+    --border: #e3e9f1;
     --success: #15803d;
     --warning: #b7791f;
-    --danger: #c62828;
+    --danger: #495057;
     --radius-lg: 18px;
     --radius-md: 11px;
     --shadow: 0 10px 30px rgba(70, 28, 39, .08);
@@ -1447,11 +1447,11 @@ body { background: linear-gradient(180deg,#fbfaf8 0%,#f5f0ed 100%); }
 
 /* Bordas e campos mais refinados */
 .card-box, .table-meta-header, .table-responsive-container, .atividades-grade-wrapper, .progress-container, .materia-header-banner, .welcome-banner, .hub-card-btn {
-    border:1px solid #e5d9d5 !important;
+    border:1px solid #e3e9f1 !important;
     box-shadow:0 8px 24px rgba(72, 29, 41, .06);
 }
 input, select, textarea, .search-box-input { border:1px solid #d8cbc6 !important; border-radius:11px !important; }
-input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box-shadow:0 0 0 3px rgba(143,29,57,.10) !important; outline:none; }
+input:focus, select:focus, textarea:focus { border-color:#495057 !important; box-shadow:0 0 0 3px rgba(143,29,57,.10) !important; outline:none; }
 
 @media (max-width: 700px) {
     .input-grid-cadastro { grid-template-columns:1fr; gap:10px; }
@@ -1508,9 +1508,9 @@ input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box
     white-space: nowrap;
 }
 .btn-table-edit {
-    border: 1.5px solid #8c304a;
+    border: 1.5px solid #2b4e80;
     background: #fff;
-    color: #6b142d;
+    color: #343a40;
     border-radius: 8px;
     padding: 7px 10px;
     font-weight: 800;
@@ -1518,7 +1518,7 @@ input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box
     transition: .18s ease;
 }
 .btn-table-edit:hover {
-    background: #6b142d;
+    background: #343a40;
     color: #fff;
     transform: translateY(-1px);
 }
@@ -1540,3 +1540,348 @@ input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box
     #table-notas th,
     #table-notas td { border-width: 1px !important; }
 }
+
+
+/* =========================================================
+   POLIMENTO VISUAL 2026 — AZUL #343a40
+   Mantém a planilha de notas e reduz apenas os campos numéricos.
+   ========================================================= */
+:root {
+    --primary: #343a40;
+    --primary-dark: #252a30;
+    --primary-light: #e9f0f8;
+    --secondary: #252a30;
+    --border: #cbd5e1;
+    --radius-lg: 3px;
+    --radius-md: 2px;
+}
+body { background: #eef2f7; }
+.topbar { border-bottom: 2px solid var(--primary); }
+.topbar-title { color: var(--primary); }
+.welcome-banner {
+    background: linear-gradient(135deg, #252a30 0%, #343a40 100%);
+    border-radius: 3px;
+    box-shadow: 0 8px 18px rgba(43,78,128,.18);
+}
+.card-box, .materia-header-banner, .disciplina-card, .hub-card-btn,
+.table-meta-header, .table-responsive-container, .atividades-grade-wrapper {
+    border-radius: 3px;
+}
+.disciplina-card:hover, .hub-card-btn:hover {
+    border-color: #343a40;
+    box-shadow: 0 6px 16px rgba(43,78,128,.14);
+}
+.btn-submit-action, .btn-action-atv { background-color: var(--primary); }
+.search-box-input:focus, .input-group input:focus,
+.faltas-toolbar select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+/* Campos da planilha de notas menores, sem mudar a estrutura. */
+.table-custom-format input[type="number"] {
+    width: 54px;
+    min-width: 54px;
+    max-width: 54px;
+    padding: 6px 3px;
+    border: 1px solid var(--border);
+}
+#screen-lancar-notas .table-custom-format th:nth-child(n+2),
+#screen-lancar-notas .table-custom-format td:nth-child(n+2) {
+    width: 62px;
+    min-width: 62px;
+    max-width: 62px;
+    text-align: center;
+}
+#screen-lancar-notas .table-custom-format th:first-child,
+#screen-lancar-notas .table-custom-format td:first-child {
+    min-width: 220px;
+}
+
+/* Faltas */
+.faltas-toolbar {
+    display: grid;
+    grid-template-columns: auto 180px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px;
+}
+.faltas-toolbar label { font-size: .82rem; font-weight: 800; color: var(--text-light); }
+.faltas-toolbar select {
+    height: 40px; padding: 0 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); border-radius: 2px; font-weight: 700;
+}
+.faltas-toolbar .search-box-input { margin-top: 0; }
+.faltas-table th, .faltas-table td { vertical-align: middle; }
+.faltas-input-col, .faltas-total-col { width: 120px; text-align:center !important; }
+.faltas-table input[type="number"] {
+    width: 64px !important; min-width: 64px !important; max-width: 64px !important;
+    text-align: center; padding: 7px 4px;
+}
+.faltas-total-cell { text-align:center; font-weight:800; color:var(--primary); }
+
+/* Modal de edição */
+.aluno-edit-modal { max-width: 560px; border-top: 4px solid var(--primary); }
+.modal-header-row { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:18px; }
+.modal-kicker { font-size:.68rem; font-weight:900; color:var(--primary); letter-spacing:.08em; }
+.modal-header-row h4 { font-size:1.2rem; margin-top:3px; }
+.modal-close-btn {
+    border:1px solid var(--border); background:var(--bg); color:var(--text);
+    width:36px; height:36px; border-radius:2px; font-size:1.5rem; line-height:1; cursor:pointer;
+}
+.edit-aluno-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
+.btn-modal-secondary {
+    border:1px solid var(--border); background:var(--bg); color:var(--text);
+    padding:12px 16px; border-radius:2px; font-weight:800; cursor:pointer;
+}
+.student-actions-cell { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+.btn-table-edit, .btn-table-delete {
+    border:1px solid transparent; padding:7px 10px; border-radius:2px; font-weight:800; cursor:pointer;
+}
+.btn-table-edit { background:var(--primary-light); color:var(--primary); border-color:#b8c9de; }
+.btn-table-delete { background:#fff1f2; color:#2b4e80; border-color:#fecdd3; }
+
+/* Responsividade real */
+.main-container { max-width: 1180px; }
+@media (max-width: 760px) {
+    body { padding-top:58px; }
+    .topbar { height:58px; padding:0 10px; }
+    .topbar-title { font-size:1rem; }
+    .main-container { padding:10px; width:100%; }
+    .welcome-banner { padding:16px; margin-bottom:16px; }
+    .banner-logo { height:40px; }
+    .disciplinas-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .disciplina-card { padding:17px 8px; min-height:108px; }
+    .hub-options-grid { grid-template-columns:1fr 1fr; gap:8px; }
+    .hub-card-btn { padding:15px 8px; min-height:115px; }
+    .table-meta-header { padding:11px; }
+    .table-custom-format { font-size:.78rem; }
+    .table-custom-format th, .table-custom-format td { padding:8px 8px; }
+    .table-responsive-container { max-width:100%; }
+    .faltas-toolbar { grid-template-columns:1fr 1fr; }
+    .faltas-toolbar label { grid-column:1 / -1; }
+    .faltas-toolbar .search-box-input { grid-column:1 / -1; }
+    .edit-aluno-grid { grid-template-columns:1fr; }
+    .modal-overlay-view { padding:10px; }
+    .modal-content-container { max-height:90vh; overflow:auto; }
+}
+@media (min-width: 761px) {
+    .disciplina-card { min-height:150px; }
+}
+@media (max-width: 430px) {
+    .hub-options-grid { grid-template-columns:1fr; }
+    .disciplinas-grid { grid-template-columns:1fr 1fr; }
+    .student-actions-cell { flex-direction:column; }
+    .btn-table-edit, .btn-table-delete { width:100%; }
+}
+
+/* ==================== TEMA FINAL PROFISSIONAL ==================== */
+:root{--bg:#f4f5f6!important;--card:#fff!important;--text:#252a30!important;--text-light:#68717b!important;--primary:#343a40!important;--primary-dark:#252a30!important;--primary-light:#eef0f2!important;--secondary:#495057!important;--border:#c7ccd1!important;--success:#5c6f62!important;--warning:#526276!important;--danger:#495057!important;--radius-lg:6px!important;--radius-md:4px!important;--shadow:0 5px 18px rgba(37,42,48,.07)!important}
+body{background:#f4f5f6!important;color:#252a30!important}.topbar{background:#252a30!important;border-bottom:3px solid #2b4e80!important}.topbar-title{color:#fff!important}.sidebar{background:#fff!important;border-right:1px solid #c7ccd1!important}.welcome-banner{background:#343a40!important;border:1px solid #252a30!important;border-radius:6px!important}.card-box,.materia-header-banner,.table-meta-header,.table-responsive-container,.atividades-grade-wrapper,.hub-card-btn,.disciplina-card{border:1px solid #c7ccd1!important;border-radius:6px!important;box-shadow:var(--shadow)!important}
+.btn-submit-action,.btn-action-atv{background:#343a40!important;border-color:#252a30!important;color:#fff!important;border-radius:4px!important}.btn-submit-action:hover,.btn-action-atv:hover{background:#252a30!important}
+input,select,textarea,.search-box-input{border:1px solid #9da5ad!important;border-radius:4px!important;color:#252a30!important;background:#fff!important}input:focus,select:focus,textarea:focus,.search-box-input:focus{border-color:#59616a!important;box-shadow:0 0 0 2px rgba(52,58,64,.12)!important}
+.bc-blue,.bc-green,.bc-orange,.bc-red,.bc-purple{background:#343a40!important;color:#fff!important}
+/* tabela de notas: quadrada com leve arredondamento, sem alterar a estrutura */
+#screen-lancar-notas .table-responsive-container{border-radius:6px!important}.table-custom-format,#table-notas,.atividades-grade-table{border:1px solid #9da5ad!important;border-collapse:separate!important;border-spacing:0!important;border-radius:5px!important;overflow:hidden!important}.table-custom-format th,#table-notas th,.atividades-grade-table th{background:#343a40!important;color:#fff!important;border-right:1px solid #59616a!important;border-bottom:1px solid #252a30!important;white-space:nowrap!important}.table-custom-format td,#table-notas td,.atividades-grade-table td{border-right:1px solid #c7ccd1!important;border-bottom:1px solid #c7ccd1!important}.table-custom-format tbody tr:nth-child(even),#table-notas tbody tr:nth-child(even),.atividades-grade-table tbody tr:nth-child(even){background:#f7f8f9!important}.table-custom-format tbody tr:hover,#table-notas tbody tr:hover,.atividades-grade-table tbody tr:hover{background:#eef0f2!important}
+#screen-lancar-notas .table-custom-format input[type=number]{width:55px!important;min-width:55px!important;max-width:55px!important;height:34px!important;padding:3px!important;border:1px solid #7f8891!important;border-radius:4px!important;text-align:center!important;font-weight:800!important}#screen-lancar-notas .table-custom-format th:nth-child(n+2),#screen-lancar-notas .table-custom-format td:nth-child(n+2){width:70px!important;min-width:70px!important;max-width:70px!important;text-align:center!important}
+.nota-alta,.nota-baixa,.nota-final-value{color:#252a30!important;background:#eef0f2!important;border-color:#c7ccd1!important}
+/* faltas diárias */
+.daily-form{display:grid;grid-template-columns:1.2fr 1fr .8fr auto;gap:12px;align-items:end;margin-top:18px}.daily-form label,.faltas-diarias-toolbar label{display:block;margin-bottom:6px;font-size:.76rem;font-weight:800;color:#4f5861}.daily-form input,.daily-form select,.faltas-diarias-toolbar select{width:100%;height:40px;padding:0 10px}.faltas-diarias-toolbar{display:grid;grid-template-columns:170px 330px 1fr;gap:12px;align-items:end;margin-top:16px}.faltas-diarias-toolbar .search-box-input{margin-top:0!important}.daily-summary{min-height:40px;display:flex;align-items:center;padding:0 12px;background:#eef0f2;border:1px solid #c7ccd1;border-radius:4px;font-size:.78rem;color:#4f5861}.daily-absence-input{width:60px!important;min-width:60px!important;max-width:60px!important;text-align:center!important;font-weight:800!important}.faltas-total-cell,.frequencia-cell{text-align:center!important;font-weight:800!important;color:#343a40!important}.btn-table-delete{border:1px solid #9da5ad!important;background:#fff!important;color:#4f5861!important;border-radius:4px!important;width:34px;height:34px;cursor:pointer}.empty-state{text-align:center!important;padding:28px!important;color:#6c757d!important}
+/* Boletim PDF e tabelas: títulos sem quebra */.boletim-vertical-header{writing-mode:vertical-rl!important;text-orientation:mixed!important;transform:rotate(180deg)!important;white-space:nowrap!important;display:inline-block!important}.boletim-table th,.boletim-table td{white-space:nowrap!important}
+@media(max-width:800px){.daily-form,.faltas-diarias-toolbar{grid-template-columns:1fr 1fr}.daily-summary{grid-column:1/-1}}@media(max-width:560px){.daily-form,.faltas-diarias-toolbar{grid-template-columns:1fr}.daily-summary{grid-column:auto}}
+
+/* ===== CENTRAL DE LANÇAMENTOS / GRADE SEMANAL ===== */
+.lancamento-flutuante{margin:22px 0 28px;padding:26px;border:1px solid var(--border);border-radius:12px;background:var(--card);box-shadow:0 12px 28px rgba(0,0,0,.07)}
+.lancamento-kicker{font-size:.68rem;letter-spacing:.14em;font-weight:800;color:var(--gold,#2b4e80);text-transform:uppercase}
+.lancamento-flutuante h3{margin:5px 0 5px;color:var(--text-dark);font-size:1.3rem}
+.lancamento-flutuante>p{margin:0 0 18px;color:var(--text-light);font-size:.88rem}
+.tipo-lancamento-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tipo-lancamento-card{display:flex;align-items:center;gap:14px;text-align:left;padding:18px;border:1px solid var(--border);border-radius:9px;background:#fff;cursor:pointer;transition:.18s;box-shadow:0 5px 16px rgba(0,0,0,.04)}
+.tipo-lancamento-card:hover{transform:translateY(-2px);border-color:var(--gold,#2b4e80);box-shadow:0 9px 22px rgba(0,0,0,.08)}
+.tipo-lancamento-card .tipo-lancamento-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:8px;background:#343a40;color:#fff;font-size:1rem;flex:none}
+.tipo-lancamento-card strong{display:block;color:var(--text-dark);font-size:.92rem}.tipo-lancamento-card small{display:block;margin-top:3px;color:var(--text-light);font-size:.76rem}
+.lancamento-filtros{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px;padding:15px;border:1px solid var(--border);background:#f7f8f9;border-radius:8px}
+.lancamento-filtros>div{min-width:190px}.lancamento-filtros label{display:block;margin-bottom:5px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light)}
+.lancamento-filtros select{width:100%;height:40px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 10px;color:var(--text-dark)}
+.planilha-resumo{margin:14px 0;padding:11px 14px;border-left:3px solid var(--gold,#2b4e80);background:#f5f5f3;color:var(--text-light);font-size:.82rem}.planilha-resumo strong{color:var(--text-dark)}.planilha-resumo span{margin-left:14px}
+.faltas-matriz-table{min-width:820px}.faltas-matriz-table th,.faltas-matriz-table td{text-align:center}.faltas-matriz-table th:first-child,.faltas-matriz-table td:first-child{text-align:left;min-width:220px}.falta-dia-input{width:64px;max-width:64px;text-align:center;border:1px solid var(--border);border-radius:5px;padding:7px 4px;background:#fff}.falta-dia-input:focus{outline:2px solid rgba(176,138,62,.22);border-color:var(--gold,#2b4e80)}
+.faltas-matriz-total{font-weight:700;background:#f3f4f5}
+.grade-editor-card{padding:22px;border:1px solid var(--border);border-radius:10px;background:var(--card);box-shadow:0 8px 22px rgba(0,0,0,.05)}
+.grade-editor-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.grade-editor-heading h4{margin:3px 0 0;font-size:1.2rem}.grade-count-badge{padding:7px 10px;border-radius:5px;background:#343a40;color:#fff;font-size:.72rem;font-weight:800;text-transform:uppercase}
+.grade-slots-grid{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px}.grade-slot{padding:12px;border:1px solid var(--border);border-radius:7px;background:#fafafa}.grade-slot span{display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:7px}.grade-slot select{width:100%;height:38px;border:1px solid var(--border);border-radius:5px;background:#fff;padding:0 7px;font-size:.78rem}
+.grade-editor-footer{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:18px;padding-top:15px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-light)}.grade-resumo-wrap{margin-top:16px}
+.notas-central-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:15px 0;padding:14px 16px;border:1px solid var(--border);background:#f7f8f9;border-radius:8px}.notas-central-head strong{display:block}.notas-central-head span{display:block;color:var(--text-light);font-size:.78rem;margin-top:3px}
+.notas-central-table{min-width:850px}.notas-central-table th:not(:first-child),.notas-central-table td:not(:first-child){text-align:center}.notas-central-table th small{display:block;font-size:.58rem;opacity:.8;margin-top:2px}.nota-central-input,.rec-central-input{width:72px;text-align:center;border:1px solid var(--border);border-radius:5px;padding:6px}.nota-central-total{font-weight:800;background:#f3f4f5}.empty-state-panel{padding:28px;text-align:center;border:1px dashed var(--border);border-radius:9px;background:#fafafa;color:var(--text-light);margin-top:15px}
+.nota-final-disc-table{min-width:1120px}.nota-final-disc-table th,.nota-final-disc-table td{text-align:center;white-space:nowrap}.nota-final-disc-table th:first-child,.nota-final-disc-table td:first-child{text-align:left;min-width:220px}
+@media(max-width:760px){.tipo-lancamento-grid{grid-template-columns:1fr}.lancamento-filtros{display:grid;grid-template-columns:1fr}.lancamento-filtros>div{min-width:0}.lancamento-filtros .btn-submit-action{width:100%}.planilha-resumo span{display:block;margin:5px 0 0}.grade-slots-grid{grid-template-columns:1fr 1fr}.grade-editor-footer{align-items:stretch;flex-direction:column}.grade-editor-footer button{width:100%}.notas-central-head{align-items:stretch;flex-direction:column}.notas-central-head button{width:100%}}
+
+/* REPAGINAÇÃO FINAL — identidade #2b4e80 */
+:root{--primary:#2b4e80;--primary-dark:#203b61;--primary-light:#e8eef7;--secondary:#172b46;--bg:#f4f6f9;--card:#fff;--text:#172235;--text-light:#667085;--border:#c9d2df;--success:#2f6b50;--warning:#8a6b2e;--danger:#2b4e80;--radius-lg:6px;--radius-md:4px;--shadow:0 3px 12px rgba(31,55,88,.08)}
+body{background:var(--bg);color:var(--text)}
+.topbar{height:62px;background:#fff;border-bottom:2px solid var(--primary);box-shadow:0 2px 10px rgba(31,55,88,.08)}.topbar-title{color:var(--primary);font-size:1.05rem}.menu-hamburger,.theme-toggle{border-radius:4px;color:var(--primary)}
+.main-container{max-width:1180px;padding:24px}.sidebar{width:310px;border-right:3px solid var(--primary);padding:22px 16px}.sidebar-nav ul li{border-radius:5px}.sidebar-nav ul li:hover,.sidebar-nav ul li:active{background:var(--primary-light);color:var(--primary)}
+.welcome-banner{background:linear-gradient(135deg,#203b61,#2b4e80);border-radius:6px;box-shadow:0 10px 24px rgba(43,78,128,.18)}.badge-active{background:#fff;color:var(--primary)}
+.disciplinas-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.disciplina-card,.hub-card-btn,.card-box,.materia-header-banner,.table-meta-header,.table-responsive-container,.atividades-grade-wrapper{border-radius:6px}.disciplina-card{padding:20px 12px;border:1px solid var(--border);box-shadow:var(--shadow)}.disciplina-card i,.title-icon{color:var(--primary)}.disciplina-card:hover,.hub-card-btn:hover{border-color:var(--primary);box-shadow:0 7px 18px rgba(43,78,128,.14)}.hub-card-btn{padding:18px 12px}.icon-circle{border-radius:5px}.bc-blue,.bc-green,.bc-orange,.bc-red,.bc-purple{background:var(--primary)!important;color:#fff!important}.btn-submit-action,.btn-action-atv{background:var(--primary);border-radius:4px}.btn-submit-action:hover,.btn-action-atv:hover{background:var(--primary-dark)}.btn-back{color:var(--primary)}
+.input-group input,.search-box-input,.lancamento-filtros select,.grade-slot select{border-radius:4px;border:1px solid var(--border)}.input-group input:focus,.search-box-input:focus,.lancamento-filtros select:focus,.grade-slot select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(43,78,128,.12)}
+.table-responsive-container{overflow:auto;border:1px solid #aeb9c8;background:#fff}.table-custom-format{border-collapse:separate;border-spacing:0;border:1px solid #aeb9c8;min-width:100%}.table-custom-format th{background:var(--primary);color:#fff;border-right:1px solid rgba(255,255,255,.25);border-bottom:1px solid var(--primary-dark);padding:9px 8px;white-space:nowrap}.table-custom-format td{border-right:1px solid #d4dbe5;border-bottom:1px solid #d4dbe5;padding:7px 8px}.table-custom-format tr:last-child td{border-bottom:0}.table-custom-format td:last-child,.table-custom-format th:last-child{border-right:0}.table-custom-format tbody tr:nth-child(even){background:#f8fafc}.table-custom-format tbody tr:hover{background:#eef3fa}
+.table-custom-format input[type=number]{width:50px;min-width:50px;max-width:50px;height:32px;padding:3px;border:1px solid #aeb9c8;border-radius:3px;background:#fff;text-align:center;font-weight:800;color:var(--text)}.table-custom-format input[type=number]:focus{outline:2px solid rgba(43,78,128,.18);border-color:var(--primary)}
+#screen-lancar-notas .table-custom-format th:nth-child(n+2),#screen-lancar-notas .table-custom-format td:nth-child(n+2){width:58px;min-width:58px;max-width:58px;text-align:center}#screen-lancar-notas .table-custom-format th:first-child,#screen-lancar-notas .table-custom-format td:first-child{min-width:230px}.notas-central-table{min-width:760px}.nota-central-input,.rec-central-input{width:50px!important;min-width:50px!important;max-width:50px!important;height:32px;padding:3px!important;border-radius:3px!important;border:1px solid #aeb9c8!important;text-align:center}.nota-central-total{font-weight:800;background:#edf2f8!important;color:var(--primary)!important}
+.lancamento-flutuante{border:1px solid #b8c4d3;border-radius:7px;box-shadow:0 8px 24px rgba(31,55,88,.08);background:#fff}.tipo-lancamento-card{border:1px solid var(--border);border-radius:5px;background:#fff}.tipo-lancamento-card:hover{border-color:var(--primary);background:var(--primary-light)}.lancamento-filtros{background:#f7f9fc;border:1px solid #d3dae5;border-radius:5px;padding:14px}.planilha-resumo{border-left:4px solid var(--primary);background:#eef3fa;border-radius:4px;color:var(--text)}.frequencia-instruction{display:flex;gap:9px;align-items:flex-start;margin:12px 0;padding:11px 13px;border:1px solid #cdd7e4;border-radius:5px;background:#f7f9fc;color:var(--text-light);font-size:.8rem}.frequencia-instruction i{color:var(--primary);margin-top:2px}
+.faltas-matriz-table{min-width:820px}.faltas-matriz-table th,.faltas-matriz-table td{text-align:center;vertical-align:middle}.faltas-matriz-table th:first-child,.faltas-matriz-table td:first-child{text-align:left;min-width:240px}.falta-dia-input{width:52px!important;min-width:52px!important;max-width:52px!important;height:32px!important;border:1px solid #aeb9c8!important;border-radius:3px!important;padding:3px!important;text-align:center;font-weight:800}.faltas-matriz-total{font-weight:800;background:#edf2f8!important;color:var(--primary)!important}
+.grade-editor-card{border:1px solid var(--border);border-radius:6px;background:#fff;box-shadow:var(--shadow)}.grade-count-badge{border-radius:4px;background:var(--primary)}.grade-slot{border-radius:4px;background:#f8fafc}.grade-slot select{background:#fff}.notas-central-head{border-radius:6px;background:#f7f9fc}.empty-state-panel{border-radius:5px}
+.modal-overlay-view{background:rgba(15,28,48,.58);backdrop-filter:blur(3px)}.modal-content-container{border:1px solid #b7c3d2;border-radius:7px;box-shadow:0 18px 50px rgba(18,37,62,.24)}.modal-close-btn{border-radius:4px;color:var(--primary)}.btn-modal-secondary{border-radius:4px;border:1px solid var(--border);background:#fff}.bg-red-light,.danger-alert{background:#eef3fa!important;color:var(--primary)!important;border-color:#c6d3e3!important}.btn-icon-del{color:var(--primary)!important}.nota-alta,.nota-baixa,.nota-final-value{color:var(--primary)!important}
+@media(min-width:900px){body{padding-top:68px}.topbar{padding:0 28px}.main-container{padding:28px 30px}.disciplinas-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.main-container{padding:14px 10px}.topbar{height:58px}body{padding-top:58px}.welcome-banner{padding:16px}.welcome-banner h2{font-size:1.2rem}.school-text{font-size:.72rem}.disciplinas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.disciplina-card{padding:15px 8px;gap:8px}.disciplina-card i{font-size:1.5rem}.disciplina-card span{font-size:.76rem}.hub-options-grid{grid-template-columns:1fr 1fr;gap:9px}.table-meta-header{padding:12px}.table-custom-format{font-size:.74rem}.table-custom-format th{padding:8px 6px}.table-custom-format td{padding:6px}.table-custom-format input[type=number]{width:48px;min-width:48px;max-width:48px}#screen-lancar-notas .table-custom-format th:first-child,#screen-lancar-notas .table-custom-format td:first-child{min-width:190px}.lancamento-filtros{grid-template-columns:1fr;display:grid}.lancamento-filtros .btn-submit-action{width:100%}.grade-slots-grid{grid-template-columns:1fr 1fr}.grade-editor-footer{flex-direction:column;align-items:stretch}.grade-editor-footer button{width:100%}.nota-final-disc-table{min-width:1040px}}
+@media(max-width:420px){.hub-options-grid{grid-template-columns:1fr}.topbar-title{font-size:.94rem}}
+
+/* POLIMENTO FINAL — identidade #2b4e80 */
+:root{--primary:#2b4e80!important;--primary-dark:#203b61!important;--primary-light:#e8eef7!important;--danger:#2b4e80!important;--radius-lg:6px!important;--radius-md:4px!important}
+select option{background:#fff;color:#172235}
+.lancamento-filtros-unificados{display:grid!important;grid-template-columns:minmax(150px,220px) minmax(150px,260px) auto;align-items:end!important;gap:10px!important;padding:12px!important;background:#f8fafc!important;border:1px solid #cbd5e1!important;border-radius:5px!important}.lancamento-filtros-unificados>div{min-width:0!important}.lancamento-filtros-unificados select{height:36px!important;padding:0 9px!important;font-size:.76rem!important;font-weight:800!important;text-transform:uppercase;border-radius:4px!important;background:#fff!important}.btn-buscar-lancamento{width:auto!important;min-width:105px;height:36px!important;padding:0 13px!important;font-size:.78rem!important;border-radius:4px!important}.lancamento-result-area{margin-top:14px}
+.table-custom-format th{background:#2b4e80!important;color:#fff!important;text-transform:uppercase}.table-custom-format input[type=number],.table-custom-format input[type=text]{border-radius:3px!important}.faltas-diarias-table{min-width:930px}.faltas-diarias-table th:not(:first-child),.faltas-diarias-table td:not(:first-child){text-align:center}.falta-diaria-input{width:48px!important;min-width:48px!important;max-width:48px!important;height:31px!important;padding:3px!important}.faltas-dia-total{font-weight:900;color:#2b4e80!important;background:#edf2f8!important}.frequencia-resumo{display:flex;justify-content:space-between;gap:14px;align-items:center}.frequencia-dia-resumo{display:flex;gap:12px;flex-wrap:wrap;font-size:.75rem}.frequencia-disc-preview{margin-top:16px}.preview-title{font-size:.75rem;font-weight:900;letter-spacing:.06em;color:#2b4e80;margin:0 0 8px}
+.save-launch-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;padding:12px 14px;background:#fff;border:1px solid #cbd5e1;border-radius:5px;color:#667085;font-size:.78rem}.save-launch-bar .btn-submit-action{width:auto;padding:10px 16px}.notas-central-head-actions{display:flex;gap:8px;align-items:center}.btn-secondary-action{height:36px;padding:0 12px;border:1px solid #b9c7d8;background:#fff;color:#2b4e80;border-radius:4px;font-weight:800;cursor:pointer;font-size:.75rem}.btn-secondary-action:hover{background:#e8eef7}.notas-central-table{min-width:780px}.notas-central-table th,.notas-central-table td{text-align:center}.notas-central-table th:first-child,.notas-central-table td:first-child{text-align:left;min-width:225px}.notas-central-table input[type=text]{width:50px!important;min-width:50px!important;max-width:50px!important;height:31px!important;text-align:center}.nota-central-total{font-weight:900!important;color:#2b4e80!important}.btn-grade-delete,.btn-grade-edit{color:#2b4e80!important;background:#eef3fa!important;border-color:#c7d4e4!important}.bg-red-light,.danger-alert{background:#eef3fa!important;color:#2b4e80!important;border-color:#c7d4e4!important}.nota-baixa,.nota-alta,.nota-final-value{color:#2b4e80!important}.btn-table-delete{background:#eef3fa!important;color:#2b4e80!important;border-color:#c7d4e4!important}
+.nota-final-disc-table th:not(:first-child){writing-mode:vertical-rl;transform:rotate(180deg);min-width:38px;height:105px;white-space:nowrap;text-align:center!important}.nota-final-disc-table th:first-child{min-width:220px}
+@media(min-width:761px){.main-container{max-width:1240px!important}.table-custom-format{font-size:.76rem}}@media(max-width:760px){.lancamento-filtros-unificados{grid-template-columns:1fr!important}.lancamento-filtros-unificados .btn-buscar-lancamento{width:100%!important}.notas-central-head-actions{flex-direction:column;align-items:stretch}.notas-central-head-actions button{width:100%}.frequencia-resumo{display:block}.frequencia-dia-resumo{margin-top:7px}.save-launch-bar{flex-direction:column;align-items:stretch}.save-launch-bar .btn-submit-action{width:100%}.faltas-diarias-table{min-width:880px}}@media(max-width:430px){.grade-slots-grid{grid-template-columns:1fr}.disciplinas-grid{grid-template-columns:1fr 1fr!important}.hub-options-grid{grid-template-columns:1fr!important}}
+
+
+/* =========================================================
+   LANÇAMENTOS INLINE — permanece no mesmo espaço da HOME
+   ========================================================= */
+.lancamento-inline-area{width:100%;margin:24px 0 30px;animation:inlineLaunchIn .22s ease-out}
+.inline-launch-shell{background:#fff;border:1px solid #b8c4d3;border-radius:6px;box-shadow:0 10px 26px rgba(31,55,88,.08);overflow:hidden}
+.inline-launch-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:22px 24px;border-bottom:1px solid #d9e0e8;background:#f8fafc}
+.inline-launch-top h3{margin:5px 0 5px;color:var(--text-dark);font-size:1.25rem}
+.inline-launch-top p{margin:0;color:var(--text-light);font-size:.86rem;max-width:850px;line-height:1.55}
+.btn-back-inline{border:1px solid #aebccc;background:#fff;color:var(--primary);border-radius:4px;padding:9px 13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-back-inline:hover{background:var(--primary-light);border-color:var(--primary)}
+.inline-filters{margin:18px 22px!important}
+.inline-launch-shell .lancamento-result-area{padding:0 22px 22px}
+.notas-inline-table{min-width:980px}
+.notas-inline-table th{vertical-align:top}
+.notas-inline-table th:not(:first-child){min-width:190px}
+.atividade-inline-header{min-height:104px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;position:relative;padding-right:46px}
+.atividade-inline-header span{font-size:.67rem;color:var(--primary);font-weight:800;letter-spacing:.04em}
+.atividade-inline-header strong{font-size:.78rem;line-height:1.25;word-break:break-word}
+.atividade-inline-header small{font-size:.68rem;color:var(--text-light);font-weight:600}
+.atividade-inline-header .atividade-header-actions{position:absolute;right:0;top:0;display:flex;gap:4px}
+.atividade-inline-header .btn-grade-edit,.atividade-inline-header .btn-grade-delete{width:28px;height:28px;padding:0;border-radius:3px}
+.notas-inline-table .atividade-stacked-cell{vertical-align:top;padding:9px 7px;min-width:190px}
+.notas-inline-table .nota-field-stack{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
+.notas-inline-table .nota-field-stack:last-child{margin-bottom:0}
+.notas-inline-table .nota-field-stack label{font-size:.64rem;font-weight:800;color:#53657a;letter-spacing:.04em}
+.notas-inline-table .nota-inline-input,.notas-inline-table .rec-inline-input{width:72px;min-width:72px;height:31px;padding:5px 7px;border:1px solid #b8c4d3;border-radius:3px;background:#fff;font-weight:700;text-align:center}
+.notas-inline-table .nota-inline-input:focus,.notas-inline-table .rec-inline-input:focus{outline:2px solid rgba(43,78,128,.16);border-color:var(--primary)}
+.notas-inline-table .nota-inline-input:disabled,.notas-inline-table .rec-inline-input:disabled{background:#eef2f6;color:#7a8795}
+.notas-inline-table .nota-final-field{padding-top:2px}
+.notas-inline-table .nota-final-value{display:inline-flex;align-items:center;justify-content:center;min-width:72px;height:31px;padding:4px 7px;border:1px solid #b8c4d3;border-radius:3px;font-weight:800;background:#f7f9fc}
+.notas-inline-table .nota-final-bimestre-cell{vertical-align:middle;text-align:center;min-width:125px}
+.notas-inline-table .nota-final-bimestre-cell strong{font-size:1rem;color:var(--primary)}
+@keyframes inlineLaunchIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){
+  .inline-launch-top{flex-direction:column;padding:18px}
+  .btn-back-inline{width:100%}
+  .inline-filters{margin:14px!important}
+  .inline-launch-shell .lancamento-result-area{padding:0 14px 16px}
+  .notas-inline-table{min-width:920px}
+  .atividade-inline-header{min-height:112px}
+}
+
+/* =========================================================
+   REPAGINAÇÃO DEFINITIVA — #2b4e80 / CONTROLES QUADRADOS
+   ========================================================= */
+:root{
+  --primary:#2b4e80!important;
+  --primary-dark:#203b61!important;
+  --primary-light:#e8eef7!important;
+  --danger:#2b4e80!important;
+  --gold:#2b4e80!important;
+  --radius-lg:4px!important;
+  --radius-md:3px!important;
+}
+body{background:#f4f7fb!important;color:#1e293b!important}
+.topbar{border-bottom:2px solid #2b4e80!important}
+.welcome-banner{background:#2b4e80!important;border-color:#203b61!important}
+.btn-submit-action,.btn-action-atv{background:#2b4e80!important;border-radius:3px!important}
+.btn-submit-action:hover,.btn-action-atv:hover{background:#203b61!important}
+select,input,button,.card-box,.table-meta-header,.table-responsive-container,.disciplinas-grid,.disciplina-card,.hub-card-btn,.lancamento-flutuante,.inline-launch-shell,.modal-content-container,.grade-editor-card,.grade-slot,.save-launch-bar{border-radius:3px!important}
+.lancamento-kicker,.tipo-lancamento-icon,.section-title,.box-title{color:#2b4e80!important}
+.lancamento-flutuante{border:1px solid #b9c7d8!important;background:#fff!important;box-shadow:0 8px 24px rgba(31,55,88,.08)!important}
+.lancamento-home-filtros{grid-template-columns:minmax(190px,230px) minmax(180px,1fr) auto!important;align-items:end!important;background:#f7f9fc!important;border:1px solid #cbd5e1!important}
+.lancamento-home-filtros .lancamento-field{min-width:0}
+.lancamento-home-filtros label{display:block;font-size:.65rem;font-weight:900;letter-spacing:.06em;color:#526276;margin-bottom:5px}
+.lancamento-home-filtros select{height:36px!important;width:100%;font-size:.74rem!important;text-transform:uppercase;font-weight:800;border:1px solid #aebccc!important;background:#fff!important;color:#1e293b!important}
+.lancamento-filtros-dinamicos{display:flex;gap:10px;align-items:end;min-width:0}
+.lancamento-filtros-dinamicos .lancamento-field{min-width:150px;flex:1}
+.lancamento-buscar-wrap{display:flex;align-items:end}
+.lancamento-placeholder{height:36px;display:flex;align-items:center;padding:0 10px;border:1px dashed #b8c4d3;background:#fff;color:#738095;font-size:.68rem;font-weight:800;letter-spacing:.04em}
+.lancamento-inline-area{scroll-margin-top:75px}
+.inline-launch-shell{border-color:#aebccc!important}
+.inline-launch-top{background:#f7f9fc!important}
+.btn-back-inline{border-radius:3px!important}
+.table-custom-format th{background:#2b4e80!important}
+.table-custom-format input[type=number],.table-custom-format input[type=text]{border-radius:2px!important}
+.notas-inline-table{min-width:860px!important}
+.notas-inline-table th:not(:first-child){min-width:145px!important;width:145px!important}
+.notas-inline-table .atividade-stacked-cell{min-width:145px!important;width:145px!important;padding:7px 5px!important}
+.notas-inline-table .nota-inline-input,.notas-inline-table .rec-inline-input{width:50px!important;min-width:50px!important;max-width:50px!important;height:28px!important;padding:3px!important}
+.notas-inline-table .nota-final-value{min-width:50px!important;width:50px!important;height:28px!important;padding:3px!important;font-size:.72rem!important}
+.atividade-inline-header{min-height:90px!important;padding-right:38px!important}
+.atividade-inline-header strong{font-size:.72rem!important}
+.atividade-inline-header .btn-grade-edit,.atividade-inline-header .btn-grade-delete{width:25px!important;height:25px!important;border-radius:2px!important}
+.inline-atividade-editor{margin:0 0 14px;padding:14px;background:#f7f9fc;border:1px solid #b9c7d8;border-left:3px solid #2b4e80;border-radius:3px}
+.inline-atividade-editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.inline-atividade-editor-head h4{margin-top:3px;color:#1e293b}
+.inline-atividade-editor-grid{display:grid;grid-template-columns:minmax(220px,1fr) 150px auto;gap:10px;align-items:end}
+.inline-atividade-editor-grid label{display:block;font-size:.64rem;font-weight:900;color:#526276;margin-bottom:5px}
+.inline-atividade-editor-grid input{height:35px;width:100%;border:1px solid #aebccc;padding:0 8px;background:#fff}
+.inline-atividade-editor-grid .btn-submit-action{height:35px;white-space:nowrap}
+.save-launch-bar{border-radius:3px!important}
+.grade-count-badge{background:#2b4e80!important;border-radius:3px!important}
+.grade-slot select{border-radius:3px!important}
+.nota-final-disc-table th:not(:first-child){writing-mode:vertical-rl!important;transform:rotate(180deg)!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important}
+.bg-blue-light,.bg-red-light,.danger-alert{background:#eef3fa!important;color:#2b4e80!important;border-color:#c7d4e4!important}
+.nota-alta,.nota-baixa,.nota-final-value{color:#2b4e80!important}
+.topbar,.sidebar,.table-meta-header,.card-box,.materia-header-banner,.table-responsive-container,.atividades-grade-wrapper{border-radius:3px!important}
+/* Elimina acentos antigos vermelhos/dourados e mantém a identidade única */
+[class*="red"],.bc-red{--local-accent:#2b4e80}
+.bc-blue,.bc-green,.bc-orange,.bc-red,.bc-purple{background:#2b4e80!important;color:#fff!important}
+@media(max-width:760px){
+  .lancamento-home-filtros{grid-template-columns:1fr!important}
+  .lancamento-filtros-dinamicos{display:grid;grid-template-columns:1fr;gap:8px}
+  .lancamento-buscar-wrap,.lancamento-buscar-wrap button{width:100%}
+  .inline-atividade-editor-grid{grid-template-columns:1fr}
+  .notas-inline-table{min-width:820px!important}
+  .notas-inline-table th:not(:first-child),.notas-inline-table .atividade-stacked-cell{min-width:128px!important;width:128px!important}
+}
+
+
+/* AJUSTES FINAIS — CENTRAL DE LANÇAMENTOS E POP-UP DE ATIVIDADE */
+.lancamento-inicial{margin-bottom:24px;}
+.lancamento-inicial .lancamento-seletor-home{margin-top:4px;}
+.lancamento-inicial .lancamento-result-area:empty{display:none;}
+#atividade-modal{z-index:1200;}
+.atividade-modal-content{width:min(620px,calc(100vw - 28px));padding:24px;}
+.atividade-modal-grid{grid-template-columns:minmax(0,1fr) 180px;}
+.atividade-modal-grid input{width:100%;box-sizing:border-box;}
+#atividade-modal .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;}
+@media(max-width:700px){
+  .atividade-modal-content{padding:18px;}
+  .atividade-modal-grid{grid-template-columns:1fr;}
+  #atividade-modal .modal-actions{flex-direction:column-reverse;}
+  #atividade-modal .modal-actions button{width:100%;justify-content:center;}
+}
+
+/* AJUSTE PONTUAL — NOTA FINAL POR DISCIPLINA */
+#screen-nota-final-disciplina .table-meta-header{border-left:4px solid #2b4e80;background:linear-gradient(135deg,#f8fbff,#eef4fb);}
+#screen-nota-final-disciplina .nota-final-disc-table thead th{background:#2b4e80;color:#fff;border-color:#2b4e80;}
+#screen-nota-final-disciplina .nota-final-disc-table tbody tr:hover{background:#f3f7fc;}
+#screen-nota-final-disciplina .nota-final-disc-table td:last-child{font-weight:700;color:#2b4e80;}
+
+
+/* CORES DE CORTE: abaixo de 60% vermelho; 60% ou mais preto */
+.nota-abaixo-corte { color:#b00000 !important; }
+.nota-no-corte { color:#111111 !important; }
+.situacao-abaixo-corte { color:#b00000 !important; }
+.situacao-no-corte { color:#111111 !important; }
+.nota-baixa { color:#b00000 !important; }
+.nota-alta { color:#111111 !important; }
+.nota-final-value.nota-baixa { color:#b00000 !important; }
+.nota-final-value.nota-alta { color:#111111 !important; }

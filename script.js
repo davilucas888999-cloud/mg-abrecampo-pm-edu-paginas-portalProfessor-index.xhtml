@@ -60,6 +60,7 @@ let myChartInstance = null;
 document.addEventListener("DOMContentLoaded", () => {
     initDatabaseEngine();
     renderMateriaBlocks();
+    renderLancamentoSeletorHome();
     updateGlobalBimestreUI();
     applyThemeLoad();
 });
@@ -135,7 +136,10 @@ function renderCadastroAlunos() {
             <td><strong>${escapeHtml(aluno)}</strong></td>
             <td>${formatarDataMatricula(c.dataMatricula)}</td>
             <td>${formatarDataNascimento(c.dataNascimento)}</td>
-            <td class="student-actions-cell"><button class="btn-table-edit" onclick="editarAluno('${escapeAttr(aluno)}')"><i class="fas fa-pen"></i> Alterar</button></td>
+            <td class="student-actions-cell">
+                <button class="btn-table-edit" onclick="editarAluno('${escapeAttr(aluno)}')"><i class="fas fa-pen"></i> Alterar</button>
+                <button class="btn-table-delete" onclick="excluirAluno('${escapeAttr(aluno)}')"><i class="fas fa-trash"></i> Excluir</button>
+            </td>
         </tr>`;
     }).join('');
 }
@@ -162,6 +166,7 @@ function cadastrarNovoAluno(event) {
     db.alunosCadastro.push(cadastro);
     ALUNOS.push(nome);
 
+    if (typeof renderLancamentoSeletorHome === 'function') renderLancamentoSeletorHome('');
     DISCIPLINAS.forEach(m => {
         for (let b = 1; b <= 4; b++) {
             (db.disciplinas[m][b].atividades || []).forEach(atv => {
@@ -181,23 +186,40 @@ function cadastrarNovoAluno(event) {
 
 function editarAluno(nomeAtual) {
     const c = getCadastroAluno(nomeAtual);
-    const novoNome = prompt('Nome completo do aluno:', c.nome);
-    if (novoNome === null) return;
-    const nome = novoNome.trim().replace(/\s+/g, ' ').toUpperCase();
+    const modal = document.getElementById('edit-aluno-modal');
+    if (!modal) return;
+    document.getElementById('edit-aluno-original').value = nomeAtual;
+    document.getElementById('edit-aluno-nome').value = c.nome || '';
+    document.getElementById('edit-aluno-data').value = dataBRParaISO(c.dataMatricula);
+    document.getElementById('edit-aluno-nascimento').value = dataBRParaISO(c.dataNascimento);
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('edit-aluno-nome')?.focus(), 50);
+}
+
+function fecharModalEditarAluno() {
+    const modal = document.getElementById('edit-aluno-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function salvarEdicaoAluno(event) {
+    event.preventDefault();
+    const nomeAtual = document.getElementById('edit-aluno-original').value;
+    const c = getCadastroAluno(nomeAtual);
+    const nome = (document.getElementById('edit-aluno-nome').value || '').trim().replace(/\s+/g, ' ').toUpperCase();
+    const dataMatriculaISO = document.getElementById('edit-aluno-data').value;
+    const dataNascimentoISO = document.getElementById('edit-aluno-nascimento').value;
+
     if (!nome) return alert('Informe o nome completo do aluno.');
-    if (nome !== nomeAtual && ALUNOS.some(a => a.toUpperCase() === nome)) return alert('Já existe outro aluno com esse nome.');
+    if (nome !== nomeAtual && ALUNOS.some(a => a.toUpperCase() === nome)) {
+        return alert('Já existe outro aluno com esse nome.');
+    }
 
-    const dataMatriculaInput = prompt('Data de matrícula (DD/MM/AAAA):', c.dataMatricula || '');
-    if (dataMatriculaInput === null) return;
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMatriculaInput.trim())) return alert('Use a data no formato DD/MM/AAAA.');
-
-    const dataNascimentoInput = prompt('Data de nascimento (DD/MM/AAAA):', c.dataNascimento || '');
-    if (dataNascimentoInput === null) return;
-    if (dataNascimentoInput.trim() && !/^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimentoInput.trim())) return alert('Use a data de nascimento no formato DD/MM/AAAA.');
+    const dataMatricula = dataMatriculaISO ? formatarDataMatricula(dataMatriculaISO) : c.dataMatricula;
+    const dataNascimento = dataNascimentoISO ? formatarDataMatricula(dataNascimentoISO) : '';
 
     c.nome = nome;
-    c.dataMatricula = dataMatriculaInput.trim();
-    c.dataNascimento = dataNascimentoInput.trim();
+    c.dataMatricula = dataMatricula;
+    c.dataNascimento = dataNascimento;
 
     if (nome !== nomeAtual) {
         DISCIPLINAS.forEach(m => {
@@ -213,20 +235,31 @@ function editarAluno(nomeAtual) {
                     bData.recuperacaoBimestral[nome] = bData.recuperacaoBimestral[nomeAtual];
                     delete bData.recuperacaoBimestral[nomeAtual];
                 }
+                if (bData.faltas && Object.prototype.hasOwnProperty.call(bData.faltas, nomeAtual)) {
+                    bData.faltas[nome] = bData.faltas[nomeAtual];
+                    delete bData.faltas[nomeAtual];
+                }
+                for (const dia of DIAS_SEMANA.map(x=>x[0])) {
+                    if (db.faltasDiarias?.[b]?.[dia] && Object.prototype.hasOwnProperty.call(db.faltasDiarias[b][dia], nomeAtual)) {
+                        db.faltasDiarias[b][dia][nome] = db.faltasDiarias[b][dia][nomeAtual];
+                        delete db.faltasDiarias[b][dia][nomeAtual];
+                    }
+                }
             }
         });
         const idx = ALUNOS.indexOf(nomeAtual);
         if (idx >= 0) ALUNOS[idx] = nome;
     }
 
-    // A matrícula permanece vinculada à ordem da turma; apenas o ano dela acompanha a data de matrícula.
     const idx = db.alunosCadastro.findIndex(a => a.nome === nome);
     if (idx >= 0) {
         const ordem = idx + 1;
         const ano = Number(c.dataMatricula.split('/')[2]) || CONFIG.ano;
         c.matricula = gerarNumeroMatricula(ano, ordem);
     }
+
     saveStorage();
+    fecharModalEditarAluno();
     renderCadastroAlunos();
     renderMateriaBlocks();
     if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
@@ -234,6 +267,427 @@ function editarAluno(nomeAtual) {
         const atv = db.disciplinas[selectedMateria]?.[selectedBimestre]?.atividades?.find(a => a.id === selectedAtividadeId);
         if (atv) renderNotasTable(atv);
     }
+}
+
+
+function excluirAluno(nome) {
+    const aluno = getCadastroAluno(nome);
+    const confirma = confirm(`Excluir o aluno "${nome}" do sistema?\n\nAs notas e faltas desse aluno também serão removidas da base local.`);
+    if (!confirma) return;
+
+    db.alunosCadastro = (db.alunosCadastro || []).filter(a => a.nome !== nome);
+    ALUNOS = ALUNOS.filter(a => a !== nome);
+
+    DISCIPLINAS.forEach(m => {
+        for (let b = 1; b <= 4; b++) {
+            const bData = db.disciplinas[m][b];
+            (bData.atividades || []).forEach(atv => {
+                if (atv.notas) delete atv.notas[nome];
+            });
+            if (bData.recuperacaoBimestral) delete bData.recuperacaoBimestral[nome];
+            if (bData.faltas) delete bData.faltas[nome];
+            for (const dia of DIAS_SEMANA.map(x=>x[0])) {
+                if (db.faltasDiarias?.[b]?.[dia]) delete db.faltasDiarias[b][dia][nome];
+            }
+        }
+        if (db.disciplinas[m].recuperacaoAnual) delete db.disciplinas[m].recuperacaoAnual[nome];
+    });
+
+    saveStorage();
+    renderCadastroAlunos();
+    renderMateriaBlocks();
+    if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
+    alert('Aluno excluído com sucesso.');
+}
+
+
+const DIAS_SEMANA=[['segunda','SEGUNDA-FEIRA'],['terca','TERÇA-FEIRA'],['quarta','QUARTA-FEIRA'],['quinta','QUINTA-FEIRA'],['sexta','SEXTA-FEIRA']];
+const GRADE_PADRAO={
+ segunda:['Língua Portuguesa','Ensino Religioso','Geografia','Língua Portuguesa','História'],
+ terca:['Educação Física','Língua Portuguesa','Ciências','Matemática','Língua Portuguesa'],
+ quarta:['Geografia','Língua Portuguesa','Matemática','Língua Inglesa','Ciências'],
+ quinta:['Matemática','Geografia','Língua Inglesa','Ciências','Matemática'],
+ sexta:['História','Educação Física','Arte','Matemática','Língua Portuguesa']
+};
+function garantirEstruturaFaltas(){
+ if(!db.gradeAulas||typeof db.gradeAulas!=='object')db.gradeAulas={};
+ // A grade da turma é fixa e já definida pelo professor.
+ // Ela é gravada para os quatro bimestres exatamente como informada.
+ [1,2,3,4].forEach(b=>{
+  if(!db.gradeAulas[b])db.gradeAulas[b]={};
+  DIAS_SEMANA.forEach(([dia])=>{if(!Array.isArray(db.gradeAulas[b][dia])||db.gradeAulas[b][dia].length!==5)db.gradeAulas[b][dia]=GRADE_PADRAO[dia].slice();});
+ });
+ if(!db.faltasDiarias||typeof db.faltasDiarias!=='object')db.faltasDiarias={};
+ if(!db.faltasPorDisciplina||typeof db.faltasPorDisciplina!=='object')db.faltasPorDisciplina={};
+ [1,2,3,4].forEach(b=>{
+  if(!db.gradeAulas[b])db.gradeAulas[b]={};
+  if(!db.faltasDiarias[b])db.faltasDiarias[b]={};
+  if(!db.faltasPorDisciplina[b])db.faltasPorDisciplina[b]={};
+  DIAS_SEMANA.forEach(([dia])=>{
+   if(!Array.isArray(db.gradeAulas[b][dia])||db.gradeAulas[b][dia].length!==5)db.gradeAulas[b][dia]=GRADE_PADRAO[dia].slice();
+   else db.gradeAulas[b][dia]=db.gradeAulas[b][dia].map((v,i)=>v||GRADE_PADRAO[dia][i]);
+   if(!db.faltasDiarias[b][dia])db.faltasDiarias[b][dia]={};
+  });
+  DISCIPLINAS.forEach(d=>{
+   if(!db.faltasPorDisciplina[b][d])db.faltasPorDisciplina[b][d]={};
+   DIAS_SEMANA.forEach(([dia])=>{if(!db.faltasPorDisciplina[b][d][dia])db.faltasPorDisciplina[b][d][dia]={};});
+  });
+ });
+}
+function listaDisciplinasOptions(selected=''){return DISCIPLINAS.map(d=>`<option value="${escapeAttr(d)}" ${d===selected?'selected':''}>${escapeHtml(d.toUpperCase())}</option>`).join('');}
+function limparSelectLancamento(id){const el=document.getElementById(id);if(el)el.value='';}
+function renderLancamentoSeletorHome(tipoInicial=''){
+    const box=document.getElementById('lancamento-seletor-home');
+    if(!box)return;
+    const incluirRec=typeof todosOsBimestresFechados==='function' && todosOsBimestresFechados();
+    box.innerHTML=`<div class="lancamento-filtros lancamento-filtros-unificados lancamento-home-filtros">
+        <div class="lancamento-field tipo-field"><label for="home-tipo-lancamento">TIPO DE LANÇAMENTO</label><select id="home-tipo-lancamento" onchange="atualizarTipoLancamentoInline()"><option value="" ${tipoInicial?'':'selected'} disabled>SELECIONE</option><option value="faltas" ${tipoInicial==='faltas'?'selected':''}>LANÇAMENTO DE FALTAS</option><option value="notas" ${tipoInicial==='notas'?'selected':''}>LANÇAMENTO DE NOTAS</option>${incluirRec?`<option value="rec-anual" ${tipoInicial==='rec-anual'?'selected':''}>LANÇAR RECUPERAÇÃO ANUAL</option>`:''}</select></div>
+        <div id="home-filtros-dinamicos" class="lancamento-filtros-dinamicos"></div>
+        <div id="home-buscar-wrap" class="lancamento-buscar-wrap"></div>
+    </div>`;
+    atualizarTipoLancamentoInline();
+}
+function atualizarTipoLancamentoInline(){
+    const tipo=document.getElementById('home-tipo-lancamento')?.value||'';
+    const filtros=document.getElementById('home-filtros-dinamicos'),buscar=document.getElementById('home-buscar-wrap'),resultado=document.getElementById('lancamento-inline-resultado');
+    if(!filtros||!buscar)return;
+    filtros.innerHTML=`<div class="lancamento-field"><label for="inline-lancamento-bimestre">BIMESTRE</label><select id="inline-lancamento-bimestre"><option value="" selected disabled>SELECIONE</option><option value="1">1º BIMESTRE</option><option value="2">2º BIMESTRE</option><option value="3">3º BIMESTRE</option><option value="4">4º BIMESTRE</option></select></div>`;
+    buscar.innerHTML='';
+    if(resultado)resultado.innerHTML='';
+    if(!tipo)return;
+    if(tipo==='notas'){
+        filtros.innerHTML+=`<div class="lancamento-field"><label for="inline-notas-disciplina">DISCIPLINA</label><select id="inline-notas-disciplina"><option value="" selected disabled>SELECIONE</option>${listaDisciplinasOptions()}</select></div>`;
+        buscar.innerHTML='<button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoNotasInline()"><i class="fas fa-search"></i> BUSCAR</button>';
+    }else if(tipo==='rec-anual'){
+        if(typeof todosOsBimestresFechados!=='function' || !todosOsBimestresFechados()){
+            filtros.innerHTML='<div class="lancamento-placeholder">A RECUPERAÇÃO ANUAL SERÁ LIBERADA APÓS O FECHAMENTO DOS 4 BIMESTRES.</div>';
+            return;
+        }
+        filtros.innerHTML=`<div class="lancamento-field"><label for="home-rec-anual-disciplina">DISCIPLINA</label><select id="home-rec-anual-disciplina"><option value="" selected disabled>SELECIONE</option>${listaDisciplinasOptions()}</select></div>`;
+        buscar.innerHTML='<button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarRecuperacaoAnualHome()"><i class="fas fa-search"></i> BUSCAR</button>';
+    }else{
+        buscar.innerHTML='<button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoFaltasInline()"><i class="fas fa-search"></i> BUSCAR</button>';
+    }
+}
+
+function mostrarLancamentoInline(tipo=''){
+    const area=document.getElementById('lancamento-inline-area');
+    const header=document.getElementById('minhas-disciplinas-header');
+    const grid=document.getElementById('disciplinas-grid');
+    if(!area)return;
+    if(header)header.style.display='none';
+    if(grid)grid.style.display='none';
+    area.style.display='block';
+    area.innerHTML=`<div class="inline-launch-shell">
+        <div class="inline-launch-top"><div><span class="lancamento-kicker">CENTRAL DE LANÇAMENTOS</span><h3>LANÇAMENTO</h3><p>Selecione o tipo e os filtros. O resultado aparecerá logo abaixo, sem trocar de página.</p></div><button type="button" class="btn-back-inline" onclick="fecharLancamentoInline()"><i class="fas fa-xmark"></i> FECHAR</button></div>
+        <div id="lancamento-seletor-inline" class="lancamento-seletor-inline"></div>
+        <div id="lancamento-inline-resultado" class="lancamento-result-area"></div>
+    </div>`;
+    const box=document.getElementById('lancamento-seletor-inline');
+    box.innerHTML=`<div class="lancamento-filtros lancamento-filtros-unificados lancamento-home-filtros"><div class="lancamento-field tipo-field"><label for="inline-tipo-lancamento">TIPO DE LANÇAMENTO</label><select id="inline-tipo-lancamento" onchange="atualizarTipoLancamentoInlineTela()"><option value="" ${tipo?'':'selected'} disabled>SELECIONE</option><option value="faltas" ${tipo==='faltas'?'selected':''}>LANÇAMENTO DE FALTAS</option><option value="notas" ${tipo==='notas'?'selected':''}>LANÇAMENTO DE NOTAS</option></select></div><div id="inline-tipo-filtros" class="lancamento-filtros-dinamicos"></div><div id="inline-tipo-buscar" class="lancamento-buscar-wrap"></div></div>`;
+    atualizarTipoLancamentoInlineTela();
+    window.scrollTo({top:Math.max(0,area.getBoundingClientRect().top+window.scrollY-18),behavior:'smooth'});
+}
+function atualizarTipoLancamentoInlineTela(){
+    const tipo=document.getElementById('inline-tipo-lancamento')?.value||'',filtros=document.getElementById('inline-tipo-filtros'),buscar=document.getElementById('inline-tipo-buscar'),resultado=document.getElementById('lancamento-inline-resultado');
+    if(!filtros||!buscar)return;
+    filtros.innerHTML='';buscar.innerHTML='';if(resultado)resultado.innerHTML='';
+    if(!tipo){filtros.innerHTML='<div class="lancamento-placeholder">SELECIONE O TIPO DE LANÇAMENTO.</div>';return;}
+    if(tipo==='faltas'){
+        filtros.innerHTML=`<div class="lancamento-field"><label for="inline-faltas-bimestre">BIMESTRE</label><select id="inline-faltas-bimestre"><option value="" selected disabled>SELECIONE</option><option value="1">1º BIMESTRE</option><option value="2">2º BIMESTRE</option><option value="3">3º BIMESTRE</option><option value="4">4º BIMESTRE</option></select></div>`;
+        buscar.innerHTML='<button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoFaltasInline()"><i class="fas fa-search"></i> BUSCAR</button>';
+    }else{
+        filtros.innerHTML=`<div class="lancamento-field"><label for="inline-notas-bimestre">BIMESTRE</label><select id="inline-notas-bimestre"><option value="" selected disabled>SELECIONE</option><option value="1">1º BIMESTRE</option><option value="2">2º BIMESTRE</option><option value="3">3º BIMESTRE</option><option value="4">4º BIMESTRE</option></select></div><div class="lancamento-field"><label for="inline-notas-disciplina">DISCIPLINA</label><select id="inline-notas-disciplina"><option value="" selected disabled>SELECIONE</option>${listaDisciplinasOptions()}</select></div>`;
+        buscar.innerHTML='<button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoNotasInline()"><i class="fas fa-search"></i> BUSCAR</button>';
+    }
+}
+function fecharLancamentoInline(){
+    const area=document.getElementById('lancamento-inline-area'),header=document.getElementById('minhas-disciplinas-header'),grid=document.getElementById('disciplinas-grid');
+    if(area){area.style.display='none';area.innerHTML='';}if(header)header.style.display='';if(grid)grid.style.display='';window.scrollTo({top:0,behavior:'smooth'});
+}
+function abrirLancamentos(){
+    navigate('home');
+    setTimeout(()=>{
+        renderLancamentoSeletorHome('');
+        const box=document.getElementById('lancamento-seletor-home');
+        box?.scrollIntoView({behavior:'smooth',block:'start'});
+    },30);
+}
+function abrirLancamentoFaltas(){
+    garantirEstruturaFaltas();
+    navigate('home');
+    setTimeout(()=>{
+        renderLancamentoSeletorHome('faltas');
+        const b=document.getElementById('home-tipo-lancamento');
+        if(b)b.value='faltas';
+        atualizarTipoLancamentoInline();
+        document.getElementById('lancamento-seletor-home')?.scrollIntoView({behavior:'smooth',block:'start'});
+    },30);
+}
+function abrirLancamentoNotas(){
+    garantirEstruturaFaltas();
+    navigate('home');
+    setTimeout(()=>{
+        renderLancamentoSeletorHome('notas');
+        const b=document.getElementById('home-tipo-lancamento');
+        if(b)b.value='notas';
+        atualizarTipoLancamentoInline();
+        document.getElementById('lancamento-seletor-home')?.scrollIntoView({behavior:'smooth',block:'start'});
+    },30);
+}
+
+function renderLancamentoFaltasInline(){
+    const area=document.getElementById('lancamento-inline-area');
+    if(!area)return;
+    garantirEstruturaFaltas();
+    area.innerHTML=`
+      <div class="inline-launch-shell">
+        <div class="inline-launch-top">
+          <div>
+            <span class="lancamento-kicker">LANÇAMENTO DE FREQUÊNCIA</span>
+            <h3><i class="fas fa-calendar-check"></i> Lançamento de Faltas</h3>
+            <p>Informe somente quantas vezes cada aluno faltou em cada dia. O sistema distribui automaticamente essas faltas pelas disciplinas conforme a grade fixa de 5 aulas.</p>
+          </div>
+          <button type="button" class="btn-back-inline" onclick="fecharLancamentoInline()"><i class="fas fa-xmark"></i> Fechar lançamento</button>
+        </div>
+        <div class="lancamento-filtros lancamento-filtros-unificados inline-filters">
+          <div><label for="inline-faltas-bimestre">BIMESTRE</label><select id="inline-faltas-bimestre"><option value="" selected disabled>SELECIONE</option><option value="1">1º BIMESTRE</option><option value="2">2º BIMESTRE</option><option value="3">3º BIMESTRE</option><option value="4">4º BIMESTRE</option></select></div>
+          <button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoFaltasInline()"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+        <div id="inline-faltas-planilha" class="lancamento-result-area"><div class="empty-state-panel">Selecione o bimestre e clique em <strong>Buscar</strong>.</div></div>
+      </div>`;
+}
+function buscarLancamentoFaltasInline(){
+    const b=Number(document.getElementById('inline-lancamento-bimestre')?.value||0),area=document.getElementById('lancamento-inline-resultado')||document.getElementById('lancamento-home-resultado');
+    if(!area)return;
+    if(!b){alert('Selecione o BIMESTRE antes de buscar.');return;}
+    garantirEstruturaFaltas();
+    const grade=DIAS_SEMANA.map(([dia,nome])=>({dia,nome,aulas:db.gradeAulas[b][dia]||GRADE_PADRAO[dia]}));
+    area.innerHTML=`
+      <div class="planilha-resumo frequencia-resumo"><div><strong>${b}º BIMESTRE</strong> · GRADE FIXA · 5 AULAS POR DIA</div><div class="frequencia-dia-resumo">${grade.map(x=>`<span>${x.nome}: ${x.aulas.length} AULAS</span>`).join('')}</div></div>
+      <div class="frequencia-instruction"><i class="fas fa-circle-info"></i><div><strong>COMO LANÇAR:</strong> digite apenas o número de faltas do aluno naquele dia, de 0 a 5. Depois de salvar, o sistema multiplica essa quantidade pelo número de aulas de cada disciplina naquele dia. Ex.: 3 faltas em um dia com 2 aulas de PORTUGUÊS geram 6 faltas de PORTUGUÊS.</div></div>
+      <div class="table-responsive-container"><table class="table-custom-format faltas-diarias-table"><thead><tr><th>ALUNO</th>${DIAS_SEMANA.map(([d,n])=>`<th>${n}</th>`).join('')}<th>TOTAL DE FALTAS LANÇADAS</th></tr></thead><tbody>
+      ${ALUNOS.map(aluno=>{let total=0;const cells=DIAS_SEMANA.map(([dia])=>{const v=obterFaltaDia(b,dia,aluno);total+=v;return `<td><input class="falta-diaria-input" data-aluno="${escapeAttr(aluno)}" data-dia="${dia}" type="number" min="0" max="5" step="1" value="${v}" oninput="atualizarTotaisFaltasDiariasInline()" onkeydown="avancarCampoComEnter(event)"></td>`}).join('');return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${cells}<td class="faltas-dia-total" data-aluno="${escapeAttr(aluno)}">${total}</td></tr>`}).join('')}
+      </tbody></table></div>
+      <div class="save-launch-bar"><span>As faltas por disciplina são calculadas automaticamente pela grade.</span><button class="btn-submit-action" type="button" onclick="salvarFaltasDiariasInline()"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div>`;
+}
+function atualizarTotaisFaltasDiariasInline(){
+    document.querySelectorAll('#lancamento-inline-resultado tbody tr').forEach(row=>{
+        let total=0;row.querySelectorAll('.falta-diaria-input').forEach(i=>{total+=Math.max(0,Math.min(5,Number(i.value)||0));});
+        const out=row.querySelector('.faltas-dia-total');if(out)out.textContent=total;
+    });
+}
+function salvarFaltasDiariasInline(){
+    const b=Number(document.getElementById('inline-lancamento-bimestre')?.value||0);
+    if(!b){alert('Selecione o BIMESTRE antes de salvar.');return;}
+    garantirEstruturaFaltas();
+    document.querySelectorAll('#lancamento-inline-resultado .falta-diaria-input').forEach(input=>{
+        const aluno=input.dataset.aluno,dia=input.dataset.dia;
+        const v=Math.max(0,Math.min(5,Math.round(Number(String(input.value||'0').replace(',','.'))||0)));
+        if(!db.faltasDiarias[b])db.faltasDiarias[b]={};
+        if(!db.faltasDiarias[b][dia])db.faltasDiarias[b][dia]={};
+        db.faltasDiarias[b][dia][aluno]=v;
+    });
+    DIAS_SEMANA.forEach(([dia])=>{
+        DISCIPLINAS.forEach(d=>{
+            if(!db.faltasPorDisciplina[b][d])db.faltasPorDisciplina[b][d]={};
+            if(!db.faltasPorDisciplina[b][d][dia])db.faltasPorDisciplina[b][d][dia]={};
+            ALUNOS.forEach(aluno=>{
+                const v=calcularFaltasDisciplinaDia(b,d,dia,aluno);
+                db.faltasPorDisciplina[b][d][dia][aluno]=v;
+            });
+        });
+    });
+    saveStorage();
+    alert('Lançamento de faltas salvo com sucesso.');
+}
+function renderLancamentoNotasInline(){
+    const area=document.getElementById('lancamento-inline-area');
+    if(!area)return;
+    garantirEstruturaFaltas();
+    area.innerHTML=`
+      <div class="inline-launch-shell">
+        <div class="inline-launch-top">
+          <div><span class="lancamento-kicker">LANÇAMENTO ACADÊMICO</span><h3><i class="fas fa-pen-to-square"></i> Lançamento de Notas</h3><p>Selecione o bimestre e a disciplina. A planilha aparecerá abaixo, sem abrir outra tela.</p></div>
+          <button type="button" class="btn-back-inline" onclick="fecharLancamentoInline()"><i class="fas fa-xmark"></i> Fechar lançamento</button>
+        </div>
+        <div class="lancamento-filtros lancamento-filtros-unificados inline-filters">
+          <div><label for="inline-notas-bimestre">BIMESTRE</label><select id="inline-notas-bimestre"><option value="" selected disabled>SELECIONE</option><option value="1">1º BIMESTRE</option><option value="2">2º BIMESTRE</option><option value="3">3º BIMESTRE</option><option value="4">4º BIMESTRE</option></select></div>
+          <div><label for="inline-notas-disciplina">DISCIPLINA</label><select id="inline-notas-disciplina"><option value="" selected disabled>SELECIONE</option>${listaDisciplinasOptions()}</select></div>
+          <button class="btn-submit-action btn-buscar-lancamento" type="button" onclick="buscarLancamentoNotasInline()"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+        <div id="inline-notas-planilha" class="lancamento-result-area"><div class="empty-state-panel">Selecione o bimestre e a disciplina e clique em <strong>Buscar</strong>.</div></div>
+      </div>`;
+}
+function buscarLancamentoNotasInline(){
+    const b=Number(document.getElementById('inline-lancamento-bimestre')?.value||0),disciplina=document.getElementById('inline-notas-disciplina')?.value||'',area=document.getElementById('lancamento-inline-resultado')||document.getElementById('lancamento-home-resultado');
+    if(!area)return;
+    if(!b||!disciplina){alert('Selecione o BIMESTRE e a DISCIPLINA antes de buscar.');return;}
+    selectedBimestre=b;selectedMateria=disciplina;
+    const bData=db.disciplinas[disciplina][b],atividades=bData.atividades||[],fechado=!!db.configGlobal.bimestresFechados[b];
+    if(!atividades.length){area.innerHTML=`<div class="empty-state-panel">Nenhuma atividade avaliativa foi criada para este bimestre. <button type="button" class="btn-secondary-action" onclick="abrirCriacaoAtividadeCentral()">CRIAR ATIVIDADE</button></div>`;return;}
+    area.innerHTML=`
+      <div class="notas-central-head"><div><strong>${escapeHtml(disciplina.toUpperCase())}</strong><span>${b}º BIMESTRE · ${atividades.length} ATIVIDADE(S)</span></div><div class="notas-central-head-actions"><button class="btn-secondary-action" ${fechado?'disabled':''} onclick="abrirCriacaoAtividadeCentral()"><i class="fas fa-plus"></i> CRIAR ATIVIDADE</button><button class="btn-submit-action" ${fechado?'disabled':''} onclick="salvarLancamentoNotasInline()"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div></div>
+      <div class="table-responsive-container"><table class="table-custom-format notas-inline-table"><thead><tr><th>ALUNO</th>${atividades.map((a,i)=>`<th><div class="atividade-inline-header"><span>ATIVIDADE ${i+1}</span><strong>${escapeHtml(a.nome.toUpperCase())}</strong><small>VALOR: ${Number(a.valor).toFixed(2)}</small><div class="atividade-header-actions"><button type="button" class="btn-grade-edit" onclick="editAtividade('${a.id}')" ${fechado?'disabled':''} title="Editar atividade"><i class="fas fa-pen"></i></button><button type="button" class="btn-grade-delete" onclick="deleteAtividade('${a.id}')" ${fechado?'disabled':''} title="Excluir atividade"><i class="fas fa-trash"></i></button></div></div></th>`).join('')}<th>NOTA FINAL DO BIMESTRE</th></tr></thead><tbody>
+      ${ALUNOS.map((aluno,idx)=>`<tr><td><strong>${idx+1}. ${escapeHtml(aluno)}</strong></td>${atividades.map(a=>{const nd=a.notas?.[aluno]||{notaOrig:'',notaRec:'',notaFinal:0},corte=Number(a.valor)*CONFIG.passingScorePct,recDisabled=(nd.notaOrig!==''&&Number(nd.notaOrig)>=corte)||fechado,final=Number(nd.notaFinal)||0;return `<td class="atividade-stacked-cell"><div class="nota-field-stack"><label>NOTA</label><input class="nota-inline-input" type="text" inputmode="decimal" value="${escapeAttr(nd.notaOrig??'')}" data-aluno="${escapeAttr(aluno)}" data-atv="${escapeAttr(a.id)}" data-campo="notaOrig" data-max="${a.valor}" ${fechado?'disabled':''} oninput="atualizarNotaInline(this)" onkeydown="avancarCampoComEnter(event)"></div><div class="nota-field-stack recuperacao-field"><label>RECUPERAÇÃO</label><input class="rec-inline-input" type="text" inputmode="decimal" value="${escapeAttr(nd.notaRec??'')}" data-aluno="${escapeAttr(aluno)}" data-atv="${escapeAttr(a.id)}" data-campo="notaRec" data-max="${a.valor}" ${recDisabled?'disabled':''} oninput="atualizarNotaInline(this)" onkeydown="avancarCampoComEnter(event)"></div><div class="nota-field-stack nota-final-field"><label>NOTA FINAL</label><div id="inline-final-${safeId(a.id)}-${safeId(aluno)}" class="nota-final-value ${final>=corte?'nota-alta':'nota-baixa'}">${final.toFixed(2)}</div></div></td>`}).join('')}<td class="nota-final-bimestre-cell"><strong id="inline-bim-${safeId(aluno)}">${atividades.reduce((s,a)=>s+(Number(a.notas?.[aluno]?.notaFinal)||0),0).toFixed(2)}</strong></td></tr>`).join('')}
+      </tbody></table></div>`;
+}
+function atualizarNotaInline(input){
+    const aluno=input.dataset.aluno,atvId=input.dataset.atv,atv=db.disciplinas[selectedMateria][selectedBimestre].atividades.find(a=>a.id===atvId);if(!atv)return;
+    if(!atv.notas)atv.notas={};if(!atv.notas[aluno])atv.notas[aluno]={notaOrig:'',notaRec:'',notaFinal:0};
+    const campo=input.dataset.campo,max=Number(input.dataset.max);
+    let exibicao=String(input.value??'').replace(/[^0-9.,]/g,'').replace(/,/g,'.');
+    const primeiroPonto=exibicao.indexOf('.');
+    if(primeiroPonto>=0)exibicao=exibicao.slice(0,primeiroPonto+1)+exibicao.slice(primeiroPonto+1).replace(/\./g,'');
+    if(primeiroPonto>=0&&exibicao.length-primeiroPonto-1>2)exibicao=exibicao.slice(0,primeiroPonto+3);
+    input.value=exibicao;
+    if(exibicao==='')atv.notas[aluno][campo]='';
+    else if(/^\d+\.$/.test(exibicao))atv.notas[aluno][campo]=exibicao;
+    else{const numero=Number(exibicao);if(Number.isFinite(numero))atv.notas[aluno][campo]=Math.max(0,Math.min(max,numero));}
+    recalcularNotasDaAtividade(atv);
+    const nd=atv.notas[aluno],corte=max*CONFIG.passingScorePct,rec=document.querySelector(`.rec-inline-input[data-aluno="${CSS.escape(aluno)}"][data-atv="${CSS.escape(atvId)}"]`),fin=document.getElementById(`inline-final-${safeId(atvId)}-${safeId(aluno)}`);
+    if(rec){rec.value=nd.notaRec??'';rec.disabled=(nd.notaOrig!==''&&Number(nd.notaOrig)>=corte)||!!db.configGlobal.bimestresFechados[selectedBimestre];}
+    if(fin){fin.textContent=(Number(nd.notaFinal)||0).toFixed(2);fin.className='nota-final-value '+((Number(nd.notaFinal)||0)>=corte?'nota-alta':'nota-baixa');}
+    const btotal=(db.disciplinas[selectedMateria][selectedBimestre].atividades||[]).reduce((sum,a)=>sum+(Number(a.notas?.[aluno]?.notaFinal)||0),0),bt=document.getElementById(`inline-bim-${safeId(aluno)}`);if(bt)bt.textContent=btotal.toFixed(2);
+    saveStorage();
+}
+function salvarLancamentoNotasInline(){
+    if(!selectedMateria||!selectedBimestre){alert('Selecione o BIMESTRE e a DISCIPLINA antes de salvar.');return;}
+    (db.disciplinas[selectedMateria][selectedBimestre].atividades||[]).forEach(recalcularNotasDaAtividade);saveStorage();alert('Lançamento de notas salvo com sucesso.');
+}
+
+function todosOsBimestresFechados(){
+    return [1,2,3,4].every(b=>!!db.configGlobal?.bimestresFechados?.[b]);
+}
+function calcularTotalAnualComRecuperacoes(disciplina,aluno){
+    let total=0;
+    for(let b=1;b<=4;b++){
+        const bData=db.disciplinas[disciplina]?.[b]||{};
+        let soma=(bData.atividades||[]).reduce((sum,a)=>sum+(parseFloat(a.notas?.[aluno]?.notaFinal)||0),0);
+        if(soma<15 && bData.recuperacaoBimestral?.[aluno]!==undefined && bData.recuperacaoBimestral[aluno]!==''){
+            const rec=Number(String(bData.recuperacaoBimestral[aluno]).replace(',','.'))||0;
+            soma=rec>=15?15:Math.max(soma,rec);
+        }
+        total+=soma;
+    }
+    return Number(total.toFixed(1));
+}
+function resultadoRecuperacaoAnual(total,rec){
+    if(rec===''||rec===null||rec===undefined)return Number(total.toFixed(1));
+    const r=Number(String(rec).replace(',','.'))||0;
+    return r>=60?60:Number(Math.max(total,r).toFixed(1));
+}
+function buscarRecuperacaoAnualHome(){
+    if(!todosOsBimestresFechados()){alert('A Recuperação Anual fica disponível somente após o fechamento dos 4 bimestres.');return;}
+    const disciplina=document.getElementById('home-rec-anual-disciplina')?.value||'';
+    if(!disciplina){alert('Selecione a DISCIPLINA antes de buscar.');return;}
+    selectedMateria=disciplina;
+    renderRecuperacaoAnualHome(disciplina);
+}
+function renderRecuperacaoAnualHome(disciplina){
+    const area=document.getElementById('lancamento-inline-resultado');
+    if(!area||!db.disciplinas[disciplina])return;
+    const recObj=db.disciplinas[disciplina].recuperacaoAnual||{};
+    const linhas=[];
+    ALUNOS.forEach(aluno=>{
+        const total=calcularTotalAnualComRecuperacoes(disciplina,aluno);
+        if(total<60){
+            const rec=recObj[aluno]===undefined?'':recObj[aluno];
+            linhas.push({aluno,total,rec,final:resultadoRecuperacaoAnual(total,rec)});
+        }
+    });
+    area.innerHTML=`<div class="inline-result-panel"><div class="notas-central-head"><div><strong>RECUPERAÇÃO ANUAL · ${escapeHtml(disciplina.toUpperCase())}</strong><span>VALOR MÁXIMO: 100,0 PONTOS</span></div></div><div class="table-responsive-container"><table class="table-custom-format"><thead><tr><th>ALUNO</th><th>SOMA ANUAL</th><th>RECUPERAÇÃO ANUAL</th><th>RESULTADO FINAL</th></tr></thead><tbody>${linhas.length?linhas.map(x=>`<tr><td><strong>${escapeHtml(x.aluno)}</strong></td><td class="${x.total<60?'nota-abaixo-corte':'nota-no-corte'}">${x.total.toFixed(1)}</td><td><input class="nota-central-input" type="text" inputmode="decimal" maxlength="6" value="${x.rec===''?'':Number(x.rec).toFixed(1)}" data-rec-anual="1" data-aluno="${escapeAttr(x.aluno)}" data-total="${x.total}" oninput="atualizarRecuperacaoAnualHome(this)"></td><td id="rec-anual-home-${safeId(x.aluno)}" class="${x.final<60?'nota-abaixo-corte':'nota-no-corte'}"><strong>${x.final.toFixed(1)}</strong></td></tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:20px;">NENHUM ALUNO ELEGÍVEL PARA RECUPERAÇÃO ANUAL.</td></tr>`}</tbody></table></div><div class="save-launch-bar"><button class="btn-submit-action" type="button" onclick="salvarRecuperacaoAnualHome('${escapeAttr(disciplina)}')"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div></div>`;
+}
+function atualizarRecuperacaoAnualHome(input){
+    const total=Number(input.dataset.total)||0;
+    const raw=String(input.value||'').replace(',','.').trim();
+    const rec=raw===''?'':Math.max(0,Math.min(100,Math.round((Number(raw)||0)*10)/10));
+    if(raw!==''&&Number.isFinite(Number(raw)))input.value=rec;
+    const final=resultadoRecuperacaoAnual(total,rec);
+    const cell=document.getElementById(`rec-anual-home-${safeId(input.dataset.aluno)}`);
+    if(cell){cell.className=final<60?'nota-abaixo-corte':'nota-no-corte';cell.innerHTML=`<strong>${final.toFixed(1)}</strong>`;}
+}
+function salvarRecuperacaoAnualHome(disciplina){
+    if(!db.disciplinas[disciplina].recuperacaoAnual)db.disciplinas[disciplina].recuperacaoAnual={};
+    document.querySelectorAll('#lancamento-inline-resultado input[data-rec-anual="1"]').forEach(input=>{
+        const aluno=input.dataset.aluno,raw=String(input.value||'').replace(',','.').trim();
+        if(raw==='')delete db.disciplinas[disciplina].recuperacaoAnual[aluno];
+        else db.disciplinas[disciplina].recuperacaoAnual[aluno]=Math.max(0,Math.min(100,Math.round((Number(raw)||0)*10)/10));
+    });
+    saveStorage();renderRecuperacaoAnualHome(disciplina);alert('Recuperação Anual salva com sucesso.');
+}
+
+function abrirCadastroAulas(){garantirEstruturaFaltas();limparSelectLancamento('grade-aulas-bimestre');limparSelectLancamento('grade-aulas-dia');const e=document.getElementById('grade-aulas-editor');if(e)e.innerHTML='<div class="empty-state-panel">Selecione o bimestre, o dia e clique em <strong>Buscar</strong>.</div>';navigate('cadastro-aulas');}
+function renderGradeAulas(){
+ garantirEstruturaFaltas();const b=Number(document.getElementById('grade-aulas-bimestre')?.value||0),dia=document.getElementById('grade-aulas-dia')?.value||'',editor=document.getElementById('grade-aulas-editor');if(!editor)return;
+ if(!b||!dia){editor.innerHTML='<div class="empty-state-panel">Selecione o bimestre, o dia e clique em <strong>Buscar</strong>.</div>';return;}
+ const aulas=db.gradeAulas[b][dia]||GRADE_PADRAO[dia],nomeDia=(DIAS_SEMANA.find(x=>x[0]===dia)||['','DIA'])[1];
+ editor.innerHTML=`<div class="grade-editor-card"><div class="grade-editor-heading"><div><span class="lancamento-kicker">GRADE SEMANAL</span><h4>${nomeDia}</h4></div><span class="grade-count-badge">5 AULAS</span></div><div class="grade-slots-grid">${[0,1,2,3,4].map(i=>`<div class="grade-slot"><span>AULA ${i+1}</span><select id="grade-slot-${i}"><option value="" disabled ${!aulas[i]?'selected':''}>SELECIONE</option>${listaDisciplinasOptions(aulas[i]||'')}</select></div>`).join('')}</div><div class="grade-editor-footer"><span id="grade-total-disc">Confira as cinco aulas e salve.</span><button class="btn-submit-action" onclick="salvarGradeAulas()"><i class="fas fa-save"></i> SALVAR GRADE</button></div></div><div class="table-responsive-container grade-resumo-wrap"><table class="table-custom-format"><thead><tr><th>DISCIPLINA</th><th>QUANTIDADE DE AULAS</th></tr></thead><tbody>${DISCIPLINAS.map(d=>{const q=aulas.filter(x=>x===d).length;return `<tr><td>${escapeHtml(d.toUpperCase())}</td><td><strong>${q}</strong></td></tr>`}).join('')}</tbody></table></div>`;
+}
+function atualizarResumoGrade(){const vals=[0,1,2,3,4].map(i=>document.getElementById(`grade-slot-${i}`)?.value||'');const r=document.getElementById('grade-total-disc');if(r)r.textContent=`${vals.filter(Boolean).length} de 5 aulas preenchidas.`;}
+function salvarGradeAulas(){
+ garantirEstruturaFaltas();const b=Number(document.getElementById('grade-aulas-bimestre')?.value||0),dia=document.getElementById('grade-aulas-dia')?.value||'';if(!b||!dia){alert('Selecione o BIMESTRE e o DIA DA SEMANA antes de salvar.');return;}
+ const vals=[0,1,2,3,4].map(i=>document.getElementById(`grade-slot-${i}`)?.value||null);if(vals.some(v=>!v)){alert('Preencha as 5 aulas antes de salvar a grade.');return;}
+ db.gradeAulas[b][dia]=vals;saveStorage();atualizarResumoGrade();alert('Grade de aulas salva com sucesso.');
+}
+function contarAulasDisciplinaNoDia(b,disciplina,dia){return(db.gradeAulas?.[b]?.[dia]||[]).filter(x=>x===disciplina).length;}
+function obterFaltaDia(b,dia,aluno){return Number(db.faltasDiarias?.[b]?.[dia]?.[aluno]||0);}
+function calcularFaltasDisciplinaDia(b,disciplina,dia,aluno){return obterFaltaDia(b,dia,aluno)*contarAulasDisciplinaNoDia(b,disciplina,dia);}
+function calcularFaltasDisciplinaBimestre(b,disciplina,aluno){return DIAS_SEMANA.reduce((t,[dia])=>t+calcularFaltasDisciplinaDia(b,disciplina,dia,aluno),0);}
+function salvarFaltasDiarias(){
+ garantirEstruturaFaltas();const b=Number(document.getElementById('faltas-bimestre-select')?.value||0);if(!b){alert('Selecione o BIMESTRE antes de salvar o lançamento.');return;}
+ ALUNOS.forEach(aluno=>DIAS_SEMANA.forEach(([dia])=>{const input=document.querySelector(`.falta-diaria-input[data-aluno="${CSS.escape(aluno)}"][data-dia="${dia}"]`);if(!input)return;let v=parseInt(String(input.value||'0').replace(',','.'),10);if(!Number.isFinite(v)||v<0)v=0;db.faltasDiarias[b][dia][aluno]=Math.min(5,v);}));
+ DISCIPLINAS.forEach(d=>DIAS_SEMANA.forEach(([dia])=>{db.faltasPorDisciplina[b][d][dia]={};ALUNOS.forEach(aluno=>{const v=calcularFaltasDisciplinaDia(b,d,dia,aluno);if(v)db.faltasPorDisciplina[b][d][dia][aluno]=v;});}));
+ saveStorage();buscarLancamentoFaltas();alert('Lançamento de faltas salvo com sucesso.');
+}
+function atualizarTotaisFaltasDiarias(){
+ const b=Number(document.getElementById('faltas-bimestre-select')?.value||0);if(!b)return;
+ ALUNOS.forEach(aluno=>{let total=0;DIAS_SEMANA.forEach(([dia])=>{const i=document.querySelector(`.falta-diaria-input[data-aluno="${CSS.escape(aluno)}"][data-dia="${dia}"]`);if(i)total+=Number(i.value)||0;});const c=document.querySelector(`.faltas-dia-total[data-aluno="${CSS.escape(aluno)}"]`);if(c)c.textContent=total;});
+}
+function buscarLancamentoFaltas(){
+ garantirEstruturaFaltas();const b=Number(document.getElementById('faltas-bimestre-select')?.value||0),area=document.getElementById('faltas-planilha-area');if(!area)return;
+ if(!b){area.innerHTML='<div class="empty-state-panel">Selecione o BIMESTRE e clique em <strong>Buscar</strong>.</div>';return;}
+ const aulasPorDia=DIAS_SEMANA.map(([dia,nome])=>({dia,nome,qtd:(db.gradeAulas[b][dia]||[]).filter(Boolean).length}));
+ area.innerHTML=`<div class="planilha-resumo frequencia-resumo"><div><strong>${b}º BIMESTRE</strong> · 5 AULAS POR DIA</div><div class="frequencia-dia-resumo">${aulasPorDia.map(x=>`<span>${x.nome.replace('-FEIRA','')}: ${x.qtd}</span>`).join('')}</div></div><div class="frequencia-instruction"><i class="fas fa-circle-info"></i><div><strong>REGRA:</strong> lance de 0 a 5 faltas por aluno em cada dia. A falta por disciplina é calculada automaticamente pela quantidade de aulas daquela disciplina no dia. Ex.: 3 faltas na terça × 2 aulas de PORTUGUÊS = 6 faltas em PORTUGUÊS.</div></div><div class="table-responsive-container"><table class="table-custom-format faltas-diarias-table"><thead><tr><th>ALUNO</th>${DIAS_SEMANA.map(([d,n])=>`<th>${n}</th>`).join('')}<th>TOTAL NO BIMESTRE</th></tr></thead><tbody>${ALUNOS.map(aluno=>{let total=0;const cells=DIAS_SEMANA.map(([dia])=>{const v=obterFaltaDia(b,dia,aluno);total+=v;return `<td><input class="falta-diaria-input" data-aluno="${escapeAttr(aluno)}" data-dia="${dia}" type="number" min="0" max="5" step="1" value="${v}" oninput="atualizarTotaisFaltasDiarias()" onkeydown="avancarCampoComEnter(event)"></td>`}).join('');return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${cells}<td class="faltas-dia-total" data-aluno="${escapeAttr(aluno)}">${total}</td></tr>`}).join('')}</tbody></table></div><div class="save-launch-bar"><span>Confira os lançamentos antes de gravar.</span><button class="btn-submit-action" onclick="salvarFaltasDiarias()"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div>`;
+}
+function obterFaltasAlunoBimestre(aluno,b){garantirEstruturaFaltas();return DISCIPLINAS.reduce((t,d)=>t+calcularFaltasDisciplinaBimestre(b,d,aluno),0);}
+function obterFaltasAlunoDisciplina(aluno,disciplina,bimestre){garantirEstruturaFaltas();return calcularFaltasDisciplinaBimestre(Number(bimestre),disciplina,aluno);}
+function totalFaltasDisciplina(aluno,disciplina){let t=0;for(let b=1;b<=4;b++)t+=obterFaltasAlunoDisciplina(aluno,disciplina,b);return t;}
+function abrirNotaFinalDisciplina(){garantirEstruturaFaltas();const s=document.getElementById('final-disciplina-select');if(s)s.innerHTML='<option value="" selected disabled>SELECIONE</option>'+listaDisciplinasOptions();const c=document.getElementById('table-nota-final-disciplina-corpo');if(c)c.innerHTML='<tr><td colspan="12" class="empty-state">Selecione uma disciplina e clique em Buscar.</td></tr>';const t=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');if(t)t.style.display='none';navigate('nota-final-disciplina');}
+function buscarNotaFinalDisciplina(){
+ garantirEstruturaFaltas();const disciplina=document.getElementById('final-disciplina-select')?.value,corpo=document.getElementById('table-nota-final-disciplina-corpo');if(!disciplina){alert('Selecione a DISCIPLINA antes de buscar.');return;}
+ const tabela=document.querySelector('#screen-nota-final-disciplina .nota-final-disc-table');if(tabela)tabela.style.display='table';
+ const todosFechados=[1,2,3,4].every(b=>db.configGlobal.bimestresFechados[b]);
+ corpo.innerHTML=ALUNOS.map(aluno=>{const notas=[1,2,3,4].map(b=>getNotaFinalBimestre(disciplina,b,aluno)),faltas=[1,2,3,4].map(b=>obterFaltasAlunoDisciplina(aluno,disciplina,b)),anual=notas.reduce((a,v)=>a+v,0);let final=anual;const recAnual=db.disciplinas[disciplina]?.recuperacaoAnual?.[aluno];if(todosFechados&&anual<60&&recAnual!==undefined&&recAnual!==''){const r=Number(String(recAnual).replace(',','.'))||0;final=r>=60?60:Math.max(anual,r);}const situacao=final>=60?'Aprovado':'Abaixo de 60 pontos';return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${notas.map((n,i)=>`<td>${n.toFixed(1)}</td><td>${faltas[i]}</td>`).join('')}<td><strong>${final.toFixed(1)}</strong></td><td><strong>${faltas.reduce((a,v)=>a+v,0)}</strong></td><td>${situacao}</td></tr>`}).join('');
+}
+
+function buscarLancamentoNotas(){
+ const b=Number(document.getElementById('central-notas-bimestre')?.value||0),disciplina=document.getElementById('central-notas-disciplina')?.value||'',area=document.getElementById('central-notas-area');if(!area)return;
+ if(!b||!disciplina){area.innerHTML='<div class="empty-state-panel">Selecione o BIMESTRE e a DISCIPLINA e clique em <strong>Buscar</strong>.</div>';return;}
+ selectedBimestre=b;selectedMateria=disciplina;const atividades=db.disciplinas[disciplina][b].atividades||[],fechado=!!db.configGlobal.bimestresFechados[b];
+ area.innerHTML=`<div class="notas-central-head"><div><strong>${escapeHtml(disciplina.toUpperCase())}</strong><span>${b}º BIMESTRE · ${atividades.length} ATIVIDADE(S)</span></div><div class="notas-central-head-actions"><button class="btn-secondary-action" ${fechado?'disabled':''} onclick="abrirCriacaoAtividadeCentral()"><i class="fas fa-plus"></i> CRIAR ATIVIDADE</button><button class="btn-submit-action" ${fechado?'disabled':''} onclick="salvarLancamentoNotasCentral()"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div></div><div id="central-notas-planilha"></div>`;
+ if(!atividades.length){document.getElementById('central-notas-planilha').innerHTML='<div class="empty-state-panel">Nenhuma atividade criada para este bimestre. Clique em <strong>CRIAR ATIVIDADE</strong> para começar.</div>';return;}
+ document.getElementById('central-notas-planilha').innerHTML=`<div class="table-responsive-container"><table class="table-custom-format notas-central-table"><thead><tr><th>ALUNO</th>${atividades.map(a=>`<th>${escapeHtml(a.nome.toUpperCase())}<small>/${Number(a.valor).toFixed(1)}</small></th>`).join('')}<th>NOTA FINAL</th><th>RECUPERAÇÃO BIMESTRAL</th></tr></thead><tbody id="central-notas-corpo"></tbody></table></div>`;
+ document.getElementById('central-notas-corpo').innerHTML=ALUNOS.map(aluno=>{const soma=atividades.reduce((s,a)=>s+(parseFloat(a.notas?.[aluno]?.notaFinal)||0),0),rec=db.disciplinas[disciplina][b].recuperacaoBimestral?.[aluno]??'',precisa=soma<15;return `<tr><td><strong>${escapeHtml(aluno)}</strong></td>${atividades.map(a=>{const nd=a.notas?.[aluno]||{notaOrig:'',notaRec:'',notaFinal:0};return `<td><input class="nota-central-input" type="text" inputmode="decimal" value="${escapeAttr(nd.notaOrig??'')}" data-aluno="${escapeAttr(aluno)}" data-atv="${escapeAttr(a.id)}" data-max="${a.valor}" ${fechado?'disabled':''} oninput="normalizarNumeroCampo(this)" onkeydown="avancarCampoComEnter(event)"></td>`}).join('')}<td class="nota-central-total">${soma.toFixed(1)}</td><td><input class="rec-central-input" type="text" inputmode="decimal" value="${escapeAttr(rec)}" data-aluno="${escapeAttr(aluno)}" ${!precisa||fechado?'disabled':''} oninput="normalizarNumeroCampo(this)" onkeydown="avancarCampoComEnter(event)"></td></tr>`}).join('');
+}
+function normalizarNumeroCampo(input){input.value=String(input.value||'').replace(',','.').replace(/[^\d.]/g,'').replace(/(\..*)\./g,'$1');}
+function salvarLancamentoNotasCentral(){
+ const b=Number(document.getElementById('central-notas-bimestre')?.value||0),disciplina=document.getElementById('central-notas-disciplina')?.value||'';if(!b||!disciplina){alert('Selecione o BIMESTRE e a DISCIPLINA antes de salvar.');return;}selectedBimestre=b;selectedMateria=disciplina;const bData=db.disciplinas[disciplina][b];
+ document.querySelectorAll('#central-notas-corpo tr').forEach(row=>{row.querySelectorAll('.nota-central-input').forEach(input=>{const aluno=input.dataset.aluno,atv=bData.atividades.find(a=>a.id===input.dataset.atv),max=Number(input.dataset.max);if(!atv)return;if(!atv.notas)atv.notas={};const nd=atv.notas[aluno]||{notaOrig:'',notaRec:'',notaFinal:0},raw=String(input.value||'').replace(',','.').trim();if(raw===''){nd.notaOrig='';nd.notaFinal=0;}else{const v=Math.max(0,Math.min(max,Number(raw)||0));nd.notaOrig=v;nd.notaFinal=v;}atv.notas[aluno]=nd;});const rec=row.querySelector('.rec-central-input');if(rec){const aluno=rec.dataset.aluno,raw=String(rec.value||'').replace(',','.').trim(),soma=bData.atividades.reduce((s,a)=>s+(parseFloat(a.notas?.[aluno]?.notaFinal)||0),0);if(soma<15&&raw!=='')bData.recuperacaoBimestral[aluno]=Math.max(0,Math.min(25,Number(raw)||0));else if(raw==='')delete bData.recuperacaoBimestral[aluno];}});
+ (bData.atividades||[]).forEach(a=>recalcularNotasDaAtividade(a));saveStorage();buscarLancamentoNotas();alert('Lançamento de notas salvo com sucesso.');
+}
+function salvarNotaCentral(aluno,atvId,input,max){normalizarNumeroCampo(input);}
+function salvarRecCentral(aluno,input){normalizarNumeroCampo(input);}
+function abrirFormularioAtividadeInline(editId=''){
+    abrirModalAtividade(editId);
+}
+function fecharFormularioAtividadeInline(){fecharModalAtividade();}
+function salvarAtividadeInline(){salvarAtividadeModal();}
+
+function avancarCampoComEnter(e){
+ if(e.key!=='Enter')return;e.preventDefault();const root=e.target.closest('.screen')||document;
+ const campos=[...root.querySelectorAll('input:not([disabled]):not([type="hidden"]),select:not([disabled]),button:not([disabled])')].filter(x=>x.offsetParent!==null&&!x.classList.contains('btn-back'));
+ const i=campos.indexOf(e.target);if(i>=0&&campos[i+1]){campos[i+1].focus();if(typeof campos[i+1].select==='function')campos[i+1].select();}
 }
 
 /**
@@ -254,11 +708,8 @@ function initDatabaseEngine() {
     } catch (e) {
         console.warn(e.message);
         db = {
-            configGlobal: {
-                currentBimestre: 1,
-                bimestresFechados: { 1: false, 2: false, 3: false, 4: false }
-            },
-            disciplinas: {}
+            configGlobal: { currentBimestre: 1, bimestresFechados: { 1:false, 2:false, 3:false, 4:false } },
+            disciplinas: {}, gradeAulas: {}, faltasPorDisciplina: {}, aulasPorDia: {}, faltasDiarias: {}
         };
         
         DISCIPLINAS.forEach(d => {
@@ -276,6 +727,10 @@ function initDatabaseEngine() {
     }
 
     inicializarCadastroAlunos();
+    garantirEstruturaFaltas();
+    if (!db.aulasPorDia) db.aulasPorDia = {};
+    if (!db.faltasDiarias) db.faltasDiarias = {};
+    garantirEstruturaFaltas();
 
     // Garante compatibilidade de chaves para recuperação anual em bases migradas
     DISCIPLINAS.forEach(d => {
@@ -316,6 +771,8 @@ function navigate(screenId) {
         updateGlobalBimestreUI();
     } else if (screenId === 'boletim-individual') {
         renderBoletimIndividualList();
+    } else if (screenId === 'cadastro-aulas') {
+        renderGradeAulas();
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -396,9 +853,8 @@ function checkBimestreStatusAlerta() {
 function checkRecuperacaoAnualButtonVisibility() {
     const todosFechados = [1, 2, 3, 4].every(b => db.configGlobal.bimestresFechados[b]);
     const btnRecAnual = document.getElementById('btn-hub-rec-anual');
-    if (btnRecAnual) {
-        btnRecAnual.style.display = todosFechados ? 'flex' : 'none';
-    }
+    if (btnRecAnual) btnRecAnual.style.display = todosFechados ? 'flex' : 'none';
+    if (typeof renderLancamentoSeletorHome === 'function') renderLancamentoSeletorHome('');
 }
 
 function updateBimestreProgressIndicator() {
@@ -489,31 +945,54 @@ function cancelarEdicaoAtividade() {
     resetAtividadeForm();
 }
 
+function fecharModalAtividade(){
+    const modal=document.getElementById('atividade-modal');
+    if(modal) modal.style.display='none';
+}
+function abrirModalAtividade(editId=''){
+    const b=Number(selectedBimestre||document.getElementById('inline-notas-bimestre')?.value||0);
+    const disciplina=selectedMateria||document.getElementById('inline-notas-disciplina')?.value||'';
+    if(!b||!disciplina){alert('Selecione o BIMESTRE e a DISCIPLINA antes de criar ou editar uma atividade.');return;}
+    const modal=document.getElementById('atividade-modal');
+    const id=document.getElementById('atividade-modal-id');
+    const nome=document.getElementById('atividade-modal-nome');
+    const valor=document.getElementById('atividade-modal-valor');
+    const titulo=document.getElementById('atividade-modal-title');
+    const atv=(db.disciplinas[disciplina]?.[b]?.atividades||[]).find(a=>a.id===editId);
+    if(id) id.value=editId||'';
+    if(nome) nome.value=atv?.nome||'';
+    if(valor) valor.value=atv?Number(atv.valor).toFixed(2):'';
+    if(titulo) titulo.textContent=atv?'EDITAR ATIVIDADE':'CRIAR ATIVIDADE';
+    if(modal){modal.style.display='flex';setTimeout(()=>nome?.focus(),50);}
+}
 function editAtividade(id) {
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
-    if (isFechado) {
-        alert("Operação negada. Este bimestre está fechado.");
-        return;
-    }
-
-    const atividades = db.disciplinas[selectedMateria][selectedBimestre].atividades;
-    const atv = atividades.find(a => a.id === id);
-    if (!atv) return;
-
-    document.getElementById('atv-edit-id').value = atv.id;
-    document.getElementById('atv-nome').value = atv.nome;
-    document.getElementById('atv-valor').value = Number(atv.valor).toFixed(2);
-
-    const saveBtn = document.getElementById('btn-salvar-atividade');
-    if (saveBtn) {
-        saveBtn.innerHTML = '<i class="fas fa-pen"></i> Salvar alterações';
-    }
-
-    const cancelBtn = document.getElementById('btn-cancelar-edicao');
-    if (cancelBtn) cancelBtn.style.display = 'flex';
-
-    document.getElementById('atv-nome').focus();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isFechado) { alert('Operação negada. Este bimestre está fechado.'); return; }
+    const atividades = db.disciplinas[selectedMateria]?.[selectedBimestre]?.atividades || [];
+    if (!atividades.some(a=>a.id===id)) return;
+    abrirModalAtividade(id);
+}
+function abrirCriacaoAtividadeCentral(){
+    const b=Number(document.getElementById('inline-notas-bimestre')?.value||selectedBimestre||0);
+    const disciplina=document.getElementById('inline-notas-disciplina')?.value||selectedMateria||'';
+    if(b)selectedBimestre=b;if(disciplina)selectedMateria=disciplina;
+    abrirModalAtividade('');
+}
+function salvarAtividadeModal(){
+    const b=Number(selectedBimestre||document.getElementById('inline-notas-bimestre')?.value||0);
+    const disciplina=selectedMateria||document.getElementById('inline-notas-disciplina')?.value||'';
+    const editId=(document.getElementById('atividade-modal-id')?.value||'').trim();
+    const nome=(document.getElementById('atividade-modal-nome')?.value||'').trim();
+    const valor=Number(String(document.getElementById('atividade-modal-valor')?.value||'').replace(',','.'));
+    if(!b||!disciplina||!nome||!Number.isFinite(valor)||valor<=0){alert('Informe o nome e um valor válido para a atividade.');return;}
+    if(db.configGlobal.bimestresFechados[b]){alert('Operação bloqueada. Este bimestre já está fechado.');return;}
+    const bData=db.disciplinas[disciplina][b];
+    const totalSemEditada=(bData.atividades||[]).filter(a=>a.id!==editId).reduce((sum,a)=>sum+(Number(a.valor)||0),0);
+    if(totalSemEditada+valor>CONFIG.limitPoints){alert(`Impossível salvar. A soma das atividades ultrapassaria ${CONFIG.limitPoints.toFixed(2)} pontos.`);return;}
+    if(editId){const atv=(bData.atividades||[]).find(a=>a.id===editId);if(!atv)return;atv.nome=nome;atv.valor=valor;recalcularNotasDaAtividade(atv);}
+    else bData.atividades.push({id:'atv_'+Date.now(),nome,valor,notas:{}});
+    saveStorage();fecharModalAtividade();
+    if(document.getElementById('inline-notas-bimestre') || document.getElementById('inline-lancamento-bimestre')) buscarLancamentoNotasInline();
 }
 
 function saveAtividade(e) {
@@ -624,6 +1103,7 @@ function deleteAtividade(id) {
         updateBimestreProgressIndicator();
         resetAtividadeForm();
         renderAtividadesCriadasList();
+        if(document.getElementById('inline-notas-bimestre') || document.getElementById('inline-lancamento-bimestre')) buscarLancamentoNotasInline();
     }
 }
 
@@ -903,17 +1383,17 @@ function renderNotasTable(atv) {
         tr.innerHTML = `
             <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td>
-                <input type="number" step="0.01" min="0" max="${atv.valor}" 
+                <input type="text" inputmode="decimal" maxlength="6" 
                     value="${nData.notaOrig}" 
                     ${isFechado ? 'disabled' : ''} 
-                    oninput="autoSaveNotaEngine('${aluno}', 'notaOrig', this, ${atv.valor})">
+                    oninput="autoSaveNotaEngine('${aluno}', 'notaOrig', this, ${atv.valor})" onkeydown="avancarCampoComEnter(event)">
             </td>
             <td>
-                <input type="number" step="0.01" min="0" max="${atv.valor}" 
+                <input type="text" inputmode="decimal" maxlength="6" 
                     value="${nData.notaRec}" 
                     id="rec-in-${aluno.replace(/ /g, '_')}" 
                     ${isBlockedRec || isFechado ? 'disabled' : ''} 
-                    oninput="autoSaveNotaEngine('${aluno}', 'notaRec', this, ${atv.valor})">
+                    oninput="autoSaveNotaEngine('${aluno}', 'notaRec', this, ${atv.valor})" onkeydown="avancarCampoComEnter(event)">
             </td>
             <td id="final-disp-${aluno.replace(/ /g, '_')}" class="${corClasse}">
                 ${notaFinalNum.toFixed(2)}
@@ -925,18 +1405,20 @@ function renderNotasTable(atv) {
 
 function autoSaveNotaEngine(aluno, campo, input, valorAtv) {
     const atv = db.disciplinas[selectedMateria][selectedBimestre].atividades.find(a => a.id === selectedAtividadeId);
-    let valStr = input.value.replace(',', '.');
-    
-    if (valStr === "") {
-        atv.notas[aluno][campo] = "";
-    } else {
-        let numeric = parseFloat(valStr);
-        if (numeric > valorAtv) numeric = valorAtv;
-        if (numeric < 0) numeric = 0;
-        atv.notas[aluno][campo] = numeric;
-        input.value = numeric;
+    let valStr = String(input.value || '').replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const ponto = valStr.indexOf('.');
+    if (ponto >= 0) {
+        valStr = valStr.slice(0, ponto + 1) + valStr.slice(ponto + 1).replace(/\./g, '');
+        if (valStr.length - ponto - 1 > 2) valStr = valStr.slice(0, ponto + 3);
     }
-
+    input.value = valStr;
+    if (valStr === "") atv.notas[aluno][campo] = "";
+    else if (/^\d+\.$/.test(valStr)) atv.notas[aluno][campo] = valStr;
+    else {
+        let numeric = Number(valStr);
+        if (!Number.isFinite(numeric)) numeric = 0;
+        atv.notas[aluno][campo] = Math.max(0, Math.min(valorAtv, numeric));
+    }
     const nData = atv.notas[aluno];
     const recInput = document.getElementById(`rec-in-${aluno.replace(/ /g, '_')}`);
     const displayFinal = document.getElementById(`final-disp-${aluno.replace(/ /g, '_')}`);
@@ -1078,7 +1560,7 @@ function openRecuperacaoBimestral() {
                 <td><strong>${aluno}</strong></td>
                 <td class="nota-baixa">${notaOrigBimestre.toFixed(2)}</td>
                 <td>
-                    <input type="number" step="0.01" min="0" max="25" 
+                    <input type="text" inputmode="decimal" maxlength="6" 
                         value="${currentRecVal}" 
                         ${isFechado ? 'disabled' : ''} 
                         oninput="saveRecBimestralAuto('${aluno}', this, ${notaOrigBimestre})">
@@ -1175,7 +1657,7 @@ function openRecuperacaoAnual() {
                 <td><strong>${aluno}</strong></td>
                 <td class="nota-baixa">${totalAnual.toFixed(2)}</td>
                 <td>
-                    <input type="number" step="0.01" min="0" max="100" 
+                    <input type="text" inputmode="decimal" maxlength="7" 
                         value="${currentRecVal}" 
                         oninput="saveRecAnualAuto('${aluno}', this, ${totalAnual})">
                 </td>
@@ -1303,6 +1785,7 @@ function executeGlobalClosureProcedure(bimestreParaFechar) {
         db.configGlobal.bimestresFechados[bimestreParaFechar] = true;
         db.configGlobal.currentBimestre = bimestreParaFechar + 1;
         saveStorage();
+        if (typeof renderLancamentoSeletorHome === 'function') renderLancamentoSeletorHome('');
         alert(`Sucesso! O ${bimestreParaFechar}º Bimestre foi trancado em todas as disciplinas.`);
         renderFechamentoGlobalScreen();
     }
@@ -1315,6 +1798,7 @@ function executeReabrirBimestreProcedure(bimestreParaReabrir) {
         db.configGlobal.bimestresFechados[bimestreParaReabrir] = false;
         db.configGlobal.currentBimestre = bimestreParaReabrir;
         saveStorage();
+        if (typeof renderLancamentoSeletorHome === 'function') renderLancamentoSeletorHome('');
         alert(`O ${bimestreParaReabrir}º Bimestre foi reaberto com sucesso!`);
         renderFechamentoGlobalScreen();
     }
@@ -1395,8 +1879,8 @@ function exportBoletimCompletoPDF() {
                 { content: "25,00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: totalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: rbVal, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                // Azul da tabela pdf corrigido para [43, 53, 62] que equivale a #2b353e
-                { content: finalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [224, 242, 254], textColor: [43, 53, 62] } }
+                // Azul da tabela pdf corrigido para [43, 78, 128] que equivale a #2b353e
+                { content: finalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [224, 242, 254], textColor: [43, 78, 128] } }
             ]);
         }
 
@@ -1422,7 +1906,7 @@ function exportBoletimCompletoPDF() {
             { content: `PONTUAÇÃO ACUMULADA DA DISCIPLINA NO ANO`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [15, 23, 42], textColor: [255, 255, 255] } },
             { content: "100.00", styles: { fontStyle: 'bold', fillColor: [15, 23, 42], textColor: [255, 255, 255] } },
             { content: "", colSpan: 2, styles: { fillColor: [15, 23, 42] } },
-            { content: finalComRecAnualPDF.toFixed(2), styles: { fontStyle: 'bold', fillColor: [16, 185, 129], textColor: [255, 255, 255], fontSize: 10 } }
+            { content: finalComRecAnualPDF.toFixed(2), styles: { fontStyle: 'bold', fillColor: [47, 107, 80], textColor: [255, 255, 255], fontSize: 10 } }
         ]);
 
         doc.autoTable({
@@ -1431,7 +1915,7 @@ function exportBoletimCompletoPDF() {
             body: tableBody,
             theme: 'grid',
             headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
-            styles: { fontSize: 8.5, halign: 'center', valign: 'middle' },
+            styles: { fontSize: 6.7, halign: 'center', valign: 'middle' },
             columnStyles: { 0: { halign: 'left', cellWidth: 26 }, 1: { halign: 'left' } }
         });
 
@@ -1614,7 +2098,7 @@ function renderBoletimIndividualList() {
         tr.innerHTML = `
             <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td style="text-align: center;">
-                <button class="btn-action-atv" style="background-color: #0c2c5c; color: #ffffff;" onclick="gerarBoletimPDF('${aluno}')">
+                <button class="btn-action-atv" style="background-color: #2b4e80; color: #ffffff;" onclick="gerarBoletimPDF('${aluno}')">
                     <i class="fas fa-file-pdf"></i> Gerar Boletim
                 </button>
             </td>
@@ -1630,6 +2114,8 @@ function obterFichaRendimentoAluno(aluno) {
     DISCIPLINAS.forEach(m => {
         ficha[m] = {
             somas: { 1: 0, 2: 0, 3: 0, 4: 0 },
+            faltas: { 1: 0, 2: 0, 3: 0, 4: 0 },
+            totalFaltas: 0,
             totalAnual: 0,
             media: 0,
             situacao: ""
@@ -1648,6 +2134,8 @@ function obterFichaRendimentoAluno(aluno) {
                 }
             }
             ficha[m].somas[b] = somaBimestre;
+            ficha[m].faltas[b] = obterFaltasAlunoDisciplina(aluno, m, b);
+            ficha[m].totalFaltas += ficha[m].faltas[b];
             ficha[m].totalAnual += somaBimestre;
         }
 
@@ -1693,7 +2181,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     // Cabeçalho institucional com visual unificado
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
-    doc.setTextColor(107, 20, 45);
+    doc.setTextColor(52, 58, 64);
     doc.text("PREFEITURA MUNICIPAL DE ABRE CAMPO", 40, 20);
     
     doc.setFontSize(9);
@@ -1713,7 +2201,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     // Metadados do Boletim
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.setTextColor(107, 20, 45);
+    doc.setTextColor(52, 58, 64);
     doc.text("BOLETIM DE RENDIMENTO ESCOLAR INDIVIDUAL", 15, 44);
 
     doc.setFont("helvetica", "normal");
@@ -1745,64 +2233,81 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         tableBody.push([
             m,
             f.somas[1].toFixed(1),
+            String(f.faltas[1]),
             f.somas[2].toFixed(1),
+            String(f.faltas[2]),
             f.somas[3].toFixed(1),
+            String(f.faltas[3]),
             f.somas[4].toFixed(1),
+            String(f.faltas[4]),
             f.totalAnual.toFixed(1),
+            String(f.totalFaltas),
             f.situacao
         ]);
     });
 
-    // Injeção da tabela utilizando AutoTable customizada nas cores solicitadas
+    // Tabela consolidada: nota + faltas em cada bimestre.
     doc.autoTable({
         startY: 67,
-        margin: { left: 15, right: 15 },
-        head: [['Componente Curricular', '1º Bim', '2º Bim', '3º Bim', '4º Bim', 'Total', 'Situação']],
+        margin: { left: 10, right: 10 },
+        head: [['Componente Curricular', '1º BIMESTRE', 'FALTAS', '2º BIMESTRE', 'FALTAS', '3º BIMESTRE', 'FALTAS', '4º BIMESTRE', 'FALTAS', 'CONCEITO FINAL', 'TOTAL DE FALTAS', 'SITUAÇÃO']],
         body: tableBody,
         theme: 'grid',
         headStyles: { 
-            fillColor: [107, 20, 45], // Azul do Brasão
+            fillColor: [43, 78, 128], // Azul do Brasão
             textColor: [255, 255, 255], 
             fontStyle: 'bold', 
             halign: 'center',
             valign: 'middle',
-            lineColor: [212, 175, 55], // Dourado
+            lineColor: [43, 78, 128], // Dourado
             lineWidth: 0.5
         },
         styles: { 
-            fontSize: 8.5, 
+            fontSize: 6.7, 
             halign: 'center', 
             valign: 'middle',
             textColor: [15, 23, 42]
         },
         columnStyles: { 
-            0: { halign: 'left', fontStyle: 'bold', cellWidth: 48 },
-            5: { fontStyle: 'bold' },
-            6: { fontStyle: 'bold' }
+            0: { halign: 'left', fontStyle: 'bold', cellWidth: 39 },
+            9: { fontStyle: 'bold' },
+            10: { fontStyle: 'bold' },
+            11: { fontStyle: 'bold' }
+        },
+        didDrawCell: function (data) {
+            if (data.section === 'head' && data.column.index > 0) {
+                const txt = String(data.cell.raw || '');
+                const x = data.cell.x + data.cell.width / 2;
+                const y = data.cell.y + data.cell.height / 2;
+                doc.setFontSize(6.5);
+                doc.setTextColor(255,255,255);
+                doc.text(txt, x, y, { angle: 90, align: 'center' });
+                data.cell.text = [];
+            }
         },
         didParseCell: function (data) {
             if (data.section === 'body') {
-                if (data.column.index >= 1 && data.column.index <= 4) {
+                if ([1, 3, 5, 7].includes(data.column.index)) {
                     const val = parseFloat(data.cell.raw.replace(',', '.'));
                     if (val < 15.00) {
-                        data.cell.styles.textColor = [220, 38, 38];
+                        data.cell.styles.textColor = [43, 78, 128];
                     } else {
                         // Azul corrigido para o novo escuro #2b353e
-                        data.cell.styles.textColor = [43, 53, 62]; 
+                        data.cell.styles.textColor = [43, 78, 128]; 
                     }
                 }
-                if (data.column.index === 5) {
+                if (data.column.index === 9) {
                     const val = parseFloat(data.cell.raw.replace(',', '.'));
-                    if (val < 60.00) data.cell.styles.textColor = [220, 38, 38];
-                    else data.cell.styles.textColor = [16, 185, 129];
+                    if (val < 60.00) data.cell.styles.textColor = [43, 78, 128];
+                    else data.cell.styles.textColor = [47, 107, 80];
                 }
-                if (data.column.index === 6) {
+                if (data.column.index === 11) {
                     if (data.cell.raw === "Aprovado") {
-                        data.cell.styles.textColor = [16, 185, 129];
+                        data.cell.styles.textColor = [47, 107, 80];
                     } else if (data.cell.raw === "Em Curso") {
-                        data.cell.styles.textColor = [245, 158, 11];
+                        data.cell.styles.textColor = [43, 78, 128];
                     } else {
-                        data.cell.styles.textColor = [220, 38, 38];
+                        data.cell.styles.textColor = [43, 78, 128];
                     }
                 }
             }
@@ -1822,7 +2327,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         doc.roundedRect(x, assinaturaY, boxW, boxH, 2, 2);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
-        doc.setTextColor(107, 20, 45);
+        doc.setTextColor(52, 58, 64);
         doc.text(label, x + boxW / 2, assinaturaY + 7, { align: 'center' });
         doc.setDrawColor(148, 163, 184);
         doc.line(x + 5, assinaturaY + 20, x + boxW - 5, assinaturaY + 20);
