@@ -1573,81 +1573,99 @@ function openVerNotas() {
 /**
  * SEÇÃO DE RECUPERAÇÃO BIMESTRAL INTEGRADA
  */
+function calcularResultadoRecuperacaoBimestral(notaOriginal, recuperacao) {
+    const original = Number(notaOriginal) || 0;
+    if (recuperacao === '' || recuperacao === null || recuperacao === undefined) return original;
+    const rec = Math.max(0, Math.min(25, Number(String(recuperacao).replace(',', '.')) || 0));
+    // O bimestre vale 25 pontos; 60% corresponde a 15 pontos.
+    // Mesma regra da recuperação normal: atingiu 60% -> fecha em 60%;
+    // caso contrário, permanece a maior nota entre original e recuperação.
+    return rec >= 15 ? 15 : Math.max(original, rec);
+}
+
 function openRecuperacaoBimestral() {
     const corpo = document.getElementById('table-rec-bim-corpo');
     if (!corpo) return;
+    const disciplina = db.disciplinas[selectedMateria];
+    const bData = disciplina?.[selectedBimestre];
+    if (!bData) return;
+    if (!bData.recuperacaoBimestral) bData.recuperacaoBimestral = {};
+
     corpo.innerHTML = '';
-    
-    const bData = db.disciplinas[selectedMateria][selectedBimestre];
-    const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
 
     ALUNOS.forEach(aluno => {
-        let notaOrigBimestre = bData.atividades.reduce((sum, a) => sum + (parseFloat(a.notas[aluno]?.notaFinal) || 0), 0);
-        
-        // Elegível apenas se nota for inferior a 15.00 (60% de 25.00)
-        if (notaOrigBimestre < 15.00) {
-            let currentRecVal = bData.recuperacaoBimestral[aluno] !== undefined ? bData.recuperacaoBimestral[aluno] : "";
-            
-            let finalBimVal = notaOrigBimestre;
-            if (currentRecVal !== "") {
-                let rVal = parseFloat(currentRecVal) || 0;
-                if (rVal >= 15.00) finalBimVal = 15.00;
-                else finalBimVal = Math.max(notaOrigBimestre, rVal);
-            }
+        const notaOrigBimestre = (bData.atividades || []).reduce(
+            (sum, a) => sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0), 0
+        );
 
-            const corClasse = finalBimVal >= 15.00 ? 'nota-alta' : 'nota-baixa';
+        // Elegibilidade: menos de 60% do bimestre = menos de 15,00/25,00.
+        if (notaOrigBimestre < 15) {
+            const currentRecVal = bData.recuperacaoBimestral[aluno] ?? '';
+            const finalBimVal = calcularResultadoRecuperacaoBimestral(notaOrigBimestre, currentRecVal);
+            const corClasse = finalBimVal >= 15 ? 'nota-alta' : 'nota-baixa';
+            const idAluno = safeId(aluno);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${aluno}</strong></td>
+                <td><strong>${escapeHtml(aluno)}</strong></td>
                 <td class="nota-baixa">${notaOrigBimestre.toFixed(2)}</td>
                 <td>
-                    <input type="text" inputmode="decimal" maxlength="6" 
-                        value="${currentRecVal}" 
-                        ${isFechado ? 'disabled' : ''} 
-                        oninput="saveRecBimestralAuto('${aluno}', this, ${notaOrigBimestre})">
+                    <input class="nota-central-input rec-bim-input" type="text" inputmode="decimal" maxlength="6"
+                        value="${escapeAttr(currentRecVal)}"
+                        data-aluno="${escapeAttr(aluno)}"
+                        data-nota-original="${notaOrigBimestre}"
+                        oninput="atualizarRecuperacaoBimestral(this)"
+                        onkeydown="avancarCampoComEnter(event)">
                 </td>
-                <td id="rec-bim-final-${aluno.replace(/ /g, '_')}" class="${corClasse}">
-                    ${finalBimVal.toFixed(2)}
-                </td>
+                <td id="rec-bim-final-${idAluno}" class="${corClasse}"><strong>${finalBimVal.toFixed(2)}</strong></td>
             `;
             corpo.appendChild(tr);
         }
     });
 
     if (corpo.innerHTML === '') {
-        corpo.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-light); padding: 20px;">Nenhum aluno em recuperação neste bimestre. Todos atingiram média $\\ge$ 15.00.</td></tr>`;
+        corpo.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-light); padding:20px;">Nenhum aluno elegível. Todos atingiram 60% ou mais no bimestre (15,00/25,00).</td></tr>`;
     }
 
     navigate('rec-bimestral');
 }
 
-function saveRecBimestralAuto(aluno, input, notaOrig) {
+function atualizarRecuperacaoBimestral(input) {
+    const notaOrig = Number(input.dataset.notaOriginal) || 0;
+    let raw = String(input.value ?? '').replace(',', '.').trim();
+    const aluno = input.dataset.aluno;
     const bData = db.disciplinas[selectedMateria][selectedBimestre];
-    let valStr = input.value.replace(',', '.');
+    if (!bData.recuperacaoBimestral) bData.recuperacaoBimestral = {};
 
-    if (valStr === "") {
+    if (raw === '') {
         delete bData.recuperacaoBimestral[aluno];
     } else {
-        let numeric = parseFloat(valStr);
-        if (numeric > 25.00) numeric = 25.00;
-        if (numeric < 0) numeric = 0;
+        let numeric = Number(raw);
+        if (!Number.isFinite(numeric)) numeric = 0;
+        numeric = Math.max(0, Math.min(25, numeric));
         bData.recuperacaoBimestral[aluno] = numeric;
         input.value = numeric;
+        raw = String(numeric);
     }
 
-    let finalBimVal = notaOrig;
-    if (bData.recuperacaoBimestral[aluno] !== undefined) {
-        let rVal = parseFloat(bData.recuperacaoBimestral[aluno]) || 0;
-        if (rVal >= 15.00) finalBimVal = 15.00;
-        else finalBimVal = Math.max(notaOrig, rVal);
-    }
-
-    const displayCell = document.getElementById(`rec-bim-final-${aluno.replace(/ /g, '_')}`);
+    const finalBimVal = calcularResultadoRecuperacaoBimestral(notaOrig, raw);
+    const displayCell = document.getElementById(`rec-bim-final-${safeId(aluno)}`);
     if (displayCell) {
-        displayCell.textContent = finalBimVal.toFixed(2);
-        displayCell.className = finalBimVal >= 15.00 ? 'nota-alta' : 'nota-baixa';
+        displayCell.innerHTML = `<strong>${finalBimVal.toFixed(2)}</strong>`;
+        displayCell.className = finalBimVal >= 15 ? 'nota-alta' : 'nota-baixa';
     }
+}
+
+function salvarRecuperacaoBimestral() {
+    saveStorage();
+    alert('Recuperações bimestrais salvas com sucesso.');
+}
+
+// Compatibilidade com versões anteriores do sistema.
+function saveRecBimestralAuto(aluno, input, notaOrig) {
+    input.dataset.aluno = aluno;
+    input.dataset.notaOriginal = notaOrig;
+    atualizarRecuperacaoBimestral(input);
     saveStorage();
 }
 
