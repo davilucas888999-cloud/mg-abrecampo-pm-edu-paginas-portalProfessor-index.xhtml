@@ -1885,3 +1885,22 @@ select,input,button,.card-box,.table-meta-header,.table-responsive-container,.di
 .nota-alta { color:#111111 !important; }
 .nota-final-value.nota-baixa { color:#b00000 !important; }
 .nota-final-value.nota-alta { color:#111111 !important; }
+
+
+/* ===== AJUSTES FINAIS: LANÇAMENTO + BOLETIM ===== */
+#screen-lancar-notas .table-responsive-container{overflow-x:auto;box-shadow:0 10px 28px rgba(37,42,48,.08)}
+#screen-lancar-notas .table-custom-format{min-width:760px;width:100%}
+#screen-lancar-notas .table-custom-format th:nth-child(5),#screen-lancar-notas .table-custom-format td:nth-child(5){min-width:110px;width:110px}
+#screen-lancar-notas .rec-bim-cell{background:#f1f4f7!important;text-align:center!important}
+#screen-lancar-notas .rec-bim-inline-input{width:78px!important;min-width:78px!important;height:34px!important;text-align:center!important;font-weight:800!important;border:1px solid #718096!important}
+#screen-lancar-notas .rec-bim-inline-input:not(:disabled):focus{border-color:#2b4e80!important;box-shadow:0 0 0 3px rgba(43,78,128,.12)!important}
+#screen-lancar-notas .table-custom-format thead th:last-child{background:#2b4e80!important}
+#screen-boletim-individual .table-meta-header{padding:22px 24px}
+#screen-boletim-individual .table-meta-header h3{font-size:1.35rem;margin-bottom:5px}
+.boletim-student-cell{display:flex!important;align-items:center;gap:13px;padding:13px 16px!important}
+.boletim-student-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#343a40;color:#fff;flex:none}
+.boletim-student-cell strong{display:block;font-size:.86rem}
+.boletim-student-cell small{display:block;margin-top:3px;color:#68717b;font-size:.72rem}
+.boletim-actions-cell{text-align:center!important}
+.boletim-pdf-btn{min-width:145px!important;display:inline-flex!important;align-items:center;justify-content:center;gap:7px}
+@media(max-width:600px){#screen-lancar-notas .table-custom-format{min-width:780px}.boletim-pdf-btn span{display:none}.boletim-pdf-btn{min-width:42px!important;width:42px!important;padding:0!important}}
