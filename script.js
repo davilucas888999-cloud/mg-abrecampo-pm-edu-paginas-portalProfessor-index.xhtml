@@ -354,7 +354,7 @@ function garantirEstruturaFaltas(){
 }
 function listaDisciplinasOptions(selected=''){return DISCIPLINAS.map(d=>`<option value="${escapeAttr(d)}" ${d===selected?'selected':''}>${escapeHtml(d.toUpperCase())}</option>`).join('');}
 function limparSelectLancamento(id){const el=document.getElementById(id);if(el)el.value='';}
-function normalizarNumeroDigitado(raw, casas=2){
+function normalizarNumeroDigitado(raw, casas=1){
     let v=String(raw ?? '').replace(/[^0-9.,]/g,'').replace(/,/g,'.');
     const p=v.indexOf('.');
     if(p>=0){
@@ -1603,7 +1603,7 @@ function autoSaveRecuperacaoBimestralInline(input) {
 function autoSaveNotaEngine(aluno, campo, input, valorAtv) {
     const atv = db.disciplinas[selectedMateria]?.[selectedBimestre]?.atividades?.find(a => a.id === selectedAtividadeId);
     if(!atv) return;
-    let valStr=normalizarNumeroDigitado(input.value,2); input.value=valStr; limitarValorInputPontos(input,valorAtv); valStr=input.value;
+    let valStr=normalizarNumeroDigitado(input.value,1); input.value=valStr; limitarValorInputPontos(input,valorAtv); valStr=input.value;
     const base=atv.notas?.[aluno]||{notaOrig:'',notaRec:''};
     const d=getDraftNota(selectedMateria,selectedBimestre,atv.id,aluno,base.notaOrig??'',base.notaRec??'');
     d[campo]=valStr;
@@ -1671,7 +1671,7 @@ function openRecuperacaoBimestral() {
     navigate('rec-bimestral');
 }
 function atualizarRecBimestralScreen(input){
-    const raw0=normalizarNumeroDigitado(input.value,2); input.value=raw0; limitarValorInputPontos(input,CONFIG.limitPoints); const raw=input.value;
+    const raw0=normalizarNumeroDigitado(input.value,1); input.value=raw0; limitarValorInputPontos(input,CONFIG.limitPoints); const raw=input.value;
     draftRecBimestral[`${selectedMateria}\u001f${selectedBimestre}\u001f${input.dataset.aluno}`]=raw;
     // Não altera a nota final exibida antes do salvamento.
 }
@@ -1704,7 +1704,7 @@ function openRecuperacaoAnual() {
     navigate('rec-anual');
 }
 function atualizarRecAnualScreen(input){
-    const raw=normalizarNumeroDigitado(input.value,2);input.value=raw;draftRecAnual[`${selectedMateria}\u001f${input.dataset.aluno}`]=raw;
+    const raw=normalizarNumeroDigitado(input.value,1);input.value=raw;draftRecAnual[`${selectedMateria}\u001f${input.dataset.aluno}`]=raw;
     const total=Number(input.dataset.total)||0,final=calcularResultadoRecuperacao(total,raw,100),cell=document.getElementById(`rec-anual-final-${safeId(input.dataset.aluno)}`);
     if(cell){cell.textContent=final.toFixed(1);cell.className=classeNotaPercentual(final,100);}
 }
