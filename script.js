@@ -371,14 +371,17 @@ function limitarValorInputPontos(input, maximo){
     if(Number.isFinite(n) && n>limite){ input.value=String(limite.toFixed(2)).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1'); }
 }
 function normalizarNotaPlanilha(input, maximo){
+    // Durante a digitação, mantém o valor exatamente no formato digitado.
+    // A formatação final (ex.: 4 -> 4.0) acontece somente ao salvar.
     let raw=normalizarNumeroDigitado(input.value,1);
     if(raw==='') return '';
-    let n=Number(raw);
-    if(!Number.isFinite(n)) n=0;
-    n=Math.max(0,Math.min(Number(maximo)||0,n));
-    n=Math.round(n*10)/10;
-    input.value=String(n.toFixed(1));
-    return input.value;
+    const limite=Number(maximo);
+    const n=Number(raw);
+    if(Number.isFinite(limite) && Number.isFinite(n) && n>limite){
+        raw=String(limite);
+        input.value=raw;
+    }
+    return raw;
 }
 function totalBimestreComDadosSalvos(disciplina,bimestre,aluno){
     const bData=db.disciplinas[disciplina]?.[Number(bimestre)]||{};
