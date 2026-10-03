@@ -40,6 +40,7 @@
                 <li onclick="abrirLancamentoFaltas()"><i class="fas fa-calendar-check"></i> Lançamento de Faltas</li>
                 <li onclick="abrirCadastroAulas()"><i class="fas fa-calendar-days"></i> Cadastro de Aulas por Dia</li>
                 <li onclick="abrirNotaFinalDisciplina()"><i class="fas fa-list-check"></i> Ver Nota Final por Disciplina</li>
+                <li onclick="abrirAtaResultadosFinais()"><i class="fas fa-file-signature"></i> Ata de Resultados Finais</li>
                 <li onclick="navigate('fechamento-global')"><i class="fas fa-lock"></i> Fechamento de Bimestre</li>
                 <li onclick="navigate('dashboard')"><i class="fas fa-chart-line"></i> Estatísticas e Gráficos</li>
                 <li onclick="navigate('backup')"><i class="fas fa-server"></i> Manutenção de Dados</li>
@@ -259,7 +260,7 @@
 
             <div class="section-header-block" style="margin-top: 25px;">
                 <h4 class="section-title">Quadro de Atividades e Notas</h4>
-                <p class="section-desc">Cada atividade fica lado a lado. Dentro de cada atividade aparecem, nesta ordem, <strong>Nota</strong>, <strong>Recuperação</strong> e <strong>Nota Final</strong>. A regra de recuperação continua sendo aplicada automaticamente.</p>
+                <p class="section-desc">A planilha apresenta <strong>Nome</strong>, as <strong>atividades criadas</strong>, <strong>Nota do Bimestre</strong>, <strong>Nota da Recuperação Bimestral</strong> e <strong>Nota Oficial do Bimestre</strong>. A Nota Oficial usa uma casa decimal e só muda depois de salvar.</p>
             </div>
 
             <div class="atividades-grade-wrapper">
@@ -296,6 +297,7 @@
                     <tbody id="table-notas-corpo"></tbody>
                 </table>
             </div>
+            <div class="save-launch-bar"><span>As notas só são gravadas e somadas após salvar.</span><button class="btn-submit-action" type="button" onclick="salvarNotasAtividadeSelecionada()"><i class="fas fa-save"></i> SALVAR LANÇAMENTO</button></div>
         </div>
 
         <!-- TELA 5: VER NOTAS (MATRIZ GERAL DA MATÉRIA COM SOMA DIRETA) -->
@@ -364,6 +366,7 @@
                         <tr>
                             <th>Estudante Elegível</th>
                             <th style="width: 80px;">Soma Anual</th>
+                            <th style="width: 70px;">Faltas</th>
                             <th style="width: 100px;">Nota Rec. Anual</th>
                             <th style="width: 90px;">Resultado Final</th>
                         </tr>
@@ -423,7 +426,7 @@
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar</button>
             <div class="table-meta-header">
                 <h3><i class="fas fa-list-check"></i> Nota Final por Disciplina</h3>
-                <p class="sub-meta">Consulte as notas e faltas dos quatro bimestres e o resultado final de cada aluno.</p>
+                <p class="sub-meta">Consulte as notas e faltas dos quatro bimestres, os limites anuais de faltas e a situação final de cada aluno.</p>
                 <div class="lancamento-filtros">
                     <div><label>Disciplina</label><select id="final-disciplina-select"></select></div>
                     <button class="btn-submit-action" type="button" onclick="buscarNotaFinalDisciplina()"><i class="fas fa-search"></i> Buscar</button>
@@ -433,6 +436,24 @@
                 <table class="table-custom-format nota-final-disc-table">
                     <thead><tr><th>Aluno</th><th>1º Bim.</th><th>Faltas</th><th>2º Bim.</th><th>Faltas</th><th>3º Bim.</th><th>Faltas</th><th>4º Bim.</th><th>Faltas</th><th>Conceito Final</th><th>Total de Faltas</th><th>Situação</th></tr></thead>
                     <tbody id="table-nota-final-disciplina-corpo"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA: ATA DE RESULTADOS FINAIS -->
+        <div id="screen-ata-resultados-finais" class="screen">
+            <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar</button>
+            <div class="table-meta-header">
+                <h3><i class="fas fa-file-signature"></i> Ata de Resultados Finais</h3>
+                <p class="sub-meta">Documento anual com nomes, resultados e faltas por disciplina, seguindo o modelo da ata apresentada.</p>
+                <div class="ata-actions">
+                    <button class="btn-submit-action" type="button" onclick="gerarAtaResultadosFinaisPDF()"><i class="fas fa-file-pdf"></i> GERAR ATA EM PDF</button>
+                </div>
+            </div>
+            <div class="table-responsive-container ata-preview-wrap">
+                <table class="table-custom-format ata-resultados-table">
+                    <thead id="ata-resultados-head"></thead>
+                    <tbody id="ata-resultados-corpo"></tbody>
                 </table>
             </div>
         </div>

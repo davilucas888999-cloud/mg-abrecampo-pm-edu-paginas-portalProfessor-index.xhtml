@@ -1904,3 +1904,388 @@ select,input,button,.card-box,.table-meta-header,.table-responsive-container,.di
 .boletim-actions-cell{text-align:center!important}
 .boletim-pdf-btn{min-width:145px!important;display:inline-flex!important;align-items:center;justify-content:center;gap:7px}
 @media(max-width:600px){#screen-lancar-notas .table-custom-format{min-width:780px}.boletim-pdf-btn span{display:none}.boletim-pdf-btn{min-width:42px!important;width:42px!important;padding:0!important}}
+
+/* Novos recursos solicitados: ata, recuperação bimestral e lançamentos com salvamento explícito. */
+.nota-baixa, .nota-final-value.nota-baixa { color:#b00000 !important; }
+.rec-bim-cell input, .rec-bim-inline-input, .rec-bim-screen-input, .rec-anual-screen-input { min-width:70px !important; text-align:center; }
+.ata-actions { margin-top:14px; }
+.ata-preview-wrap { margin-top:18px; }
+.ata-resultados-table { min-width:1250px; }
+.ata-resultados-table th, .ata-resultados-table td { text-align:center; vertical-align:middle; }
+.ata-resultados-table th:first-child, .ata-resultados-table td:first-child { text-align:left; min-width:42px; }
+.ata-resultados-table .ata-aluno { min-width:260px; text-align:left; }
+.ata-subject-head { white-space:nowrap; }
+.ata-res-col { min-width:68px; }
+.ata-fal-col { min-width:52px; }
+
+/* ===== REFINO VISUAL DA PLANILHA DE NOTAS ===== */
+#screen-lancar-notas .table-responsive-container,
+.notas-inline-table + * { border-radius: 14px; }
+#screen-lancar-notas .table-custom-format,
+.notas-inline-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(31, 41, 55, .09);
+}
+#screen-lancar-notas .table-custom-format thead th,
+.notas-inline-table thead th {
+    background: #f3f6fa;
+    color: #26364a;
+    border-bottom: 2px solid #d8e0ea;
+    padding: 13px 10px;
+    font-size: .72rem;
+    font-weight: 850;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+#screen-lancar-notas .table-custom-format thead th:first-child,
+.notas-inline-table thead th:first-child {
+    background: #eaf0f7;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+#screen-lancar-notas .table-custom-format tbody tr:nth-child(even),
+.notas-inline-table tbody tr:nth-child(even) { background: #fbfcfe; }
+#screen-lancar-notas .table-custom-format tbody tr:hover,
+.notas-inline-table tbody tr:hover { background: #f2f7fc; }
+#screen-lancar-notas .table-custom-format tbody td,
+.notas-inline-table tbody td {
+    padding: 10px 9px;
+    border-bottom: 1px solid #e7ebf0;
+    vertical-align: middle;
+}
+#screen-lancar-notas .table-custom-format tbody td:first-child,
+.notas-inline-table tbody td:first-child {
+    background: inherit;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+#screen-lancar-notas .nota-inline-input,
+#screen-lancar-notas .rec-inline-input,
+#screen-lancar-notas .rec-bim-inline-input,
+#screen-lancar-notas .nota-central-input,
+#screen-lancar-notas .rec-central-input {
+    height: 42px !important;
+    min-height: 42px !important;
+    border: 1.5px solid #b7c4d3 !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    font-size: .92rem !important;
+    font-weight: 800 !important;
+    box-shadow: inset 0 1px 2px rgba(15,23,42,.04);
+    transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+#screen-lancar-notas .nota-inline-input:focus,
+#screen-lancar-notas .rec-inline-input:focus,
+#screen-lancar-notas .rec-bim-inline-input:focus,
+#screen-lancar-notas .nota-central-input:focus,
+#screen-lancar-notas .rec-central-input:focus {
+    outline: none;
+    border-color: #2b4e80 !important;
+    box-shadow: 0 0 0 3px rgba(43,78,128,.12), 0 3px 8px rgba(31,41,55,.08) !important;
+}
+#screen-lancar-notas .rec-bim-cell {
+    background: #eef4fb !important;
+    min-width: 120px;
+}
+#screen-lancar-notas .rec-bim-inline-input {
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    border-radius: 12px !important;
+    border: 2px solid #7891ad !important;
+    font-size: 1rem !important;
+}
+#screen-lancar-notas .rec-bim-inline-input:disabled {
+    background: #e7ebf0 !important;
+    border-color: #cbd3dc !important;
+    color: #7b8794 !important;
+    opacity: 1;
+}
+#screen-lancar-notas .rec-bim-cell::before {
+    content: 'ATÉ 25,00';
+    display: block;
+    margin-bottom: 5px;
+    font-size: .57rem;
+    font-weight: 850;
+    color: #65778b;
+    letter-spacing: .05em;
+}
+#screen-lancar-notas .atividade-stacked-cell .nota-field-stack {
+    padding: 5px 0 8px;
+    border-bottom: 1px solid #e5eaf0;
+}
+#screen-lancar-notas .nota-final-field { border-bottom: 0 !important; }
+#screen-lancar-notas .nota-final-value {
+    height: 38px !important;
+    min-width: 78px !important;
+    border-radius: 9px !important;
+    display: inline-flex;
+    font-size: .9rem;
+}
+#screen-lancar-notas .nota-final-bimestre-cell {
+    background: #f7f9fc;
+    border-left: 1px solid #dfe5ec;
+    border-right: 1px solid #dfe5ec;
+}
+#screen-lancar-notas .nota-final-bimestre-cell strong { font-size: 1.08rem; }
+
+/* A planilha integrada de notas usa o mesmo padrão visual. */
+.notas-inline-table .rec-bim-cell::before {
+    content: 'ATÉ 25,00';
+    display: block;
+    margin-bottom: 5px;
+    font-size: .57rem;
+    font-weight: 850;
+    color: #65778b;
+}
+.notas-inline-table .rec-bim-inline-input {
+    height: 46px !important;
+    min-height: 46px !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
+    border-radius: 12px !important;
+    border: 2px solid #7891ad !important;
+    font-size: 1rem !important;
+}
+.notas-inline-table .rec-bim-inline-input:disabled {
+    background: #e7ebf0 !important;
+    border-color: #cbd3dc !important;
+    opacity: 1;
+}
+
+/* Ata em tela: nome fica em uma única linha. */
+.ata-resultados-table .ata-aluno {
+    max-width: 260px;
+    width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Planilha principal de notas: leitura mais clara e recuperação bimestral destacada. */
+.atividades-grade-table { border-collapse: separate !important; border-spacing: 0 !important; background:#fff; }
+.atividades-grade-table th { vertical-align: middle; }
+.atividades-grade-table .rec-bim-matrix-head,
+.atividades-grade-table .rec-bim-matrix-cell { background:#eef4fb !important; }
+.atividades-grade-table .rec-bim-matrix-head { min-width:125px; width:125px; border-left:2px solid #d4deea; }
+.atividades-grade-table .rec-bim-matrix-cell { text-align:center; min-width:125px; width:125px; border-left:2px solid #dfe7f0; }
+.atividades-grade-table .rec-bim-matrix-cell::before { content:'ATÉ 25,00'; display:block; margin-bottom:5px; font-size:.56rem; font-weight:850; color:#65778b; letter-spacing:.05em; }
+.atividades-grade-table .rec-bim-matrix-input {
+    width:84px !important; min-width:84px !important; max-width:84px !important;
+    height:46px !important; min-height:46px !important;
+    border:2px solid #7891ad !important; border-radius:12px !important;
+    background:#fff !important; text-align:center; font-weight:850; font-size:1rem;
+}
+.atividades-grade-table .rec-bim-matrix-input:focus { outline:none; border-color:#2b4e80 !important; box-shadow:0 0 0 3px rgba(43,78,128,.12); }
+.atividades-grade-table .rec-bim-matrix-input:disabled { background:#e7ebf0 !important; border-color:#cbd3dc !important; color:#7b8795; opacity:1; }
+.atividades-grade-table .matrix-nota-input,
+.atividades-grade-table .matrix-rec-input {
+    width:76px; min-width:76px; height:42px; border:1.5px solid #b7c4d3; border-radius:10px;
+    background:#fff; text-align:center; font-weight:800; box-shadow:inset 0 1px 2px rgba(15,23,42,.04);
+}
+.atividades-grade-table .matrix-nota-input:focus,
+.atividades-grade-table .matrix-rec-input:focus { outline:none; border-color:#2b4e80; box-shadow:0 0 0 3px rgba(43,78,128,.12); }
+.atividades-grade-table .matrix-nota-input:disabled,
+.atividades-grade-table .matrix-rec-input:disabled { background:#e7ebf0; color:#7b8795; opacity:1; }
+.matrix-notas-save-bar { margin-top:14px; }
+
+/* ===== Planilha principal de notas — layout solicitado ===== */
+.atividades-grade-table .atividade-column-head {
+    min-width: 155px;
+    width: 155px;
+    vertical-align: top;
+}
+.atividades-grade-table .atividade-lancamento-cell {
+    min-width: 155px;
+    width: 155px;
+    padding: 9px 8px !important;
+    vertical-align: middle;
+}
+.atividades-grade-table .nota-bimestre-head,
+.atividades-grade-table .nota-bimestre-cell {
+    min-width: 125px;
+    width: 125px;
+    text-align: center;
+}
+.atividades-grade-table .nota-bimestre-cell {
+    background: #f7f9fc !important;
+    vertical-align: middle;
+}
+.atividades-grade-table .nota-cell-label,
+.atividades-grade-table .nota-oficial-label {
+    display: block;
+    font-size: .58rem;
+    font-weight: 850;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    color: #64748b;
+}
+.atividades-grade-table .nota-bimestre-cell strong {
+    display: block;
+    font-size: 1.12rem;
+    line-height: 1.1;
+}
+.atividades-grade-table .nota-oficial-head,
+.atividades-grade-table .nota-oficial-cell {
+    min-width: 145px;
+    width: 145px;
+    text-align: center;
+}
+.atividades-grade-table .nota-oficial-cell {
+    background: #f0f6ff !important;
+    border-left: 2px solid #d2dfef !important;
+    vertical-align: middle;
+}
+.atividades-grade-table .nota-oficial-label {
+    font-size: .68rem;
+    color: #2b4e80;
+}
+.atividades-grade-table .nota-oficial-cell strong {
+    display: block;
+    font-size: 1.25rem;
+    line-height: 1.1;
+}
+.atividades-grade-table .rec-bim-matrix-cell {
+    min-width: 145px;
+    width: 145px;
+    padding: 9px 8px !important;
+    vertical-align: middle;
+}
+.atividades-grade-table .rec-bim-matrix-cell .nota-cell-label {
+    color: #526b88;
+}
+.atividades-grade-table .rec-bim-matrix-input {
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    border-radius: 14px !important;
+    font-size: 1.08rem !important;
+}
+.atividades-grade-table .nota-field-stack {
+    padding: 3px 0 7px;
+}
+.atividades-grade-table .nota-field-stack label {
+    font-size: .57rem;
+    font-weight: 850;
+    letter-spacing: .04em;
+    color: #65778b;
+}
+.atividades-grade-table .nota-field-stack.recuperacao-field {
+    border-top: 1px solid #e5ebf3;
+    margin-top: 3px;
+}
+.atividades-grade-table .matrix-nota-input,
+.atividades-grade-table .matrix-rec-input {
+    width: 82px !important;
+    min-width: 82px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    border-radius: 11px !important;
+    font-size: 1rem !important;
+}
+.atividades-grade-table .nota-final-field {
+    border-bottom: 0 !important;
+    padding-bottom: 1px;
+}
+.atividades-grade-table .nota-final-value {
+    min-height: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: .88rem;
+    font-weight: 850;
+}
+.atividades-grade-table .aluno-grade-name {
+    min-width: 230px;
+    width: 230px;
+    max-width: 230px;
+    vertical-align: middle;
+}
+.atividades-grade-table .aluno-grade-name strong {
+    display: block;
+    line-height: 1.25;
+}
+.atividades-grade-table .aluno-grade-name .aluno-number {
+    display: inline-block;
+    min-width: 28px;
+    color: #64748b;
+}
+
+/* PLANILHA DE NOTAS — TELA CENTRAL REAL */
+#screen-lancamento-central-notas .notas-central-table {
+    min-width: 1180px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+#screen-lancamento-central-notas .notas-central-table th {
+    background: #2b4e80;
+    color: #fff;
+    font-size: .74rem;
+    font-weight: 900;
+    padding: 12px 10px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+#screen-lancamento-central-notas .notas-central-table th:first-child,
+#screen-lancamento-central-notas .notas-central-table td:first-child {
+    min-width: 255px;
+    text-align: left;
+}
+#screen-lancamento-central-notas .notas-central-table tbody tr:nth-child(even) { background:#f7f9fc; }
+#screen-lancamento-central-notas .notas-central-table tbody tr:hover { background:#eef4fb; }
+#screen-lancamento-central-notas .notas-central-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #dfe5ec;
+    text-align: center;
+    vertical-align: middle;
+}
+#screen-lancamento-central-notas .central-aluno-name { position:sticky; left:0; z-index:2; background:inherit; }
+#screen-lancamento-central-notas .central-atividade-head span,
+#screen-lancamento-central-notas .central-atividade-head small { display:block; font-size:.64rem; opacity:.9; }
+#screen-lancamento-central-notas .central-atividade-head strong { display:block; margin:3px 0; font-size:.76rem; }
+#screen-lancamento-central-notas .nota-central-input {
+    width: 78px !important; min-width:78px !important; max-width:78px !important;
+    height: 46px !important; min-height:46px !important;
+    border: 1.5px solid #b7c4d3 !important; border-radius: 11px !important;
+    background:#fff !important; font-size:.95rem !important; font-weight:800 !important;
+    text-align:center;
+}
+#screen-lancamento-central-notas .nota-central-input:focus,
+#screen-lancamento-central-notas .rec-central-input:focus {
+    outline:none; border-color:#2b4e80 !important; box-shadow:0 0 0 3px rgba(43,78,128,.12) !important;
+}
+#screen-lancamento-central-notas .nota-central-total,
+#screen-lancamento-central-notas .nota-oficial-central {
+    min-width:125px; font-weight:900;
+}
+#screen-lancamento-central-notas .nota-cell-label,
+#screen-lancamento-central-notas .nota-oficial-label {
+    display:block; font-size:.63rem; font-weight:900; text-transform:uppercase; margin-bottom:4px;
+}
+#screen-lancamento-central-notas .nota-central-total strong,
+#screen-lancamento-central-notas .nota-oficial-central strong { display:block; font-size:1.05rem; }
+#screen-lancamento-central-notas .rec-central-cell { min-width:145px; background:#eef4fb; }
+#screen-lancamento-central-notas .rec-central-input {
+    width:92px !important; min-width:92px !important; max-width:92px !important;
+    height:48px !important; min-height:48px !important;
+    border:2px solid #7891ad !important; border-radius:12px !important;
+    background:#fff !important; font-size:1rem !important; font-weight:800 !important; text-align:center;
+}
+#screen-lancamento-central-notas .nota-baixa { color:#c62828 !important; }
+#screen-lancamento-central-notas .nota-alta { color:#172235 !important; }
